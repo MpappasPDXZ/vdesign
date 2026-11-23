@@ -22,7 +22,12 @@
       "drawWalls": "Draw Walls",
       "deleteWalls": "Delete Walls",
       "done": "Done",
-      "escHint": "Press the \"Esc\" key to stop drawing walls"
+      "escHint": "Click to place corners, or type an exact length and press Enter. Esc stops drawing.",
+      "typedLengthLabel": "Wall length",
+      "typedLengthPlaceholder": "26' or 41'-4\"",
+      "typedLengthApply": "Set",
+      "typedLengthHint": "Aim with the mouse, then Enter",
+      "typedLengthNeedStart": "Click the first corner, then enter a length"
     },
     "viewToggle": {
       "3d": "3D",
@@ -117,11 +122,20 @@
         "stool": "Stools",
         "door": "Doors",
         "window": "Windows",
-        "toilet": "Toilets"
+        "toilet": "Toilets",
+        "venue": "Venue / Training"
       },
       "loadingItem": "Loading \"{name}\"...",
       "loadedSuccess": "\"{name}\" loaded successfully",
       "loadError": "Failed to load \"{name}\"",
+      "venueTurfMat": "Turf Mat (10×20 ft)",
+      "venueHomePlate": "Home Plate Area",
+      "venueLScreen": "L-Screen",
+      "venuePitchingMachine": "Pitching Machine",
+      "venueNettingPanel": "Netting Panel (10×11 ft)",
+      "venueMedBallWall": "Med Ball Wall",
+      "venueTee": "Batting Tee",
+      "venueBucket": "Ball Bucket",
       "bedOne": "Modern Upholstered Twin Bed",
       "drawerOne": "Minimalist White Six-Drawer Dresser",
       "drawerTwo": "Modern Eight Drawer Wooden Dresser",

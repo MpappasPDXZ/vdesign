@@ -6,6 +6,7 @@ import type { Item } from '../items/item'
 import type { Model } from './model'
 import { JSONLoader } from '../loaders/JSONLoader'
 import { GLBLoader } from '../loaders/GLBLoader'
+import { ProceduralLoader, isProceduralUrl } from '../loaders/ProceduralLoader'
 
 /**
  * The Scene is a manager of Items and also links to a ThreeJS scene.
@@ -25,6 +26,9 @@ export class Scene {
 
   /** The GLB loader. */
   private glbLoader: GLBLoader
+
+  /** Procedural placeholder geometry (venue / layout objects). */
+  private proceduralLoader: ProceduralLoader
 
   /** */
   public itemLoadingCallbacks = new EventEmitter<void>()
@@ -55,6 +59,7 @@ export class Scene {
     this.jsonLoader = new JSONLoader()
     // Use GLBLoader for modern GLB/GLTF models
     this.glbLoader = new GLBLoader()
+    this.proceduralLoader = new ProceduralLoader()
   }
 
   /** Adds a non-item, basically a mesh, to the scene.
@@ -170,9 +175,12 @@ export class Scene {
 
     this.itemLoadingCallbacks.fire()
 
-    // Determine which loader to use based on file extension
-    const isGLB = fileName.toLowerCase().endsWith('.glb') || fileName.toLowerCase().endsWith('.gltf')
-    const loader = isGLB ? this.glbLoader : this.jsonLoader
+    // Determine which loader to use based on URL / file extension
+    const loader = isProceduralUrl(fileName)
+      ? this.proceduralLoader
+      : fileName.toLowerCase().endsWith('.glb') || fileName.toLowerCase().endsWith('.gltf')
+        ? this.glbLoader
+        : this.jsonLoader
 
     // Wrap in try-catch for better error handling
     try {

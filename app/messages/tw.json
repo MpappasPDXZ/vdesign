@@ -22,7 +22,12 @@
       "drawWalls": "绘制墙体",
       "deleteWalls": "删除墙体",
       "done": "完成",
-      "escHint": "按\"Esc\"键停止绘制墙体"
+      "escHint": "點擊放置牆角，或輸入精確長度後按 Enter。Esc 停止繪製。",
+      "typedLengthLabel": "牆體長度",
+      "typedLengthPlaceholder": "26' 或 800cm",
+      "typedLengthApply": "確定",
+      "typedLengthHint": "用滑鼠指向方向，再按 Enter",
+      "typedLengthNeedStart": "先點擊第一個牆角，再輸入長度"
     },
     "viewToggle": {
       "3d": "3D",
@@ -117,11 +122,20 @@
         "stool": "凳子",
         "door": "门",
         "window": "窗户",
-        "toilet": "马桶"
+        "toilet": "马桶",
+        "venue": "場館 / 訓練"
       },
       "loadingItem": "正在加载\"{name}\"...",
       "loadedSuccess": "\"{name}\"加载成功",
       "loadError": "加载\"{name}\"失败",
+      "venueTurfMat": "人造草皮墊 (10×20 ft)",
+      "venueHomePlate": "本壘板區域",
+      "venueLScreen": "L 型防護網",
+      "venuePitchingMachine": "投球機",
+      "venueNettingPanel": "網片 (10×11 ft)",
+      "venueMedBallWall": "藥球牆",
+      "venueTee": "擊球座",
+      "venueBucket": "球桶",
       "bedOne": "现代软包双人床",
       "drawerOne": "简约白色六抽屉斗柜",
       "drawerTwo": "现代木质八抽屉斗柜",

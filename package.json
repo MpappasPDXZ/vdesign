@@ -1,29 +1,31 @@
 {
-  "name": "blueprint3d-modern",
+  "name": "vdesign",
   "version": "0.1.0",
-  "description": "A modern 3D floor planner library built with Three.js, featuring a Next.js demo application",
+  "description": "vdesign — Next.js 2D/3D floor planner for dimensions and layout, based on Blueprint3D Modern",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "cd app && pnpm dev",
-    "dev:nextjs": "cd app && next dev --turbopack",
-    "build": "pnpm install && cd app && pnpm install && pnpm run build",
-    "build:nextjs": "cd app && next build",
-    "start": "cd app && next start",
-    "start:nextjs": "cd app && next start",
-    "ts": "tsc --noEmit"
+    "dev": "pnpm --dir app dev",
+    "build": "pnpm install && pnpm --dir app install && pnpm --dir app build",
+    "start": "pnpm --dir app start",
+    "ts": "tsc --noEmit",
+    "docker:up": "docker compose up --build web",
+    "docker:dev": "docker compose --profile dev up --build dev",
+    "docker:down": "docker compose down"
   },
+  "packageManager": "pnpm@9.15.9",
   "dependencies": {
     "animejs": "^4.3.6",
     "three": "^0.181.0"
   },
   "devDependencies": {
     "@types/three": "^0.181.0",
+    "pnpm": "^9.15.9",
     "typescript": "^5.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/blueprint3d-modern.git"
+    "url": "https://github.com/MpappasPDXZ/vdesign.git"
   },
   "author": ""
 }

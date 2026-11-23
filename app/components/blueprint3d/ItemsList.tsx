@@ -12,6 +12,7 @@ interface ItemsListProps {
 
 const CATEGORY_KEYS = {
   all: 'all',
+  venue: 'venue',
   bed: 'bed',
   drawer: 'drawer',
   wardrobe: 'wardrobe',
@@ -28,6 +29,7 @@ const CATEGORY_KEYS = {
 
 const CATEGORY_VALUES: Array<ItemCategory | 'all'> = [
   'all',
+  'venue',
   'bed',
   'drawer',
   'wardrobe',
@@ -126,7 +128,7 @@ export function ItemsList({ onItemSelect }: ItemsListProps) {
       {filteredItems.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <p className="text-sm">{t('list.noItemsFound')}</p>
-          <p className="text-xs mt-2">{t('list.selectDifferentCategory')}</p>
+          <p className="text-xs mt-2">{t('list.selectDifferentLayer')}</p>
         </div>
       )}
     </div>

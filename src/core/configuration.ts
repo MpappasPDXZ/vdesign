@@ -24,7 +24,7 @@ export class Configuration {
   private static data: { [key: string]: any } = {
     dimUnit: dimInch,
 
-    wallHeight: 250,
+    wallHeight: 335, // ~11' default ceiling height for layout planning
     wallThickness: 10,
     snapToWallDistance: 10
   }

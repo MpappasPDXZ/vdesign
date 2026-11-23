@@ -314,4 +314,46 @@ export class Floorplanner {
   public convertY(y: number): number {
     return (y - this.originY * this.cmPerPixel) * this.pixelsPerCm
   }
+
+  /**
+   * While drawing, place the next corner at an exact length (cm) from lastNode
+   * along the current mouse/target direction. Starts a new wall from that corner.
+   * @returns true if a segment was committed
+   */
+  public commitDrawLength(lengthCm: number): boolean {
+    if (this.mode !== floorplannerModes.DRAW || !this.lastNode || !(lengthCm > 0)) {
+      return false
+    }
+
+    let dx = this.targetX - this.lastNode.x
+    let dy = this.targetY - this.lastNode.y
+    let dist = Math.sqrt(dx * dx + dy * dy)
+
+    // Default to +X if the mouse hasn't moved away from the last node yet
+    if (dist < 0.01) {
+      dx = 1
+      dy = 0
+      dist = 1
+    }
+
+    const scale = lengthCm / dist
+    const x = this.lastNode.x + dx * scale
+    const y = this.lastNode.y + dy * scale
+
+    const corner = this.floorplan.newCorner(x, y)
+    this.floorplan.newWall(this.lastNode, corner)
+    if (corner.mergeWithIntersected()) {
+      this.setMode(floorplannerModes.MOVE)
+      return true
+    }
+    this.lastNode = corner
+    this.updateTarget()
+    this.view.draw()
+    return true
+  }
+
+  /** Whether typed length input can commit a wall segment. */
+  public canCommitDrawLength(): boolean {
+    return this.mode === floorplannerModes.DRAW && this.lastNode != null
+  }
 }

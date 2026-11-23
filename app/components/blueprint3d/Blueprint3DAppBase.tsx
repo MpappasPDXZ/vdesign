@@ -10,6 +10,7 @@ import { SettingsDialog } from './SettingsDialog'
 import { ContextMenu } from './ContextMenu'
 import { BedSizeInput } from './BedSizeInput'
 import { FloorplannerControls } from './FloorplannerControls'
+import { LengthInput } from './LengthInput'
 import { TextureSelector } from './TextureSelector'
 import { SaveFloorplanDialog } from './SaveFloorplanDialog'
 import { TouchHelp } from './TouchHelp'
@@ -486,6 +487,16 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     }
   }, [])
 
+  const handleTypedLength = useCallback((lengthCm: number) => {
+    const fp = blueprint3dRef.current?.floorplanner
+    if (!fp) return
+    if (!fp.canCommitDrawLength()) {
+      toast.message(tFloorplanner('typedLengthNeedStart'))
+      return
+    }
+    fp.commitDrawLength(lengthCm)
+  }, [tFloorplanner])
+
   const handleItemSelect = useCallback(
     (item: {
       name: string
@@ -612,8 +623,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                   onDone={handleFloorplannerDone}
                 />
                 {floorplannerMode === 'draw' && (
-                  <div className="absolute left-5 bottom-5 bg-black/50 text-primary-foreground px-2.5 py-1.5 rounded text-sm">
-                    {tFloorplanner('escHint')}
+                  <div className="absolute left-5 bottom-5 flex flex-col gap-2 items-start">
+                    <LengthInput enabled onCommit={handleTypedLength} />
+                    <div className="bg-black/50 text-primary-foreground px-2.5 py-1.5 rounded text-sm">
+                      {tFloorplanner('escHint')}
+                    </div>
                   </div>
                 )}
                 <ControlsHelp viewMode="2d" />

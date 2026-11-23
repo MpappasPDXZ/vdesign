@@ -62,6 +62,10 @@ web_modules/
 # Output of 'npm pack'
 *.tgz
 
+# Prefer pnpm lockfiles
+package-lock.json
+yarn.lock
+
 # Yarn Integrity file
 .yarn-integrity
 

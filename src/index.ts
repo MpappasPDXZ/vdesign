@@ -1,6 +1,6 @@
 /**
- * Blueprint3D - Modern ES6 Module Entry Point
- * A web-based 3D floor planner
+ * vdesign core — Blueprint3D Modern ES6 module entry point
+ * 2D/3D floor planner for dimensions and layout
  */
 
 // Core modules

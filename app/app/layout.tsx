@@ -9,8 +9,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Blueprint3D — 3D Floor Planner',
-  description: 'An open-source interactive 3D floor planner powered by Three.js'
+  title: 'vdesign — 2D/3D Floor Planner',
+  description: 'Plan dimensions and layout in 2D, then walk through in 3D'
 }
 
 export default function RootLayout({

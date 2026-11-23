@@ -12,6 +12,7 @@ export type ItemCategory =
   | 'stool'
   | 'door'
   | 'window'
+  | 'venue'
 
 export interface Item {
   key: string
@@ -701,6 +702,79 @@ export const ITEMS: Item[] = [
     model: 'https://cdn-images.archybase.com/archybase/blueprint3d/models/window-1.glb',
     type: '3',
     category: 'window'
+  },
+  // Venue / training layout (procedural placeholders — resize in 3D)
+  {
+    key: 'venueTurfMat',
+    name: 'Turf Mat (10×20 ft)',
+    description: 'Green artificial turf training mat. Default 10′×20′, low height — resize to fit.',
+    image: '/icons/venue-turf.svg',
+    model: 'procedural:plane:304.8:2:609.6:1b7a3d',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueHomePlate',
+    name: 'Home Plate Area',
+    description: 'Batter box / home plate marker pad.',
+    image: '/icons/venue-plate.svg',
+    model: 'procedural:plane:152.4:3:182.9:c0392b',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueLScreen',
+    name: 'L-Screen',
+    description: 'Protective L-screen for pitching / BP.',
+    image: '/icons/venue-lscreen.svg',
+    model: 'procedural:box:213:213:10:6b7280',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venuePitchingMachine',
+    name: 'Pitching Machine',
+    description: 'Pitching machine footprint (Hack Attack–style placeholder).',
+    image: '/icons/venue-machine.svg',
+    model: 'procedural:box:76:107:91:2563eb',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueNettingPanel',
+    name: 'Netting Panel (10×11 ft)',
+    description: 'Vinyl / mesh netting panel. Default ~10′ wide × 11′ tall, semi-transparent.',
+    image: '/icons/venue-net.svg',
+    model: 'procedural:box:304.8:335:4:f97316:0.45',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueMedBallWall',
+    name: 'Med Ball Wall',
+    description: 'Medicine ball rebound wall placeholder.',
+    image: '/icons/venue-medball.svg',
+    model: 'procedural:box:244:244:20:15803d',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueTee',
+    name: 'Batting Tee',
+    description: 'Batting tee stand placeholder.',
+    image: '/icons/venue-tee.svg',
+    model: 'procedural:cylinder:30:110:30:3b82f6',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueBucket',
+    name: 'Ball Bucket',
+    description: 'Ball bucket placeholder.',
+    image: '/icons/venue-bucket.svg',
+    model: 'procedural:cylinder:35:45:35:111827',
+    type: '8',
+    category: 'venue'
   }
 ]
 

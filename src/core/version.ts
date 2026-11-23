@@ -12,5 +12,5 @@ export class Version {
 }
 
 console.log(
-  'Blueprint3D ' + Version.getInformalVersion() + ' (' + Version.getTechnicalVersion() + ')'
+  'vdesign ' + Version.getInformalVersion() + ' (' + Version.getTechnicalVersion() + ')'
 )
