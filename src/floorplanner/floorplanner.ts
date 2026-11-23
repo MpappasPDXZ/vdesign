@@ -46,16 +46,17 @@ export class Floorplanner {
   /** */
   private modeResetCallbacks: Array<(mode: FloorplannerMode) => void> = []
 
-  /** Fired on double-click to open/close the wall inspector. */
+  /** Fired when Wall Editor should open (`wall`) or close (`null`). */
   public wallSelectedCallbacks = new EventEmitter<Wall | null>()
 
   /** Currently selected wall for property editing */
   public selectedWall: Wall | null = null
 
-  /** Double-click detection */
-  private lastClickTime = 0
-  private lastClickWall: Wall | null = null
-  private static readonly DOUBLE_CLICK_MS = 400
+  /**
+   * Connect host while Wall Editor is open — drawn orange so the join
+   * target is obvious next to the blue selected wall.
+   */
+  public connectHostWall: Wall | null = null
 
   /** */
   private canvasElement: HTMLCanvasElement
@@ -225,7 +226,13 @@ export class Floorplanner {
     // update object target
     if (this.mode != floorplannerModes.DRAW && !this.mouseDown) {
       const hoverCorner: Corner | null = this.floorplan.overlappedCorner(this.mouseX, this.mouseY)
-      const hoverWall: Wall | null = this.floorplan.overlappedWall(this.mouseX, this.mouseY)
+      // MOVE: only the numbered mid-span badge (avoids parallel-wall miss-hits).
+      // DELETE: still allow body hit so delete remains usable with numbers off.
+      const badgeRadiusCm = 14 * this.cmPerPixel
+      const hoverWall: Wall | null =
+        this.mode == floorplannerModes.MOVE
+          ? this.floorplan.overlappedWallBadge(this.mouseX, this.mouseY, badgeRadiusCm)
+          : this.floorplan.overlappedWall(this.mouseX, this.mouseY)
       let draw = false
       if (hoverCorner != this.activeCorner) {
         this.activeCorner = hoverCorner
@@ -292,29 +299,16 @@ export class Floorplanner {
       this.lastNode = corner
     }
 
-    // Double-click wall to toggle property inspector (MOVE, no drag)
+    // # badge click opens Wall Editor (MOVE, no drag). Never toggle-close on
+    // the same badge — double-click would open then instantly close.
+    // Close: empty canvas click, or X in the panel.
     if (this.mode == floorplannerModes.MOVE && canvasClick) {
-      const now = Date.now()
       const wall = this.activeWall
-      const isDouble =
-        !!wall &&
-        wall === this.lastClickWall &&
-        now - this.lastClickTime < Floorplanner.DOUBLE_CLICK_MS
-
-      this.lastClickTime = now
-      this.lastClickWall = wall
-
-      if (isDouble && wall) {
-        if (this.selectedWall === wall) {
-          this.selectedWall = null
-          this.wallSelectedCallbacks.fire(null)
-        } else {
-          this.selectedWall = wall
-          this.wallSelectedCallbacks.fire(wall)
-        }
+      if (wall) {
+        this.selectedWall = wall
+        this.wallSelectedCallbacks.fire(wall)
         this.view.draw()
-      } else if (!wall && !this.activeCorner) {
-        // click empty space closes inspector
+      } else if (!this.activeCorner) {
         if (this.selectedWall) {
           this.selectedWall = null
           this.wallSelectedCallbacks.fire(null)
@@ -326,7 +320,14 @@ export class Floorplanner {
 
   public selectWall(wall: Wall | null): void {
     this.selectedWall = wall
+    if (!wall) this.connectHostWall = null
     this.wallSelectedCallbacks.fire(wall)
+    this.view.draw()
+  }
+
+  /** Highlight the Connect host (orange). Pass null to clear. */
+  public setConnectHostWall(wall: Wall | null): void {
+    this.connectHostWall = wall
     this.view.draw()
   }
 

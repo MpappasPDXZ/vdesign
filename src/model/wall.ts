@@ -299,60 +299,156 @@ export class Wall {
     return sx <= ex ? { x: sx, y: sy } : { x: ex, y: ey }
   }
 
-  /** Point along this wall, `inchesFromTop` from the top end toward the other end. */
-  public pointFromTop(inchesFromTop: number): { x: number; y: number } {
+  /** Opposite of top — southernmost (then easternmost). */
+  public getBottomPoint(): { x: number; y: number } {
     const top = this.getTopPoint()
     const sx = this.getStartX()
     const sy = this.getStartY()
     const ex = this.getEndX()
     const ey = this.getEndY()
-    const bottom =
-      Math.abs(top.x - sx) < 1e-6 && Math.abs(top.y - sy) < 1e-6
-        ? { x: ex, y: ey }
-        : { x: sx, y: sy }
-    const len = this.getLength()
-    if (len < 1e-6) return { ...top }
-    const dist = Math.max(0, Math.min(len, inchesFromTop * 2.54))
-    const t = dist / len
-    return {
-      x: top.x + (bottom.x - top.x) * t,
-      y: top.y + (bottom.y - top.y) * t
+    if (Math.abs(top.x - sx) < 1e-6 && Math.abs(top.y - sy) < 1e-6) {
+      return { x: ex, y: ey }
     }
+    return { x: sx, y: sy }
   }
 
   /**
-   * Place this wall so its nearer end sits on `host` at `inchesFromTop`
-   * from the host's top.
+   * Point along this wall measured from `fromEnd` toward the other end.
+   * Use bottom + positive inches instead of negative from top.
+   */
+  public pointFromEnd(
+    fromEnd: 'top' | 'bottom',
+    inchesFromEnd: number
+  ): { x: number; y: number } {
+    const origin = fromEnd === 'top' ? this.getTopPoint() : this.getBottomPoint()
+    const other = fromEnd === 'top' ? this.getBottomPoint() : this.getTopPoint()
+    const len = this.getLength()
+    if (len < 1e-6) return { ...origin }
+    const dist = Math.max(0, Math.min(len, inchesFromEnd * 2.54))
+    const t = dist / len
+    return {
+      x: origin.x + (other.x - origin.x) * t,
+      y: origin.y + (other.y - origin.y) * t
+    }
+  }
+
+  /** @deprecated Prefer pointFromEnd('top', inches) */
+  public pointFromTop(inchesFromTop: number): { x: number; y: number } {
+    return this.pointFromEnd('top', inchesFromTop)
+  }
+
+  /**
+   * Lay this wall start→finish: start at (ax,ay), finish `len` toward `dir`.
+   * If `attachStart` is set, start is joined to that corner (true topology).
    *
-   * Congruency: when `bringAttached`, only walls on the *free* end that share
-   * a simple 2-wall corner come along (e.g. W3 with W2). The host, and any
-   * predecessor at a 3+ junction (e.g. W1 at the party-wall node), stay put.
+   * Free ends never drag neighbors: shared corners are split so Apply on wall N
+   * cannot move wall N+1 / chain mates (papercut: host/neighbors sacred).
+   */
+  public setSpanFrom(
+    ax: number,
+    ay: number,
+    dir: 'N' | 'E' | 'S' | 'W',
+    bringAttached = false,
+    attachStart: Corner | null = null,
+    lengthCm?: number
+  ): void {
+    const len = lengthCm != null && lengthCm > 0 ? lengthCm : this.getLength()
+    if (!(len > 0)) return
+    let bx = ax
+    let by = ay
+    switch (dir) {
+      case 'N':
+        by = ay - len
+        break
+      case 'S':
+        by = ay + len
+        break
+      case 'E':
+        bx = ax + len
+        break
+      case 'W':
+        bx = ax - len
+        break
+    }
+    const oldMx = (this.getStartX() + this.getEndX()) / 2
+    const oldMy = (this.getStartY() + this.getEndY()) / 2
+    // Opt-in only: translate free-end chain neighbors as a group
+    const companions = bringAttached ? this.getCongruentCompanions('start') : []
+    const fp = this.start.getFloorplan()
+    const nearly = (x0: number, y0: number, x1: number, y1: number) =>
+      Math.abs(x0 - x1) < 1e-4 && Math.abs(y0 - y1) < 1e-4
+
+    /** Move this wall’s tip only. If already at target, keep the corner (preserve host join).
+     * If shared and must move, split — never drag neighbors (W12 Apply must not move W13). */
+    const setCornerIndependent = (which: 'start' | 'end', x: number, y: number) => {
+      const corner = which === 'start' ? this.start : this.end
+      if (nearly(corner.x, corner.y, x, y)) return
+      if (corner.wallCount() <= 1) {
+        corner.move(x, y, false)
+        return
+      }
+      const fresh = fp.newCorner(x, y)
+      if (which === 'start') this.setStart(fresh)
+      else this.setEnd(fresh)
+    }
+
+    if (attachStart) {
+      // Never let start and end become the same corner (zero-length collapse).
+      if (this.end === attachStart) {
+        const freeEnd = fp.newCorner(bx, by)
+        this.setEnd(freeEnd)
+        if (this.start !== attachStart) this.setStart(attachStart)
+      } else if (this.start !== attachStart) {
+        this.setStart(attachStart)
+        setCornerIndependent('end', bx, by)
+      } else {
+        // Already on host tip — only reposition free end (split if chained)
+        setCornerIndependent('end', bx, by)
+      }
+    } else {
+      setCornerIndependent('start', ax, ay)
+      setCornerIndependent('end', bx, by)
+    }
+
+    if (companions.length) {
+      const dx = (ax + bx) / 2 - oldMx
+      const dy = (ay + by) / 2 - oldMy
+      for (const w of companions) {
+        if (w === this) continue
+        w.relativeMoveIndependent(dx, dy)
+      }
+    }
+    this.fireMoved()
+  }
+
+  /** Host corner at top or bottom tip, if any. */
+  public cornerAtEnd(fromEnd: 'top' | 'bottom'): Corner {
+    const tip = fromEnd === 'top' ? this.getTopPoint() : this.getBottomPoint()
+    const sx = this.getStartX()
+    const sy = this.getStartY()
+    if (Math.abs(sx - tip.x) < 1e-4 && Math.abs(sy - tip.y) < 1e-4) return this.start
+    return this.end
+  }
+
+  /**
+   * Place this wall so its start joins `host` at `inchesFromEnd` from the
+   * host's top/bottom (east/west or south tip), then runs start→finish in `extendDir`.
+   * At 0" from an end, shares the host corner (real connection, not just overlapping).
    */
   public placeAgainstWall(
     host: Wall,
-    inchesFromTop: number,
-    bringAttached = false
+    inchesFromEnd: number,
+    bringAttached = false,
+    fromEnd: 'top' | 'bottom' = 'top',
+    extendDir: 'N' | 'E' | 'S' | 'W' = 'E',
+    lengthCm?: number
   ): void {
-    const P = host.pointFromTop(inchesFromTop)
-    const dStart =
-      (this.getStartX() - P.x) ** 2 + (this.getStartY() - P.y) ** 2
-    const dEnd = (this.getEndX() - P.x) ** 2 + (this.getEndY() - P.y) ** 2
-    const placeOnStart = dStart <= dEnd
-    const ax = placeOnStart ? this.getStartX() : this.getEndX()
-    const ay = placeOnStart ? this.getStartY() : this.getEndY()
-    const dx = P.x - ax
-    const dy = P.y - ay
-    if (!bringAttached) {
-      this.relativeMoveIndependent(dx, dy)
-      return
-    }
-    // Free end = opposite the end landing on the host; companions there only
-    const companions = this.getCongruentCompanions(placeOnStart ? 'start' : 'end').filter(
-      (w) => w !== host
-    )
-    const group = new Set<Wall>([this, ...companions])
-    group.delete(host)
-    this.moveWallGroup(group, dx, dy)
+    const P = host.pointFromEnd(fromEnd, inchesFromEnd)
+    const tip = fromEnd === 'top' ? host.getTopPoint() : host.getBottomPoint()
+    const atTip =
+      Math.abs(P.x - tip.x) < 1e-4 && Math.abs(P.y - tip.y) < 1e-4
+    const attach = atTip ? host.cornerAtEnd(fromEnd) : null
+    this.setSpanFrom(P.x, P.y, extendDir, bringAttached, attach, lengthCm)
   }
 
   public fireMoved(): void {
@@ -405,23 +501,73 @@ export class Wall {
   }
 
   /**
-   * Set centerline length in cm, keeping the start corner fixed and
-   * moving the end along the current wall direction.
+   * Set centerline length in cm.
+   * Prefer keeping a shared join fixed and moving the free tip — so editing a
+   * stub (W3 on W2) never drags the host. When both ends are shared (or both
+   * free), keep top/west fixed and grow toward bottom/east; companions on the
+   * moving tip translate rigidly so they stay axis-aligned.
    */
   public setLength(lengthCm: number): void {
     if (!(lengthCm > 0)) return
-    const sx = this.getStartX()
-    const sy = this.getStartY()
-    let dx = this.getEndX() - sx
-    let dy = this.getEndY() - sy
-    let dist = Math.sqrt(dx * dx + dy * dy)
+    const top = this.getTopPoint()
+    const bot = this.getBottomPoint()
+    const startShared = this.start.wallCount() > 1
+    const endShared = this.end.wallCount() > 1
+    // One join + one free tip → pin the join (never drag the host).
+    let fixed: Corner
+    let movable: Corner
+    let dirX: number
+    let dirY: number
+    if (startShared !== endShared) {
+      fixed = startShared ? this.start : this.end
+      movable = startShared ? this.end : this.start
+      dirX = movable.x - fixed.x
+      dirY = movable.y - fixed.y
+    } else {
+      const fixIsStart =
+        Math.abs(this.getStartX() - top.x) < 1e-6 && Math.abs(this.getStartY() - top.y) < 1e-6
+      fixed = fixIsStart ? this.start : this.end
+      movable = fixIsStart ? this.end : this.start
+      dirX = bot.x - top.x
+      dirY = bot.y - top.y
+    }
+
+    let dist = Math.sqrt(dirX * dirX + dirY * dirY)
     if (dist < 1e-6) {
-      dx = 1
-      dy = 0
+      if (this.getAxis() === 'north-south') {
+        dirX = 0
+        dirY = 1
+      } else {
+        dirX = 1
+        dirY = 0
+      }
       dist = 1
     }
-    const scale = lengthCm / dist
-    this.end.move(sx + dx * scale, sy + dy * scale)
+    const ux = dirX / dist
+    const uy = dirY / dist
+    const nx = fixed.x + ux * lengthCm
+    const ny = fixed.y + uy * lengthCm
+    const mdx = nx - movable.x
+    const mdy = ny - movable.y
+    if (Math.abs(mdx) < 1e-9 && Math.abs(mdy) < 1e-9) return
+
+    // Other walls on the moving tip — shift their free ends by the same delta
+    const companions: Wall[] = []
+    if (movable.wallCount() > 1) {
+      for (const w of movable.getWalls()) {
+        if (w !== this) companions.push(w)
+      }
+    }
+
+    movable.move(nx, ny, false)
+    for (const w of companions) {
+      const other = w.getStart() === movable ? w.getEnd() : w.getStart()
+      // Only auto-shift free tips (or simple chain). Avoid dragging a 3+ junction.
+      if (other.wallCount() <= 2) {
+        other.relativeMove(mdx, mdy, false)
+      }
+      w.fireMoved()
+    }
     this.fireMoved()
   }
 

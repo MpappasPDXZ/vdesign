@@ -88,7 +88,8 @@ export class Main {
 
   private init(): void {
     this.domElement = this.element // Container
-    this.camera = new THREE.PerspectiveCamera(45, 1, 1, 10000)
+    // far must stay ahead of controls.maxDistance or zoom-out clips the plan
+    this.camera = new THREE.PerspectiveCamera(45, 1, 1, 200000)
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       preserveDrawingBuffer: true // required to support .toDataURL()
@@ -342,12 +343,38 @@ export class Main {
 
     this.controls.target = pan
 
-    const distance = this.model.floorplan.getSize().z * 1.5
+    const size = this.model.floorplan.getSize()
+    const span = Math.max(size.x, size.z, 100)
+    // Keep zoom-out headroom past the fit distance; sync camera.far so nothing clips.
+    this.controls.maxDistance = Math.max(100000, span * 40)
+    this.camera.far = Math.max(this.camera.far, this.controls.maxDistance * 2)
+    this.camera.updateProjectionMatrix()
+    const distance = span * 1.5
 
     const offset = pan.clone().add(new THREE.Vector3(0, distance, distance))
     this.camera.position.copy(offset)
 
     this.controls.update()
+  }
+
+  /** Zoom camera toward the orbit target (see less of the plan). */
+  public zoomIn(steps = 6): void {
+    for (let i = 0; i < steps; i++) this.controls.dollyOut()
+    this.controls.update()
+    this._needsUpdate = true
+  }
+
+  /** Zoom camera away from the orbit target (see more of the plan). */
+  public zoomOut(steps = 6): void {
+    for (let i = 0; i < steps; i++) this.controls.dollyIn()
+    this.controls.update()
+    this._needsUpdate = true
+  }
+
+  /** Re-fit the camera to the current floorplan bounds. */
+  public fitCamera(): void {
+    this.centerCamera()
+    this._needsUpdate = true
   }
 
   // projects the object's center point into x,y screen coords

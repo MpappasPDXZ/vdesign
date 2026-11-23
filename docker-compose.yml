@@ -1,7 +1,33 @@
 services:
-  # Production: http://localhost:3000
-  # projects/ is bind-mounted so floorplan.json / overlays update without rebuild
+  # Default: hot-reload development — `docker compose up --build`
+  # http://localhost:3000  (bind-mounts ./app + ./src; UI edits without rebuild)
   web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/app/app
+      - ./src:/app/src
+      - ./projects:/app/projects
+      # Save Plan writes versioned JSON here (shared with host git repo)
+      - ./plans:/app/plans
+      - /app/app/node_modules
+      - /app/node_modules
+      - /app/app/.next
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - VDESIGN_PLANS_DIR=/app/plans
+
+  # Production image (no hot reload): `docker compose --profile prod up --build prod`
+  prod:
+    profiles: ["prod"]
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,24 +40,3 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
-
-  # Development (hot reload): docker compose --profile dev up dev
-  # http://localhost:3000
-  dev:
-    profiles: ["dev"]
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./app:/app/app
-      - ./src:/app/src
-      - /app/app/node_modules
-      - /app/node_modules
-      - /app/app/.next
-    environment:
-      - NODE_ENV=development
-      - WATCHPACK_POLLING=true
-      - CHOKIDAR_USEPOLLING=true
-      - NEXT_TELEMETRY_DISABLED=1

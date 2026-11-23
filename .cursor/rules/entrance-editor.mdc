@@ -1,0 +1,20 @@
+---
+description: Entrance Editor — door on wall only; portal; field→function
+globs: app/components/blueprint3d/Entrance*.tsx,docs/entrance-editor.md,src/items/in_wall*.ts,src/three/edge.ts
+alwaysApply: false
+---
+
+# Entrance Editor
+
+See `docs/entrance-editor.md` and `docs/roadmap-interior-fitout.md` Phase 1.
+
+## Hard
+
+- Call them **entrances**, not “just doors.” Kinds: `door` | `stairs` (extend later).
+- **No entrance without a host wall.** Add requires selected wall `#`.
+- Sidebar label **Entrance**; kind picked on Add (Door / Stairs).
+- **How to open** documented first; single open paths only.
+- Portal to `document.body` + `fixed` viewport right — never under `#floorplanner`.
+- Field → function row before any new control; one Apply; no dual keys.
+- Placing/editing an entrance must **not** move the host wall.
+- Hole comes from `wall.items` + `Edge` shape holes (existing pipeline).

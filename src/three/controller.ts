@@ -143,7 +143,7 @@ export class Controller {
       }
 
       // check floors
-      const floorPlanes = (this.model.floorplan as any).floorPlanes()
+      const floorPlanes = this.model.floorplan.floorPlanes()
       const floorIntersects = this.getIntersections(this.mouse, floorPlanes, false)
       if (floorIntersects.length > 0) {
         const room = (floorIntersects[0].object as any).room
@@ -167,7 +167,13 @@ export class Controller {
       this.mouse.y = event.clientY - rect.top
 
       if (!this.mouseDown) {
-        this.updateIntersections()
+        try {
+          this.updateIntersections()
+        } catch (err) {
+          // Never let a bad mesh material crash 3D mouse-move (material.side)
+          console.warn('[Controller] updateIntersections skipped:', err)
+          this.intersectedObject = null
+        }
       }
 
       switch (this.state) {
@@ -381,16 +387,65 @@ export class Controller {
     }
   }
 
+  /** True if material can be used by THREE.Mesh.raycast (reads material.side). */
+  private static materialHasSide(mat: THREE.Material | null | undefined): mat is THREE.Material {
+    return mat != null && typeof (mat as THREE.Material).side === 'number'
+  }
+
+  /**
+   * THREE.Mesh.raycast reads material.side — missing / holey multi-materials throw.
+   * Also reject meshes whose geometry.groups index into a missing material slot.
+   */
+  private static isRaycastableMesh(obj: THREE.Object3D | null | undefined): obj is THREE.Mesh {
+    if (!obj || !(obj as THREE.Mesh).isMesh) return false
+    const mesh = obj as THREE.Mesh
+    const mat = mesh.material
+    if (mat == null) return false
+    if (Array.isArray(mat)) {
+      if (mat.length === 0 || mat.some((m) => !Controller.materialHasSide(m))) return false
+      const groups = mesh.geometry?.groups
+      if (groups?.length) {
+        for (const g of groups) {
+          if (!Controller.materialHasSide(mat[g.materialIndex])) return false
+        }
+      }
+      return true
+    }
+    return Controller.materialHasSide(mat)
+  }
+
+  /** Flatten roots (optionally recursive) to meshes safe for Raycaster. */
+  private static collectRaycastMeshes(
+    roots: THREE.Object3D[],
+    recursive: boolean
+  ): THREE.Object3D[] {
+    const out: THREE.Object3D[] = []
+    const visit = (obj: THREE.Object3D) => {
+      if (Controller.isRaycastableMesh(obj)) out.push(obj)
+      // Non-mesh roots (HUD groups, etc.) are only useful via children
+      if (recursive || !(obj as THREE.Mesh).isMesh) {
+        for (const child of obj.children) visit(child)
+      }
+    }
+    for (const root of roots) {
+      if (!root?.isObject3D) continue
+      visit(root)
+    }
+    return out
+  }
+
   // filter by normals will only return objects facing the camera
   // objects can be an array of objects or a single object
   public getIntersections(
     vec2: THREE.Vector2,
-    objects: THREE.Object3D | THREE.Object3D[],
+    objects: THREE.Object3D | THREE.Object3D[] | null | undefined,
     filterByNormals?: boolean,
     onlyVisible?: boolean,
     recursive?: boolean,
     linePrecision?: number
   ): THREE.Intersection[] {
+    if (objects == null) return []
+
     const vector = this.mouseToVec3(vec2)
 
     const _onlyVisible = onlyVisible ?? false
@@ -402,11 +457,17 @@ export class Controller {
     const raycaster = new THREE.Raycaster(this.camera.position, direction)
     raycaster.params.Line.threshold = _linePrecision
 
+    const roots = Array.isArray(objects) ? objects : [objects]
+    // Never let THREE walk an unsafe tree — we flatten to known-good meshes only
+    const list = Controller.collectRaycastMeshes(roots, _recursive)
+    if (list.length === 0) return []
+
     let intersections: THREE.Intersection[]
-    if (objects instanceof Array) {
-      intersections = raycaster.intersectObjects(objects, _recursive)
-    } else {
-      intersections = raycaster.intersectObject(objects, _recursive)
+    try {
+      intersections = raycaster.intersectObjects(list, false)
+    } catch (err) {
+      console.warn('[Controller] raycast skipped (bad material/geometry):', err)
+      return []
     }
 
     // filter by visible, if true
@@ -422,10 +483,8 @@ export class Controller {
         // In Three.js r181 with BufferGeometry, use intersection.normal instead of face.normal
         let normal: THREE.Vector3 | null = null
         if (intersection.normal) {
-          // For BufferGeometry, raycaster provides the normal directly
           normal = intersection.normal
         } else if (intersection.face && intersection.face.normal) {
-          // Legacy support for old Geometry class (shouldn't happen in r181)
           normal = intersection.face.normal
         }
 

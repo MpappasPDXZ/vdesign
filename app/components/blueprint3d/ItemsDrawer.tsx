@@ -5,14 +5,21 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useTranslations } from 'next-intl'
 import { ItemsList } from './ItemsList'
+import type { ItemCategory } from '@blueprint3d/constants'
 
 interface ItemsDrawerProps {
   isOpen: boolean
   onClose: () => void
   onItemSelect: (item: any) => void
+  initialCategory?: ItemCategory | 'all'
 }
 
-export function ItemsDrawer({ isOpen, onClose, onItemSelect }: ItemsDrawerProps) {
+export function ItemsDrawer({
+  isOpen,
+  onClose,
+  onItemSelect,
+  initialCategory = 'all'
+}: ItemsDrawerProps) {
   const t = useTranslations('BluePrint.sidebar')
 
   return (
@@ -48,9 +55,15 @@ export function ItemsDrawer({ isOpen, onClose, onItemSelect }: ItemsDrawerProps)
             </Button>
           </div>
 
-          {/* Content */}
+          {/* Content — remount when category changes so filter sticks */}
           <div className="flex-1 overflow-y-auto p-4">
-            <ItemsList onItemSelect={onItemSelect} />
+            {isOpen && (
+              <ItemsList
+                key={initialCategory}
+                onItemSelect={onItemSelect}
+                initialCategory={initialCategory}
+              />
+            )}
           </div>
         </div>
       </div>

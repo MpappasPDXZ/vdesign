@@ -38,9 +38,9 @@ export class Controls {
   // backwards compatibility
   public noZoom = false
   public zoomSpeed = 1.0
-  // Limits to how far you can dolly in and out
-  public minDistance = 0
-  public maxDistance = 1500 //Infinity;
+  // Limits to how far you can dolly in and out (cm). Must stay under camera.far.
+  public minDistance = 10
+  public maxDistance = 100000
 
   // Enable/disable wheel zoom (for controlling page scroll vs zoom behavior)
   public enableWheelZoom = true
@@ -119,6 +119,12 @@ export class Controls {
       'mousedown',
       this.onMouseDown.bind(this) as EventListener,
       false
+    )
+    // Prefer standard `wheel`; keep legacy names for older engines.
+    this.domElement.addEventListener(
+      'wheel',
+      this.onMouseWheel.bind(this) as EventListener,
+      { passive: false }
     )
     this.domElement.addEventListener(
       'mousewheel',
@@ -297,7 +303,8 @@ export class Controls {
   }
 
   private getZoomScale(): number {
-    return Math.pow(0.95, this.zoomSpeed)
+    // Larger step so each wheel tick / button press moves farther.
+    return Math.pow(0.88, this.zoomSpeed)
   }
 
   private onMouseDown(event: MouseEvent): void {
@@ -409,7 +416,7 @@ export class Controls {
     this.state = STATE.NONE
   }
 
-  private onMouseWheel(event: any): void {
+  private onMouseWheel(event: WheelEvent & { wheelDelta?: number; detail?: number }): void {
     if (this.enabled === false || this.noZoom === true) return
 
     // If wheel zoom is disabled, allow page scrolling by not preventing default
@@ -418,17 +425,17 @@ export class Controls {
     // Prevent page scroll when zooming
     event.preventDefault()
 
-    let delta = 0
-
-    if (event.wheelDelta) {
-      // WebKit / Opera / Explorer 9
-      delta = event.wheelDelta
+    // Scroll up → zoom in (closer). Note: this file's dollyOut shortens radius.
+    let zoomIn = false
+    if (typeof event.deltaY === 'number' && event.deltaY !== 0) {
+      zoomIn = event.deltaY < 0
+    } else if (event.wheelDelta) {
+      zoomIn = event.wheelDelta > 0
     } else if (event.detail) {
-      // Firefox
-      delta = -event.detail
+      zoomIn = event.detail < 0
     }
 
-    if (delta > 0) {
+    if (zoomIn) {
       this.dollyOut()
     } else {
       this.dollyIn()

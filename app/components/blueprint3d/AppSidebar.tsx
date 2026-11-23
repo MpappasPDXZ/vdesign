@@ -10,14 +10,31 @@ import {
   Settings,
   Layers,
   ListOrdered,
-  HelpCircle
+  HelpCircle,
+  Plus,
+  Minus,
+  Pencil,
+  Move,
+  DoorOpen,
+  ArrowUpFromLine,
+  Sofa,
+  BetweenHorizonalStart,
+  ListTree,
+  ChevronDown,
+  FolderInput
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import type { OverlayDescriptor } from '@blueprint3d/floorplanner/overlay'
 import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
-import type { WallScheduleEntry } from '@/types/project'
+import type { EntranceKind, WallScheduleEntry } from '@/types/project'
 import { BlueprintOverlayEditor } from './BlueprintOverlayEditor'
 
 interface AppSidebarProps {
@@ -38,10 +55,21 @@ interface AppSidebarProps {
   onNew: () => void
   onImport?: () => void
   onDownload?: () => void
+  /** Load newest JSON from repo plans/ */
+  onLoadLatest?: () => void
   onSettingsClick: () => void
   projectName?: string | null
   onHelpClick?: () => void
   autosaveLabel?: string | null
+  floorplannerMode?: 'move' | 'draw' | 'delete'
+  onFloorplannerMode?: (mode: 'move' | 'draw' | 'delete') => void
+  /** Add wall-hosted entrance (door or stairs). */
+  onAddEntrance?: (kind: EntranceKind) => void
+  /** @deprecated use onAddEntrance('door') */
+  onAddDoor?: () => void
+  onAddItem?: () => void
+  onInsertWall?: () => void
+  onOpenExteriorWalls?: () => void
 }
 
 export function AppSidebar({
@@ -62,15 +90,24 @@ export function AppSidebar({
   onNew,
   onImport,
   onDownload,
+  onLoadLatest,
   onSettingsClick,
   projectName,
   onHelpClick,
-  autosaveLabel
+  autosaveLabel,
+  floorplannerMode = 'move',
+  onFloorplannerMode,
+  onAddEntrance,
+  onAddDoor,
+  onAddItem,
+  onInsertWall,
+  onOpenExteriorWalls
 }: AppSidebarProps) {
   const t = useTranslations('BluePrint.sidebar')
   const tMain = useTranslations('BluePrint.mainControls')
   const tOverlays = useTranslations('BluePrint.overlays')
   const tWalls = useTranslations('BluePrint.wallSchedule')
+  const tFloor = useTranslations('BluePrint.floorplanner')
 
   useEffect(() => {
     if (!open) return
@@ -151,9 +188,28 @@ export function AppSidebar({
 
           {/* Compact file actions */}
           <section className="mb-3 space-y-1">
-            <Button type="button" size="sm" className="h-8 w-full justify-start text-xs" onClick={onSave}>
+            <Button
+              type="button"
+              size="sm"
+              className="h-8 w-full justify-start text-xs"
+              onClick={onSave}
+              title={tMain('savePlanHint')}
+            >
               {tMain('savePlan')}
             </Button>
+            {onLoadLatest && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-8 w-full justify-start gap-1.5 text-xs"
+                onClick={onLoadLatest}
+                title={tMain('loadLatestPlanHint')}
+              >
+                <FolderInput className="h-3.5 w-3.5" />
+                {tMain('loadLatestPlan')}
+              </Button>
+            )}
             <div className="grid grid-cols-3 gap-1">
               <Button
                 type="button"
@@ -184,7 +240,7 @@ export function AppSidebar({
                   size="sm"
                   className="h-8 px-1.5 text-[11px]"
                   onClick={onDownload}
-                  title={tMain('downloadPlan')}
+                  title={tMain('downloadPlanHint')}
                 >
                   <Download className="h-3.5 w-3.5" />
                 </Button>
@@ -218,6 +274,145 @@ export function AppSidebar({
               )}
             </div>
           </section>
+
+          {activeTab === 'edit' && onOpenExteriorWalls && (
+            <section className="mb-3 space-y-1">
+              <Button
+                type="button"
+                size="sm"
+                className="h-9 w-full justify-start gap-2 text-xs"
+                onClick={() => {
+                  onOpenExteriorWalls()
+                  onOpenChange(false)
+                }}
+              >
+                <ListTree className="h-4 w-4" />
+                {t('exteriorWalls')}
+              </Button>
+            </section>
+          )}
+
+          {activeTab === 'edit' && onFloorplannerMode && (
+            <section className="mb-3 space-y-1.5">
+              <div className="flex items-center gap-1.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Plus className="h-3 w-3" />
+                {t('tools')}
+              </div>
+              <p className="px-1 text-[10px] leading-snug text-muted-foreground">{t('toolsHint')}</p>
+              <div className="grid grid-cols-2 gap-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={floorplannerMode === 'draw' ? 'default' : 'outline'}
+                  className="h-8 justify-start gap-1.5 px-2 text-[11px]"
+                  title={tFloor('drawWalls')}
+                  onClick={() => {
+                    onFloorplannerMode('draw')
+                    onOpenChange(false)
+                  }}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  <Plus className="h-3 w-3 opacity-70" />
+                  {t('addWall')}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={floorplannerMode === 'delete' ? 'default' : 'outline'}
+                  className="h-8 justify-start gap-1.5 px-2 text-[11px]"
+                  title={tFloor('deleteWalls')}
+                  onClick={() => {
+                    onFloorplannerMode('delete')
+                    onOpenChange(false)
+                  }}
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                  {t('remove')}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="h-8 justify-start gap-1.5 px-2 text-[11px]"
+                  title={t('insertWallHint')}
+                  disabled={!onInsertWall}
+                  onClick={() => {
+                    onInsertWall?.()
+                    onOpenChange(false)
+                  }}
+                >
+                  <BetweenHorizonalStart className="h-3.5 w-3.5" />
+                  {t('insertWall')}
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-8 justify-start gap-1.5 px-2 text-[11px]"
+                      title={t('addEntranceHint')}
+                    >
+                      <DoorOpen className="h-3.5 w-3.5" />
+                      <Plus className="h-3 w-3 opacity-70" />
+                      {t('addEntrance')}
+                      <ChevronDown className="ml-auto h-3 w-3 opacity-60" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="z-[80]">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        if (onAddEntrance) onAddEntrance('door')
+                        else onAddDoor?.()
+                        onOpenChange(false)
+                      }}
+                    >
+                      <DoorOpen className="h-3.5 w-3.5" />
+                      {t('addEntranceDoor')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        onAddEntrance?.('stairs')
+                        onOpenChange(false)
+                      }}
+                    >
+                      <ArrowUpFromLine className="h-3.5 w-3.5" />
+                      {t('addEntranceStairs')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="h-8 justify-start gap-1.5 px-2 text-[11px]"
+                  title={t('addItem')}
+                  onClick={() => {
+                    onAddItem?.()
+                    onOpenChange(false)
+                  }}
+                >
+                  <Sofa className="h-3.5 w-3.5" />
+                  <Plus className="h-3 w-3 opacity-70" />
+                  {t('addItem')}
+                </Button>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant={floorplannerMode === 'move' ? 'secondary' : 'ghost'}
+                className="h-7 w-full justify-start gap-1.5 px-2 text-[11px]"
+                title={tFloor('moveWalls')}
+                onClick={() => {
+                  onFloorplannerMode('move')
+                  onOpenChange(false)
+                }}
+              >
+                <Move className="h-3.5 w-3.5" />
+                {t('moveEdit')}
+              </Button>
+            </section>
+          )}
 
           {activeTab === 'edit' && (
             <section className="mb-3 space-y-1.5">

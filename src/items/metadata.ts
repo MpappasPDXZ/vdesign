@@ -17,5 +17,11 @@ export interface Metadata {
 
   /** Description of the item for AI understanding */
   description?: string
+
+  /** Wall-hosted entrance kind (door | stairs) — see docs/entrance-editor.md */
+  entranceKind?: 'door' | 'stairs'
+
+  /** 1-based host wall number when placed as an entrance */
+  hostWallN?: number
 }
 

@@ -13,7 +13,9 @@ import { ContextMenu } from './ContextMenu'
 import { BedSizeInput } from './BedSizeInput'
 import { LengthInput } from './LengthInput'
 import { FloorplannerControls } from './FloorplannerControls'
-import { WallPropertiesPanel } from './WallPropertiesPanel'
+import { WallPropertiesPanel, type WallConnectSave } from './WallPropertiesPanel'
+import { ExteriorWallsModal, EXTERIOR_WALL_TARGET } from './ExteriorWallsModal'
+import { insertWallScheduleEntry } from '@/lib/wall-schedule'
 import { TextureSelector } from './TextureSelector'
 import type { Wall } from '@blueprint3d/model/wall'
 import { cmToInches } from './InchesDimensionInput'
@@ -23,6 +25,10 @@ import {
   writeRecoverySnapshot
 } from '@/services/recovery'
 import {
+  loadLatestProjectFromRepo,
+  saveProjectToRepo
+} from '@/services/plans-repo'
+import {
   normalizeAreas,
   normalizeUnderlay,
   parseProjectJson,
@@ -31,10 +37,16 @@ import {
 import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
 import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
 import type { OverlayDescriptor } from '@blueprint3d/floorplanner/overlay'
-import type { WallScheduleEntry, VdesignProject } from '@/types/project'
+import type {
+  EntranceKind,
+  EntranceScheduleEntry,
+  WallScheduleEntry,
+  VdesignProject
+} from '@/types/project'
 import { SaveFloorplanDialog } from './SaveFloorplanDialog'
 
-const DEFAULT_PROJECT_PATH = '/projects/2713-s-224th-basement/floorplan.json'
+const DEFAULT_PROJECT_ID = '2713-s-224th-basement'
+const DEFAULT_PROJECT_PATH = `/projects/${DEFAULT_PROJECT_ID}/floorplan.json`
 import { TouchHelp } from './TouchHelp'
 import DefaultFloorplan from '@blueprint3d/templates/default.json'
 import { blueprintStorage } from '@/services/storage'
@@ -42,7 +54,9 @@ import { blueprintStorage } from '@/services/storage'
 import { Blueprint3d } from '@blueprint3d/blueprint3d'
 import { floorplannerModes } from '@blueprint3d/floorplanner/floorplanner_view'
 import { Configuration, configDimUnit } from '@blueprint3d/core/configuration'
+import { ITEMS } from '@blueprint3d/constants'
 import type { Item } from '@blueprint3d/items/item'
+import { WallItem } from '@blueprint3d/items/wall_item'
 import type { HalfEdge } from '@blueprint3d/model/half_edge'
 import type { Room } from '@blueprint3d/model/room'
 import { Blueprint3DModes, type Blueprint3DMode } from '@blueprint3d/config/modes'
@@ -94,6 +108,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const loadingToastsRef = useRef<Array<{ toastId: string | number; itemName: string }>>([])
   const underlayConfigRef = useRef<UnderlayConfig | null>(null)
   const areasRef = useRef<AreaLabel[]>([])
+  const entrancesRef = useRef<EntranceScheduleEntry[]>([])
+  /** Skip persist while GLB/procedural items are still loading — otherwise doors vanish from saves. */
+  const itemsLoadingRef = useRef(0)
 
   const [activeTab, setActiveTab] = useState<'projects' | 'edit' | 'items'>(
     openMyFloorplans ? 'projects' : 'edit'
@@ -101,6 +118,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [floorplannerMode, setFloorplannerMode] = useState<'move' | 'draw' | 'delete'>('move')
+  const [itemsCategory, setItemsCategory] = useState<'all' | 'door' | 'window'>('all')
   const [textureType, setTextureType] = useState<'floor' | 'wall' | null>(null)
   const [currentTarget, setCurrentTarget] = useState<HalfEdge | Room | null>(null)
   const [itemsLoading, setItemsLoading] = useState(0)
@@ -111,6 +129,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const [selectedWall, setSelectedWall] = useState<Wall | null>(null)
   const [selectedWallNumber, setSelectedWallNumber] = useState<number | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [exteriorWallsOpen, setExteriorWallsOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
   const [underlayState, setUnderlayState] = useState<UnderlayConfig | null>(null)
   const [recoverySavedAt, setRecoverySavedAt] = useState<number | null>(null)
@@ -132,9 +151,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   } | null>(null)
   const currentBlueprintRef = useRef(currentBlueprint)
   currentBlueprintRef.current = currentBlueprint
+  const persistRecoveryRef = useRef<(() => void) | null>(null)
 
   const tSeed = useTranslations('BluePrint.seedProjects')
   const tOverlays = useTranslations('BluePrint.overlays')
+  const tSidebar = useTranslations('BluePrint.sidebar')
 
   const buildOverlayList = useCallback(
     (opts: {
@@ -217,7 +238,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       setSelectedItem(null)
     })
 
-    // 3D: click toggles wall inspector (2D uses double-click)
+    // 3D: click wall to open editor (2D: single-click # badge)
     blueprint3d.three.wallClicked.add((halfEdge) => {
       setCurrentTarget(halfEdge)
       setTextureType(null)
@@ -271,20 +292,29 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     blueprint3d.floorplanner?.wallSelectedCallbacks.add(onWallSelected)
 
     blueprint3d.model.scene.itemLoadingCallbacks.add(() => {
+      itemsLoadingRef.current += 1
       setItemsLoading((prev) => prev + 1)
     })
 
     blueprint3d.model.scene.itemLoadedCallbacks.add((item) => {
-      setItemsLoading((prev) => prev - 1)
+      itemsLoadingRef.current = Math.max(0, itemsLoadingRef.current - 1)
+      setItemsLoading((prev) => Math.max(0, prev - 1))
       const loadingToasts = loadingToastsRef.current
       if (loadingToasts.length > 0) {
         const { toastId, itemName } = loadingToasts.shift()!
         toast.success(tItems('loadedSuccess', { name: itemName }), { id: toastId })
       }
+      // Once all pending loads finish, snapshot so doors aren't lost to an earlier empty save
+      if (itemsLoadingRef.current === 0) {
+        window.setTimeout(() => {
+          if (itemsLoadingRef.current === 0) persistRecoveryRef.current?.()
+        }, 100)
+      }
     })
 
     blueprint3d.model.scene.itemLoadErrorCallbacks.add(() => {
-      setItemsLoading((prev) => prev - 1)
+      itemsLoadingRef.current = Math.max(0, itemsLoadingRef.current - 1)
+      setItemsLoading((prev) => Math.max(0, prev - 1))
       const loadingToasts = loadingToastsRef.current
       if (loadingToasts.length > 0) {
         const { toastId, itemName } = loadingToasts.shift()!
@@ -292,95 +322,74 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       }
     })
 
-    // Default: 2713 S 224th basement project
+    /** Prefer IndexedDB / recovery over seed so reload keeps edits. */
+    const applyProjectToCanvas = (project: VdesignProject, id: string, name?: string) => {
+      blueprint3d.model.loadSerialized(toSerializedRoom(project))
+      setCurrentBlueprint({
+        id,
+        name: name || project.meta?.name || '2713 S 224th — Basement',
+        roomType: RoomType.BEDROOM
+      })
+      setWallSchedule(project.wallSchedule || [])
+      entrancesRef.current = Array.isArray(project.entrances)
+        ? structuredClone(project.entrances)
+        : []
+      const underlay = normalizeUnderlay(project.underlay)
+      underlayConfigRef.current = underlay
+      setUnderlayState(underlay)
+      const areas = normalizeAreas(project.areas)
+      areasRef.current = areas
+      setOverlays(
+        buildOverlayList({
+          hasBlueprint: !!underlay,
+          blueprintOpacity: underlay?.opacity ?? 0.4,
+          hasAreas: areas.length > 0
+        })
+      )
+      requestAnimationFrame(() => {
+        blueprint3d.floorplanner?.reset()
+        blueprint3d.floorplanner?.setShowWallNumbers(true)
+        if (underlay) blueprint3d.floorplanner?.setUnderlay({ ...underlay })
+        blueprint3d.floorplanner?.setAreaLabels(areas)
+      })
+    }
+
     const loadInitialFloorplan = async () => {
       try {
+        // 1) Browser DB (Save Plan / Apply / Done)
+        const saved = await blueprintStorage.get(DEFAULT_PROJECT_ID)
+        if (saved?.layoutData?.floorplan?.walls?.length) {
+          applyProjectToCanvas(saved.layoutData as VdesignProject, saved.id, saved.name)
+          return
+        }
+        // 2) localStorage recovery (crash / last session)
+        const recovery = readRecoverySnapshot()
+        if (
+          recovery?.project?.floorplan?.walls?.length &&
+          (!recovery.meta?.id || recovery.meta.id === DEFAULT_PROJECT_ID)
+        ) {
+          applyProjectToCanvas(
+            recovery.project,
+            DEFAULT_PROJECT_ID,
+            recovery.meta?.name
+          )
+          return
+        }
+        // 3) Seed file under /public (not a cache of edits)
         const res = await fetch(`${DEFAULT_PROJECT_PATH}?t=${Date.now()}`, {
           cache: 'no-store'
         })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const project = parseProjectJson(await res.text()) as VdesignProject
-        blueprint3d.model.loadSerialized(toSerializedRoom(project))
-        setCurrentBlueprint({
-          id: '2713-s-224th-basement',
-          name: project.meta?.name || '2713 S 224th — Basement',
-          roomType: RoomType.BEDROOM
-        })
-        setWallSchedule(project.wallSchedule || [])
-        const underlay = normalizeUnderlay(project.underlay)
-        underlayConfigRef.current = underlay
-        setUnderlayState(underlay)
-        const areas = normalizeAreas(project.areas)
-        areasRef.current = areas
-        setOverlays(
-          buildOverlayList({
-            hasBlueprint: !!underlay,
-            blueprintOpacity: underlay?.opacity ?? 0.4,
-            hasAreas: areas.length > 0
-          })
-        )
-        requestAnimationFrame(() => {
-          blueprint3d.floorplanner?.reset()
-          blueprint3d.floorplanner?.setShowWallNumbers(true)
-          if (underlay) blueprint3d.floorplanner?.setUnderlay({ ...underlay })
-          blueprint3d.floorplanner?.setAreaLabels(areas)
-        })
+        applyProjectToCanvas(project, DEFAULT_PROJECT_ID, project.meta?.name)
       } catch (error) {
         console.error('[Blueprint3DAppBase] Error loading default project:', error)
         blueprint3d.model.loadSerialized(JSON.stringify(DefaultFloorplan))
       }
     }
 
-    loadInitialFloorplan().then(() => {
-      if (recoveryOfferedRef.current) return
-      const snap = readRecoverySnapshot()
-      if (!snap?.project) return
+    void loadInitialFloorplan().then(() => {
       recoveryOfferedRef.current = true
-      const when = snap.meta?.savedAt
-        ? new Date(snap.meta.savedAt).toLocaleString()
-        : 'earlier'
-      toast.message(`Recovery snapshot from ${when}`, {
-        description: 'Restore unsaved edits from this browser?',
-        duration: 12000,
-        action: {
-          label: 'Restore',
-          onClick: () => {
-            const project = snap.project
-            blueprint3d.model.loadSerialized(toSerializedRoom(project))
-            setWallSchedule(project.wallSchedule || [])
-            const underlay = normalizeUnderlay(project.underlay)
-            underlayConfigRef.current = underlay
-            setUnderlayState(underlay)
-            const areas = normalizeAreas(project.areas)
-            areasRef.current = areas
-            if (snap.meta?.name) {
-              setCurrentBlueprint((prev) =>
-                prev
-                  ? { ...prev, name: snap.meta?.name || prev.name, id: snap.meta?.id || prev.id }
-                  : {
-                      id: snap.meta?.id || `recovery-${Date.now()}`,
-                      name: snap.meta?.name || 'Recovered plan',
-                      roomType: RoomType.BEDROOM
-                    }
-              )
-            }
-            setOverlays(
-              buildOverlayList({
-                hasBlueprint: !!underlay,
-                blueprintOpacity: underlay?.opacity ?? 0.4,
-                hasAreas: areas.length > 0
-              })
-            )
-            requestAnimationFrame(() => {
-              blueprint3d.floorplanner?.reset()
-              blueprint3d.floorplanner?.setShowWallNumbers(true)
-              if (underlay) blueprint3d.floorplanner?.setUnderlay({ ...underlay })
-              blueprint3d.floorplanner?.setAreaLabels(areas)
-            })
-            toast.success('Plan restored from recovery snapshot')
-          }
-        }
-      })
     })
 
     return () => {
@@ -561,23 +570,28 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       ...room,
       underlay: underlayConfigRef.current ?? undefined,
       areas: areasRef.current,
-      wallSchedule,
+      entrances: structuredClone(entrancesRef.current),
+      // Ref = latest schedule (avoid stale closure after Apply patches)
+      wallSchedule: structuredClone(wallScheduleRef.current),
       meta: {
-        name: currentBlueprint?.name
+        name: currentBlueprintRef.current?.name
       }
     }
     return { layoutData, thumbnailBase64 }
-  }, [currentBlueprint?.name, generateTopDownThumbnail, wallSchedule])
+  }, [generateTopDownThumbnail])
 
   const persistRecovery = useCallback(() => {
+    // Never snapshot mid-load — empty item list would wipe doors from recovery/plans
+    if (itemsLoadingRef.current > 0) return
     const payload = buildSavePayload()
     if (!payload) return
     writeRecoverySnapshot(payload.layoutData, {
-      name: currentBlueprint?.name,
-      id: currentBlueprint?.id
+      name: currentBlueprintRef.current?.name,
+      id: currentBlueprintRef.current?.id
     })
     setRecoverySavedAt(Date.now())
-  }, [buildSavePayload, currentBlueprint?.id, currentBlueprint?.name])
+  }, [buildSavePayload])
+  persistRecoveryRef.current = persistRecovery
 
   const pushUndoSnapshot = useCallback(() => {
     const b = blueprint3dRef.current
@@ -592,6 +606,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   }, [])
 
   const persistPlanNow = useCallback(async () => {
+    if (itemsLoadingRef.current > 0) return
     const payload = buildSavePayload()
     if (!payload) return
     writeRecoverySnapshot(payload.layoutData, {
@@ -645,8 +660,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     })
     const n = selectedWallNumber
     if (n != null) {
-      setWallSchedule((prev) =>
-        prev.map((entry) =>
+      setWallSchedule((prev) => {
+        const next = prev.map((entry) =>
           entry.n === n
             ? {
                 ...entry,
@@ -659,9 +674,13 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               }
             : entry
         )
-      )
+        wallScheduleRef.current = next
+        return next
+      })
     }
-    void persistPlanNow()
+    requestAnimationFrame(() => {
+      void persistPlanNow()
+    })
   }, [selectedWall, selectedWallNumber, persistPlanNow])
 
   const handleDeleteWall = useCallback(() => {
@@ -689,6 +708,161 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     })
   }, [selectedWall, selectedWallNumber, pushUndoSnapshot, persistPlanNow, handleUndo])
 
+  /** Wall Editor Connect host → orange stroke on 2D plan. */
+  const handleConnectHostHighlight = useCallback((host: Wall | null) => {
+    blueprint3dRef.current?.floorplanner?.setConnectHostWall(host)
+  }, [])
+
+  const handleConnectSaved = useCallback(
+    (n: number, connect: WallConnectSave) => {
+      const extendsWord =
+        connect.extends === 'N'
+          ? 'north'
+          : connect.extends === 'E'
+            ? 'east'
+            : connect.extends === 'S'
+              ? 'south'
+              : 'west'
+      setWallSchedule((prev) => {
+        const row = {
+          connectsToWall: connect.connectsToWall,
+          connectsAt: connect.connectsAt,
+          extends: extendsWord
+        }
+        const has = prev.some((e) => e.n === n)
+        const next = !has
+          ? [...prev, { n, role: `Wall ${n}`, ...row }].sort((a, b) => a.n - b.n)
+          : prev.map((e) => (e.n === n ? { ...e, ...row } : e))
+        wallScheduleRef.current = next
+        return next
+      })
+    },
+    []
+  )
+
+  const handleUpdateScheduleMeta = useCallback(
+    (n: number, patch: Partial<WallScheduleEntry>) => {
+      setWallSchedule((prev) => {
+        const merge = (entry: WallScheduleEntry): WallScheduleEntry => {
+          const merged: WallScheduleEntry = { ...entry, ...patch }
+          // null lineage = clear key (JSON would drop undefined anyway)
+          for (const key of ['lengthLineage', 'thicknessLineage', 'offsetLineage'] as const) {
+            if (key in patch && patch[key] == null) delete merged[key]
+          }
+          return merged
+        }
+        const has = prev.some((e) => e.n === n)
+        const next = !has
+          ? [...prev, merge({ n, role: patch.role || `Wall ${n}` })].sort((a, b) => a.n - b.n)
+          : prev.map((e) => (e.n === n ? merge(e) : e))
+        wallScheduleRef.current = next
+        return next
+      })
+      // Carpenter-square lineage (and other meta) must hit IndexedDB without waiting for Apply
+      const lineageTouched =
+        'lengthLineage' in patch ||
+        'thicknessLineage' in patch ||
+        'offsetLineage' in patch
+      if (lineageTouched) {
+        requestAnimationFrame(() => {
+          void persistPlanNow()
+        })
+      }
+    },
+    [persistPlanNow]
+  )
+
+  const selectWallByIndex = useCallback((index0: number) => {
+    const b = blueprint3dRef.current
+    if (!b) return
+    const walls = b.model.floorplan.getWalls()
+    const wall = walls[index0]
+    if (!wall) return
+    setViewMode('2d')
+    setFloorplannerMode('move')
+    b.floorplanner?.setMode(floorplannerModes.MOVE)
+    b.floorplanner?.selectWall(wall)
+    setSelectedWall(wall)
+    setSelectedWallNumber(index0 + 1)
+    b.floorplanner?.redraw()
+  }, [])
+
+  const handleAddExteriorWall = useCallback(() => {
+    const b = blueprint3dRef.current
+    if (!b) return
+    const walls = b.model.floorplan.getWalls()
+    if (walls.length >= EXTERIOR_WALL_TARGET) {
+      toast.message(`Already at ${EXTERIOR_WALL_TARGET} walls`)
+      return
+    }
+    pushUndoSnapshot()
+    const afterN = walls.length
+    try {
+      const inserted = b.model.floorplan.insertWallAfter(afterN - 1)
+      inserted.exposure = 'exterior'
+      inserted.wallType = 'concrete'
+      const newN = afterN + 1
+      setWallSchedule((prev) =>
+        insertWallScheduleEntry(prev, afterN, {
+          role: `Exterior #${newN}`,
+          name: `basement #${newN} exterior wall`,
+          outerLength: '8\'',
+          thickness: '8"',
+          wallType: 'concrete',
+          exposure: 'exterior',
+          connectsToWall: afterN > 0 ? afterN : undefined,
+          connectsAt: 'bottom',
+          offsetInches: 0,
+          notes: 'Added via exterior walls modal'
+        })
+      )
+      setViewMode('2d')
+      setFloorplannerMode('move')
+      b.floorplanner?.setMode(floorplannerModes.MOVE)
+      b.floorplanner?.selectWall(inserted)
+      setSelectedWall(inserted)
+      setSelectedWallNumber(newN)
+      b.floorplanner?.redraw()
+      void persistPlanNow()
+      toast.success(`Added exterior wall #${newN}`)
+    } catch (err) {
+      console.error(err)
+      toast.error('Could not add wall')
+    }
+  }, [pushUndoSnapshot, persistPlanNow])
+
+  const handleExteriorWallChanged = useCallback(() => {
+    const b = blueprint3dRef.current
+    if (!b || !selectedWall) return
+    b.model.floorplan.update()
+    b.floorplanner?.selectWall(selectedWall)
+    b.floorplanner?.redraw()
+    requestAnimationFrame(() => b.floorplanner?.redraw())
+    const n = selectedWallNumber
+    if (n != null) {
+      setWallSchedule((prev) => {
+        const next = prev.map((entry) =>
+          entry.n === n
+            ? {
+                ...entry,
+                name: selectedWall.name || entry.name,
+                role: selectedWall.name || entry.role,
+                outerLength: `${cmToInches(selectedWall.getLength())}"`,
+                thickness: `${cmToInches(selectedWall.thickness)}"`,
+                wallType: selectedWall.wallType,
+                exposure: selectedWall.exposure
+              }
+            : entry
+        )
+        wallScheduleRef.current = next
+        return next
+      })
+    }
+    requestAnimationFrame(() => {
+      void persistPlanNow()
+    })
+  }, [selectedWall, selectedWallNumber, persistPlanNow])
+
   // Debounced recovery autosave — survives refresh/crash in localStorage
   useEffect(() => {
     if (!blueprint3dRef.current) return
@@ -698,9 +872,13 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     return () => window.clearTimeout(timer)
   }, [persistRecovery, wallSchedule, underlayState, selectedWall, viewMode])
 
-  // Save: upsert existing or show dialog
+  // Save: IndexedDB + repo plans/{slug}.json + plans/versions/…
   const handleSave = useCallback(async () => {
     if (currentBlueprint) {
+      if (itemsLoadingRef.current > 0) {
+        toast.message(tMain('savePlanWaitItems') || 'Wait for items to finish loading, then Save again')
+        return
+      }
       const payload = buildSavePayload()
       if (!payload) return
       const toastId = toast.loading(t('saving') || 'Saving floorplan...')
@@ -716,17 +894,41 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           thumbnailBase64: payload.thumbnailBase64,
           roomType: currentBlueprint.roomType
         })
-        toast.success(t('saveSuccess'), { id: toastId })
+        try {
+          const repo = await saveProjectToRepo({
+            project: payload.layoutData,
+            name: currentBlueprint.name,
+            id: currentBlueprint.id
+          })
+          toast.success(
+            tMain('savePlanRepoOk', {
+              path: repo.relativeLatest,
+              walls: repo.walls
+            }),
+            { id: toastId, duration: 7000 }
+          )
+        } catch (repoErr) {
+          console.error('[Save Plan] repo write failed:', repoErr)
+          toast.success(
+            tMain('savePlanRepoFail', {
+              error: repoErr instanceof Error ? repoErr.message : String(repoErr)
+            }),
+            { id: toastId, duration: 8000 }
+          )
+          downloadProjectJson(
+            payload.layoutData,
+            `${currentBlueprint.name}-recovery.json`
+          )
+        }
       } catch (error) {
         console.error('Failed to update floorplan:', error)
         toast.error(t('saveError'), { id: toastId })
-        // Still offer a file the user can keep
         downloadProjectJson(payload.layoutData, `${currentBlueprint.name}-recovery.json`)
       }
     } else {
       setSaveDialogOpen(true)
     }
-  }, [buildSavePayload, currentBlueprint, t])
+  }, [buildSavePayload, currentBlueprint, t, tMain])
 
   const handleDownload = useCallback(() => {
     const payload = buildSavePayload()
@@ -761,13 +963,26 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           roomType
         })
         setCurrentBlueprint({ id: result.id, name, roomType })
-        toast.success(t('saveSuccess'), { id: toastId })
+        try {
+          const repo = await saveProjectToRepo({
+            project: payload.layoutData,
+            name,
+            id: result.id
+          })
+          toast.success(
+            tMain('savePlanRepoOk', { path: repo.relativeLatest, walls: repo.walls }),
+            { id: toastId, duration: 7000 }
+          )
+        } catch (repoErr) {
+          console.error(repoErr)
+          toast.success(t('saveSuccess'), { id: toastId })
+        }
       } catch (error) {
         console.error('Failed to save floorplan:', error)
         toast.error(t('saveError'), { id: toastId })
       }
     },
-    [buildSavePayload, t]
+    [buildSavePayload, t, tMain]
   )
 
   const applyAreas = useCallback((areas: AreaLabel[]) => {
@@ -831,6 +1046,53 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     [applyAreas, buildOverlayList]
   )
 
+  const applyProjectExtras = useCallback((project: VdesignProject) => {
+    entrancesRef.current = Array.isArray(project.entrances)
+      ? structuredClone(project.entrances)
+      : []
+  }, [])
+
+  const handleLoadLatestPlan = useCallback(async () => {
+    const toastId = toast.loading(tMain('loadLatestPlan'))
+    try {
+      const hint = currentBlueprintRef.current?.name || currentBlueprintRef.current?.id
+      const { project, relativePath } = await loadLatestProjectFromRepo(hint)
+      applyProjectExtras(project)
+      handleLoadFloorplan(
+        toSerializedRoom(project),
+        RoomType.BEDROOM,
+        currentBlueprintRef.current?.id || DEFAULT_PROJECT_ID,
+        project.meta?.name || relativePath.replace(/^plans\//, '').replace(/\.json$/i, ''),
+        normalizeUnderlay(project.underlay),
+        normalizeAreas(project.areas),
+        project.wallSchedule || []
+      )
+      const bp = currentBlueprintRef.current
+      if (bp) {
+        await blueprintStorage.upsert(bp.id, {
+          name: bp.name,
+          layoutData: project,
+          roomType: bp.roomType
+        })
+      }
+      writeRecoverySnapshot(project, { name: bp?.name, id: bp?.id })
+      setRecoverySavedAt(Date.now())
+      const walls = project.floorplan?.walls?.length ?? 0
+      toast.success(tMain('loadLatestPlanOk', { path: relativePath, walls }), {
+        id: toastId,
+        duration: 6000
+      })
+    } catch (err) {
+      console.error(err)
+      toast.error(
+        tMain('loadLatestPlanFail', {
+          error: err instanceof Error ? err.message : String(err)
+        }),
+        { id: toastId }
+      )
+    }
+  }, [applyProjectExtras, handleLoadFloorplan, tMain])
+
   const handleImportClick = useCallback(() => {
     importFileRef.current?.click()
   }, [])
@@ -842,6 +1104,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       if (!file) return
       try {
         const project = parseProjectJson(await file.text())
+        applyProjectExtras(project)
         handleLoadFloorplan(
           toSerializedRoom(project),
           RoomType.BEDROOM,
@@ -857,7 +1120,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         toast.error(tSeed('importError'))
       }
     },
-    [handleLoadFloorplan, tSeed]
+    [applyProjectExtras, handleLoadFloorplan, tSeed]
   )
 
   const handleOverlayToggle = useCallback((id: string, visible: boolean) => {
@@ -1029,6 +1292,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
   const handleFloorplannerModeChange = useCallback((mode: 'move' | 'draw' | 'delete') => {
     setFloorplannerMode(mode)
+    setViewMode('2d')
+    setActiveTab('edit')
     if (!blueprint3dRef.current) return
     const modeMap = {
       move: floorplannerModes.MOVE,
@@ -1041,14 +1306,225 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       setSelectedWallNumber(null)
       blueprint3dRef.current.floorplanner?.selectWall(null)
     }
+    if (mode === 'draw') {
+      toast.message(tFloorplanner('escHint'))
+    } else if (mode === 'delete') {
+      toast.message(tFloorplanner('deleteWalls'))
+    }
+  }, [tFloorplanner])
+
+  /** 3D zoom — prefer Main helpers; fall back to controls (HMR may keep an old instance). */
+  const withThreeZoom = useCallback((dir: 'in' | 'out' | 'fit') => {
+    const three = blueprint3dRef.current?.three as
+      | {
+          zoomIn?: (n?: number) => void
+          zoomOut?: (n?: number) => void
+          fitCamera?: () => void
+          centerCamera?: () => void
+          camera?: { far: number; updateProjectionMatrix: () => void }
+          controls?: {
+            maxDistance: number
+            dollyIn: (s?: number) => void
+            dollyOut: (s?: number) => void
+            update: () => void
+          }
+        }
+      | null
+      | undefined
+    if (!three) return
+    if (dir === 'fit') {
+      three.fitCamera?.() ?? three.centerCamera?.()
+      return
+    }
+    if (dir === 'in' && typeof three.zoomIn === 'function') {
+      three.zoomIn()
+      return
+    }
+    if (dir === 'out' && typeof three.zoomOut === 'function') {
+      three.zoomOut()
+      return
+    }
+    const controls = three.controls
+    if (!controls) return
+    controls.maxDistance = Math.max(controls.maxDistance || 0, 100000)
+    if (three.camera) {
+      three.camera.far = Math.max(three.camera.far || 0, controls.maxDistance * 2)
+      three.camera.updateProjectionMatrix()
+    }
+    for (let i = 0; i < 6; i++) {
+      if (dir === 'out') controls.dollyIn()
+      else controls.dollyOut()
+    }
+    controls.update()
   }, [])
 
+  const handleAddEntrance = useCallback(
+    (kind: EntranceKind) => {
+      const b = blueprint3dRef.current
+      const host = selectedWall
+      const n = selectedWallNumber
+      if (!b || !host || n == null) {
+        toast.error(tSidebar('addEntranceNeedWall'))
+        return
+      }
+      if (!host.frontEdge && !host.backEdge) {
+        toast.error(tSidebar('addEntranceFailed'))
+        return
+      }
+
+      const catalog =
+        kind === 'stairs'
+          ? ITEMS.find((it) => it.key === 'entranceStairs')
+          : ITEMS.find((it) => it.key === 'doorOne') || ITEMS.find((it) => it.category === 'door')
+      if (!catalog) {
+        toast.error(tSidebar('addEntranceFailed'))
+        return
+      }
+
+      const kindLabel =
+        kind === 'stairs' ? tSidebar('addEntranceStairs') : tSidebar('addEntranceDoor')
+      const translatedName = tItems(catalog.key)
+      const toastId = toast.loading(tItems('loadingItem', { name: translatedName }))
+
+      const onLoaded = (item: Item) => {
+        b.model.scene.itemLoadedCallbacks.remove(onLoaded)
+        if (!(item instanceof WallItem)) {
+          toast.error(tSidebar('addEntranceFailed'), { id: toastId })
+          return
+        }
+        const ok = item.placeOnWall(host, 0.5)
+        if (!ok) {
+          toast.error(tSidebar('addEntranceFailed'), { id: toastId })
+          return
+        }
+        item.metadata.entranceKind = kind
+        item.metadata.hostWallN = n
+        const nextN =
+          (entrancesRef.current.reduce((m, e) => Math.max(m, e.n || 0), 0) || 0) + 1
+        entrancesRef.current = [
+          ...entrancesRef.current,
+          {
+            id: `entrance-${Date.now()}`,
+            n: nextN,
+            kind,
+            wallN: n,
+            name: kindLabel,
+            offsetInches: undefined,
+            sillInches: 0
+          }
+        ]
+        toast.success(tSidebar('addEntrancePlaced', { n, kind: kindLabel }), { id: toastId })
+        void persistPlanNow()
+      }
+      b.model.scene.itemLoadedCallbacks.add(onLoaded)
+
+      const metadata = {
+        itemName: catalog.name,
+        itemKey: catalog.key,
+        resizable: true,
+        modelUrl: catalog.model,
+        itemType: parseInt(catalog.type, 10),
+        description: catalog.description,
+        entranceKind: kind,
+        hostWallN: n
+      }
+      b.model.scene.addItem(parseInt(catalog.type, 10), catalog.model, metadata)
+
+      setActiveTab('edit')
+      // Sync three controls (unlock orbit) — don't only flip React display
+      handleViewChange('3d')
+      setSidebarOpen(false)
+    },
+    [selectedWall, selectedWallNumber, tSidebar, tItems, persistPlanNow, handleViewChange]
+  )
+
+  const handleAddItem = useCallback(() => {
+    setItemsCategory('all')
+    setActiveTab('items')
+    handleViewChange('3d')
+  }, [handleViewChange])
+
+  const handleInsertWall = useCallback(() => {
+    const b = blueprint3dRef.current
+    if (!b) return
+    const walls = b.model.floorplan.getWalls()
+    if (!walls.length) {
+      toast.error(tSidebar('insertWallNeedHost'))
+      return
+    }
+    const max = walls.length
+    const raw = window.prompt(
+      tSidebar('insertWallPrompt', { max }),
+      selectedWallNumber != null ? String(selectedWallNumber) : String(max)
+    )
+    if (raw == null) return
+    const trimmed = raw.trim()
+    let afterN: number
+    if (trimmed === '') {
+      if (selectedWallNumber == null) {
+        toast.error(tSidebar('insertWallNeedHost'))
+        return
+      }
+      afterN = selectedWallNumber
+    } else {
+      afterN = parseInt(trimmed, 10)
+    }
+    if (!Number.isFinite(afterN) || afterN < 0 || afterN > max) {
+      toast.error(tSidebar('insertWallNeedHost'))
+      return
+    }
+
+    pushUndoSnapshot()
+    setViewMode('2d')
+    setActiveTab('edit')
+    try {
+      const inserted = b.model.floorplan.insertWallAfter(afterN - 1)
+      const newN = afterN + 1
+      setWallSchedule((prev) =>
+        insertWallScheduleEntry(prev, afterN, {
+          role: `Inserted after #${afterN}`,
+          name: inserted.name || `basement #${newN} inserted`,
+          outerLength: '8\'',
+          thickness:
+            inserted.thickness > 0
+              ? `${+(inserted.thickness / 2.54).toFixed(2)}"`.replace(/\.00"/, '"')
+              : null,
+          wallType: inserted.wallType,
+          exposure: inserted.exposure,
+          notes: 'Inserted stub — set length / Connect Place'
+        })
+      )
+      setFloorplannerMode('move')
+      b.floorplanner?.setMode(floorplannerModes.MOVE)
+      b.floorplanner?.selectWall(inserted)
+      setSelectedWall(inserted)
+      setSelectedWallNumber(newN)
+      b.floorplanner?.redraw()
+      void persistPlanNow()
+      toast.success(tSidebar('insertWallDone', { n: newN, after: afterN }), {
+        action: { label: 'Undo', onClick: () => handleUndo() }
+      })
+    } catch (err) {
+      console.error(err)
+      toast.error(tSidebar('insertWallNeedHost'))
+    }
+  }, [
+    selectedWallNumber,
+    pushUndoSnapshot,
+    persistPlanNow,
+    handleUndo,
+    tSidebar
+  ])
+
   const handleFloorplannerDone = useCallback(() => {
-    setViewMode('3d')
     if (blueprint3dRef.current) {
       blueprint3dRef.current.model.floorplan.update()
     }
-  }, [])
+    void persistPlanNow().then(() => {
+      toast.success(tFloorplanner('doneSaved'))
+    })
+    setViewMode('3d')
+  }, [persistPlanNow, tFloorplanner])
 
   const handleSelectWallNumber = useCallback((n: number) => {
     const b = blueprint3dRef.current
@@ -1146,6 +1622,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               onNew={handleNew}
               onImport={handleImportClick}
               onDownload={handleDownload}
+              onLoadLatest={handleLoadLatestPlan}
               onSettingsClick={() => setSettingsOpen(true)}
               projectName={currentBlueprint?.name}
               onHelpClick={() => setHelpOpen(true)}
@@ -1154,12 +1631,30 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                   ? `Autosaved ${new Date(recoverySavedAt).toLocaleTimeString()}`
                   : null
               }
+              floorplannerMode={floorplannerMode}
+              onFloorplannerMode={handleFloorplannerModeChange}
+              onAddEntrance={handleAddEntrance}
+              onAddItem={handleAddItem}
+              onInsertWall={handleInsertWall}
+              onOpenExteriorWalls={() => {
+                setExteriorWallsOpen(true)
+                setViewMode('2d')
+                const walls = blueprint3dRef.current?.model.floorplan.getWalls() || []
+                if (walls.length && selectedWallNumber == null) {
+                  selectWallByIndex(0)
+                } else if (selectedWallNumber != null) {
+                  selectWallByIndex(selectedWallNumber - 1)
+                }
+              }}
             />
             <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
               <TopNavBar
                 viewMode={viewMode}
                 onViewModeChange={handleViewChange}
                 showViewToggle
+                onZoomIn={() => withThreeZoom('in')}
+                onZoomOut={() => withThreeZoom('out')}
+                onFitView={() => withThreeZoom('fit')}
               />
             </div>
           </>
@@ -1235,27 +1730,6 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 )}
               </div>
             )}
-            {selectedWall && !isFullscreen && (
-              <WallPropertiesPanel
-                wall={selectedWall}
-                wallNumber={selectedWallNumber}
-                walls={(blueprint3dRef.current?.model.floorplan.getWalls() || []).map((w, i) => ({
-                  n: i + 1,
-                  wall: w,
-                  label: w.name || wallSchedule.find((s) => s.n === i + 1)?.role || `Wall ${i + 1}`
-                }))}
-                onClose={() => {
-                  setSelectedWall(null)
-                  setSelectedWallNumber(null)
-                  blueprint3dRef.current?.floorplanner?.selectWall(null)
-                }}
-                onBeforeMutate={pushUndoSnapshot}
-                onChanged={handleWallPropsChanged}
-                onDelete={handleDeleteWall}
-                canUndo={canUndo}
-                onUndo={handleUndo}
-              />
-            )}
             {!selectedWall && canUndo && !isFullscreen && viewMode === '2d' && (
               <Button
                 type="button"
@@ -1269,10 +1743,16 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             )}
           </div>
 
-          {viewMode === '3d' && selectedWall && !isFullscreen && (
+          {/* One Wall Editor instance — portaled to body (papercut: open/visibility hell). */}
+          {selectedWall && !isFullscreen && (
             <WallPropertiesPanel
               wall={selectedWall}
               wallNumber={selectedWallNumber}
+              scheduleEntry={
+                selectedWallNumber != null
+                  ? wallSchedule.find((s) => s.n === selectedWallNumber) ?? null
+                  : null
+              }
               walls={(blueprint3dRef.current?.model.floorplan.getWalls() || []).map((w, i) => ({
                 n: i + 1,
                 wall: w,
@@ -1285,6 +1765,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               }}
               onBeforeMutate={pushUndoSnapshot}
               onChanged={handleWallPropsChanged}
+              onConnectSaved={handleConnectSaved}
+              onSchedulePatch={handleUpdateScheduleMeta}
+              onConnectHostHighlight={handleConnectHostHighlight}
               onDelete={handleDeleteWall}
               canUndo={canUndo}
               onUndo={handleUndo}
@@ -1322,8 +1805,26 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
       <ItemsDrawer
         isOpen={activeTab === 'items'}
-        onClose={() => setActiveTab('edit')}
+        onClose={() => {
+          setActiveTab('edit')
+          setItemsCategory('all')
+        }}
         onItemSelect={handleItemSelect}
+        initialCategory={itemsCategory}
+      />
+
+      <ExteriorWallsModal
+        open={exteriorWallsOpen}
+        onOpenChange={setExteriorWallsOpen}
+        walls={blueprint3dRef.current?.model.floorplan.getWalls() || []}
+        wallSchedule={wallSchedule}
+        selectedIndex={Math.max(0, (selectedWallNumber ?? 1) - 1)}
+        onSelectIndex={selectWallByIndex}
+        onBeforeMutate={pushUndoSnapshot}
+        onChanged={handleExteriorWallChanged}
+        onConnectSaved={handleConnectSaved}
+        onAddWall={handleAddExteriorWall}
+        onUpdateScheduleMeta={handleUpdateScheduleMeta}
       />
 
       <SettingsDialog
@@ -1370,7 +1871,7 @@ function ControlsHelpForced({
         </h2>
         <p className="mb-2 text-sm text-muted-foreground">
           {viewMode === '2d'
-            ? 'Use the left menu for move / draw / delete. Double-click a wall to edit properties. Type a length while drawing, then Enter.'
+            ? 'Use the left menu for move / draw / delete. Click a wall # badge (or the Edit list) to open Wall Editor. Type a length while drawing, then Enter.'
             : 'Orbit with left drag, pan with right drag, zoom with scroll. Click a wall to edit properties.'}
         </p>
         <button

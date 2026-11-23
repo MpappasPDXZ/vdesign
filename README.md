@@ -18,16 +18,16 @@ Built on [Blueprint3D Modern](https://github.com/charmlinn/blueprint3d-modern) (
 With Docker Desktop running:
 
 ```bash
-# Production build + run
-docker compose up --build web
+# Hot-reload development (default) — edits to app/ and src/ apply without rebuild
+docker compose up --build
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Hot-reload development:
+Production image (no hot reload):
 
 ```bash
-docker compose --profile dev up --build dev
+docker compose --profile prod up --build prod
 ```
 
 Stop with `Ctrl+C`, or `docker compose down`.

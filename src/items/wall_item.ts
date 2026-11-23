@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { Utils } from '../core/utils'
 import { HalfEdge } from '../model/half_edge'
 import { Model } from '../model/model'
+import type { Wall } from '../model/wall'
 import { Item } from './item'
 import { Metadata } from './metadata'
 
@@ -150,6 +151,31 @@ export abstract class WallItem extends Item {
       this.position.copy(newPos)
       this.redrawWall()
     }
+  }
+
+  /**
+   * Attach to a specific host wall (Entrance Add). Does not move the wall.
+   * @param wall Host wall — must already have a front or back edge
+   * @param alongFraction 0..1 along interior edge (0.5 = mid-span)
+   */
+  public placeOnWall(wall: Wall, alongFraction = 0.5): boolean {
+    const edge = wall.frontEdge || wall.backEdge
+    if (!edge) return false
+
+    this.changeWallEdge(edge)
+    this.updateSize()
+
+    const t = Math.min(1, Math.max(0, alongFraction))
+    const start = edge.interiorStart()
+    const end = edge.interiorEnd()
+    const x = start.x + (end.x - start.x) * t
+    const z = start.y + (end.y - start.y) * t
+    const newPos = new THREE.Vector3(x, edge.wall.height / 2.0, z)
+    this.boundMove(newPos)
+    this.position.copy(newPos)
+    this.position_set = true
+    this.redrawWall()
+    return true
   }
 
   /** */

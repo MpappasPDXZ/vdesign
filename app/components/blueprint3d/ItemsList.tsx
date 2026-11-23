@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 
 interface ItemsListProps {
   onItemSelect: (item: { name: string; key: string; model: string; type: string }) => void
+  /** Pre-select a category (e.g. entrance) when opening from sidebar. */
+  initialCategory?: ItemCategory | 'all'
 }
 
 const CATEGORY_KEYS = {
@@ -24,6 +26,7 @@ const CATEGORY_KEYS = {
   armchair: 'armchair',
   stool: 'stool',
   door: 'door',
+  entrance: 'entrance',
   window: 'window'
 } as const
 
@@ -41,13 +44,14 @@ const CATEGORY_VALUES: Array<ItemCategory | 'all'> = [
   'armchair',
   'stool',
   'door',
+  'entrance',
   'window'
 ]
 
-export function ItemsList({ onItemSelect }: ItemsListProps) {
+export function ItemsList({ onItemSelect, initialCategory = 'all' }: ItemsListProps) {
   const t = useTranslations('BluePrint.items')
 
-  const [selectedCategory, setSelectedCategory] = useState<ItemCategory | 'all'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<ItemCategory | 'all'>(initialCategory)
 
   // Build categories with translated labels
   const categories = useMemo(() => {

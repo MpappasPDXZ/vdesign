@@ -83,28 +83,32 @@ export class Floorplan {
     return edges
   }
 
-  // hack
+  // hack — only meshes with material (THREE raycast reads material.side)
   public wallEdgePlanes(): THREE.Mesh[] {
     const planes: THREE.Mesh[] = []
+    const pushIfRaycastable = (plane: THREE.Mesh | null | undefined) => {
+      if (!plane?.isMesh) return
+      const mat = plane.material
+      if (mat == null) return
+      if (Array.isArray(mat) && mat.some((m) => m == null)) return
+      planes.push(plane)
+    }
     this.walls.forEach((wall) => {
-      if (wall.frontEdge) {
-        if (wall.frontEdge.plane) {
-          planes.push(wall.frontEdge.plane)
-        }
-      }
-      if (wall.backEdge) {
-        if (wall.backEdge.plane) {
-          planes.push(wall.backEdge.plane)
-        }
-      }
+      pushIfRaycastable(wall.frontEdge?.plane ?? undefined)
+      pushIfRaycastable(wall.backEdge?.plane ?? undefined)
     })
     return planes
   }
 
-  // @ts-ignore - floorPlanes is declared but not used, keeping for future use
-  private floorPlanes(): THREE.Mesh[] {
+  public floorPlanes(): THREE.Mesh[] {
     return Utils.map(this.rooms, (room: Room) => room.floorPlane).filter(
-      (plane): plane is THREE.Mesh => plane !== null
+      (plane): plane is THREE.Mesh => {
+        if (!plane?.isMesh) return false
+        const mat = plane.material
+        if (mat == null) return false
+        if (Array.isArray(mat) && mat.some((m) => m == null)) return false
+        return true
+      }
     )
   }
 
@@ -133,6 +137,80 @@ export class Floorplan {
   public newWall(start: Corner, end: Corner): Wall {
     const wall = new Wall(start, end)
     this.walls.push(wall)
+    const scope = this
+    wall.fireOnDelete(() => {
+      scope.removeWall(wall)
+    })
+    this.new_wall_callbacks.fire(wall)
+    this.update()
+    return wall
+  }
+
+  /**
+   * Insert a new wall into the numbered sequence after `afterIndex` (0-based).
+   * Use `afterIndex = -1` to insert as wall #1.
+   * Shares the host's bottom (south/east) corner when inserting after an existing wall,
+   * so Connect / Place can refine from there. Returns the new wall.
+   */
+  public insertWallAfter(
+    afterIndex: number,
+    lengthCm = 8 * 12 * 2.54,
+    dir?: 'N' | 'E' | 'S' | 'W'
+  ): Wall {
+    const n = this.walls.length
+    if (!Number.isFinite(afterIndex) || afterIndex < -1 || afterIndex >= n) {
+      throw new Error(`insertWallAfter: afterIndex ${afterIndex} out of range for ${n} walls`)
+    }
+    if (!(lengthCm > 0)) throw new Error('insertWallAfter: length must be > 0')
+
+    let startCorner: Corner
+    let extend: 'N' | 'E' | 'S' | 'W' = dir || 'S'
+
+    if (afterIndex < 0) {
+      startCorner = this.newCorner(0, 0)
+      extend = dir || 'E'
+    } else {
+      const host = this.walls[afterIndex]
+      const bottom = host.getBottomPoint()
+      const sx = host.getStartX()
+      const sy = host.getStartY()
+      startCorner =
+        Math.abs(sx - bottom.x) < 1e-6 && Math.abs(sy - bottom.y) < 1e-6
+          ? host.getStart()
+          : host.getEnd()
+      if (!dir) {
+        extend = host.getAxis() === 'east-west' ? 'S' : 'E'
+      }
+    }
+
+    let ex = startCorner.x
+    let ey = startCorner.y
+    switch (extend) {
+      case 'N':
+        ey -= lengthCm
+        break
+      case 'S':
+        ey += lengthCm
+        break
+      case 'E':
+        ex += lengthCm
+        break
+      case 'W':
+        ex -= lengthCm
+        break
+    }
+    const endCorner = this.newCorner(ex, ey)
+    const wall = new Wall(startCorner, endCorner)
+    if (afterIndex >= 0) {
+      const host = this.walls[afterIndex]
+      wall.thickness = host.thickness
+      wall.wallType = host.wallType
+      wall.exposure = host.exposure
+    }
+    wall.name = `inserted after #${afterIndex + 1}`
+
+    const insertAt = afterIndex + 1
+    this.walls.splice(insertAt, 0, wall)
     const scope = this
     wall.fireOnDelete(() => {
       scope.removeWall(wall)
@@ -209,6 +287,29 @@ export class Floorplan {
     return null
   }
 
+  /**
+   * Hit-test the mid-span wall-number badge (not the wall body).
+   * Prefer this for select/drag so parallel/collinear walls don't steal clicks.
+   */
+  public overlappedWallBadge(x: number, y: number, radiusCm: number): Wall | null {
+    const r2 = radiusCm * radiusCm
+    let best: Wall | null = null
+    let bestD = r2
+    for (let i = 0; i < this.walls.length; i++) {
+      const wall = this.walls[i]
+      const mx = (wall.getStartX() + wall.getEndX()) / 2
+      const my = (wall.getStartY() + wall.getEndY()) / 2
+      const dx = x - mx
+      const dy = y - my
+      const d = dx * dx + dy * dy
+      if (d <= bestD) {
+        bestD = d
+        best = wall
+      }
+    }
+    return best
+  }
+
   // import and export -- cleanup
 
   public saveFloorplan(): SavedFloorplan {
@@ -256,8 +357,26 @@ export class Floorplan {
       corners[id] = this.newCorner(corner.x, corner.y, id)
     }
     const scope = this
-    floorplan.walls.forEach((wall) => {
-      const newWall = scope.newWall(corners[wall.corner1], corners[wall.corner2])
+    floorplan.walls.forEach((wall, wallIndex) => {
+      const c1 = corners[wall.corner1]
+      const c2 = corners[wall.corner2]
+      if (!c1 || !c2) {
+        console.warn(
+          `[floorplan] skip wall #${wallIndex + 1}: missing corner`,
+          wall.corner1,
+          wall.corner2
+        )
+        return
+      }
+      // Same start/end collapses length → NaN in half-edge planes. Nudge a free end east.
+      let end = c2
+      if (c1 === c2 || (Math.abs(c1.x - c2.x) < 1e-9 && Math.abs(c1.y - c2.y) < 1e-9)) {
+        console.warn(
+          `[floorplan] wall #${wallIndex + 1} had zero length; creating free end`
+        )
+        end = this.newCorner(c1.x + 2.54, c1.y)
+      }
+      const newWall = scope.newWall(c1, end)
       if (wall.frontTexture) {
         newWall.frontTexture = wall.frontTexture
       }
@@ -393,14 +512,27 @@ export class Floorplan {
     // give them edges
     const orphanWalls = []
     this.walls.forEach((wall) => {
-      if (!wall.backEdge && !wall.frontEdge) {
-        wall.orphan = true
-        const back = new HalfEdge(null, wall, false)
-        back.generatePlane()
-        const front = new HalfEdge(null, wall, true)
-        front.generatePlane()
-        orphanWalls.push(wall)
+      if (wall.backEdge || wall.frontEdge) return
+      const sx = wall.getStartX()
+      const sy = wall.getStartY()
+      const ex = wall.getEndX()
+      const ey = wall.getEndY()
+      if (
+        !Number.isFinite(sx) ||
+        !Number.isFinite(sy) ||
+        !Number.isFinite(ex) ||
+        !Number.isFinite(ey) ||
+        wall.getLength() < 1e-6
+      ) {
+        console.warn('[floorplan] skip orphan edges for degenerate wall', wall.name || wall.id)
+        return
       }
+      wall.orphan = true
+      const back = new HalfEdge(null, wall, false)
+      back.generatePlane()
+      const front = new HalfEdge(null, wall, true)
+      front.generatePlane()
+      orphanWalls.push(wall)
     })
   }
 

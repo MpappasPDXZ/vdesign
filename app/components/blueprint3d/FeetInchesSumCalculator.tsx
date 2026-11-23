@@ -1,14 +1,19 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Dimensioning } from '@blueprint3d/core/dimensioning'
+import type { InchMeasurementLineage } from '@/types/project'
+
+export interface FeetInchesSumResult extends InchMeasurementLineage {}
 
 interface FeetInchesSumCalculatorProps {
-  onApplyInches: (inches: number) => void
+  onApply: (result: FeetInchesSumResult) => void
   applyLabel?: string
   className?: string
+  /** Prefill from saved lineage for this field */
+  initialLines?: string[]
 }
 
 /** Parse one line: 2'6", 2'-6", 2 ft 6 in, 30", 2.5', bare number = inches. */
@@ -48,46 +53,62 @@ export function parseDimLineToInches(raw: string): number | null {
   return null
 }
 
-export function FeetInchesSumCalculator({
-  onApplyInches,
-  applyLabel = 'Use sum',
-  className
-}: FeetInchesSumCalculatorProps) {
-  const [text, setText] = useState('')
+function splitLines(text: string): string[] {
+  return text
+    .split(/\n|,|;/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+}
 
-  const { totalInches, lineCount, error } = useMemo(() => {
-    const lines = text
-      .split(/\n|,|;/)
-      .map((l) => l.trim())
-      .filter(Boolean)
-    if (!lines.length) return { totalInches: 0, lineCount: 0, error: null as string | null }
+export function FeetInchesSumCalculator({
+  onApply,
+  applyLabel = 'Use sum',
+  className,
+  initialLines
+}: FeetInchesSumCalculatorProps) {
+  const [text, setText] = useState(() => (initialLines?.length ? initialLines.join('\n') : ''))
+
+  useEffect(() => {
+    if (initialLines?.length) setText(initialLines.join('\n'))
+  }, [initialLines])
+
+  const { totalInches, lines, error } = useMemo(() => {
+    const parsed = splitLines(text)
+    if (!parsed.length) {
+      return { totalInches: 0, lines: [] as string[], error: null as string | null }
+    }
     let sum = 0
-    for (const line of lines) {
+    for (const line of parsed) {
       const inches = parseDimLineToInches(line)
       if (inches == null) {
-        return { totalInches: 0, lineCount: lines.length, error: `Can't parse: ${line}` }
+        return { totalInches: 0, lines: parsed, error: `Can't parse: ${line}` }
       }
       sum += inches
     }
-    return { totalInches: Math.round(sum * 1000) / 1000, lineCount: lines.length, error: null }
+    return {
+      totalInches: Math.round(sum * 1000) / 1000,
+      lines: parsed,
+      error: null
+    }
   }, [text])
 
   return (
-    <div className={cn('space-y-1 rounded border border-border/70 bg-muted/30 p-1.5', className)}>
+    <div className={cn('space-y-1.5', className)}>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        rows={3}
-        placeholder={"2'6\"\n2'5\"\n6\""}
-        className="w-full resize-y rounded border border-input bg-background px-1.5 py-1 font-mono text-[11px] outline-none focus:ring-1 focus:ring-ring"
+        rows={4}
+        placeholder={"2'6\"\n2'5\"\n9\""}
+        className="w-full resize-y rounded border border-input bg-background px-2 py-1.5 font-mono text-[11px] outline-none focus:ring-1 focus:ring-ring"
+        autoFocus
       />
       <div className="flex items-center justify-between gap-2">
         <span className="text-[10px] text-muted-foreground">
           {error ? (
             <span className="text-destructive">{error}</span>
-          ) : lineCount > 0 ? (
+          ) : lines.length > 0 ? (
             <>
-              {lineCount} → <strong className="text-foreground">{totalInches}"</strong>
+              {lines.length} → <strong className="text-foreground">{totalInches}"</strong>
             </>
           ) : (
             'One dim per line'
@@ -97,13 +118,19 @@ export function FeetInchesSumCalculator({
           type="button"
           size="sm"
           variant="secondary"
-          className="h-6 px-2 text-[10px]"
+          className="h-7 px-2.5 text-[10px]"
           disabled={!!error || !(totalInches > 0)}
-          onClick={() => onApplyInches(totalInches)}
+          onClick={() => onApply({ lines, totalInches })}
         >
           {applyLabel}
         </Button>
       </div>
     </div>
   )
+}
+
+/** Compact display of saved lineage under an inch field. */
+export function lineageLabel(lineage: InchMeasurementLineage | null | undefined): string | null {
+  if (!lineage?.lines?.length) return null
+  return lineage.lines.join(' + ')
 }

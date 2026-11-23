@@ -12,6 +12,7 @@ export type ItemCategory =
   | 'stool'
   | 'door'
   | 'window'
+  | 'entrance'
   | 'venue'
 
 export interface Item {
@@ -675,7 +676,7 @@ export const ITEMS: Item[] = [
     type: '1',
     category: 'stool'
   },
-  // Special items (doors, windows)
+  // Entrances (wall-hosted openings — doors, stairs, …)
   {
     key: 'doorOne',
     name: 'Minimalist White Interior Door',
@@ -693,6 +694,17 @@ export const ITEMS: Item[] = [
     model: 'https://cdn-images.archybase.com/archybase/blueprint3d/models/door-2.glb',
     type: '7',
     category: 'door'
+  },
+  {
+    key: 'entranceStairs',
+    name: 'Stair Opening',
+    description:
+      'Wall-hosted stair entrance — cuts an opening in the host wall. Placeholder mesh; size in Entrance Editor later.',
+    image: '/icons/entrance-stairs.svg',
+    // 48" wide × 84" tall × 8" deep — stair rough opening through wall
+    model: 'procedural:box:121.92:213.36:20.32:64748b',
+    type: '7',
+    category: 'entrance'
   },
   {
     key: 'windowOne',

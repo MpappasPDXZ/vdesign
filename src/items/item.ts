@@ -12,8 +12,11 @@ export abstract class Item extends THREE.Mesh {
   /** */
   private scene: Scene
 
-  /** */
-  private errorGlow = new THREE.Mesh()
+  /** Placeholder until createGlow — never raycast (no material). */
+  private errorGlow: THREE.Mesh = new THREE.Mesh(
+    new THREE.BufferGeometry(),
+    new THREE.MeshBasicMaterial({ visible: false })
+  )
 
   /** */
   private hover = false

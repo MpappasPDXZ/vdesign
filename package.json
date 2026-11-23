@@ -10,7 +10,8 @@
     "start": "pnpm --dir app start",
     "ts": "tsc --noEmit",
     "docker:up": "docker compose up --build web",
-    "docker:dev": "docker compose --profile dev up --build dev",
+    "docker:dev": "docker compose up --build web",
+    "docker:prod": "docker compose --profile prod up --build prod",
     "docker:down": "docker compose down"
   },
   "packageManager": "pnpm@9.15.9",

@@ -96,43 +96,49 @@ export class HalfEdge {
   }
 
   /**
-   * this feels hacky, but need wall items
+   * this feels hacky, but need wall items.
+   * Never feed NaN/degenerate points to THREE (zero-length walls / bad joins).
    */
   public generatePlane(): void {
-    function transformCorner(corner: { x: number; y: number }): THREE.Vector3 {
-      return new THREE.Vector3(corner.x, 0, corner.y)
+    const finitePt = (p: { x: number; y: number }) =>
+      Number.isFinite(p.x) && Number.isFinite(p.y)
+
+    let a = this.interiorStart()
+    let b = this.interiorEnd()
+    if (!finitePt(a) || !finitePt(b)) {
+      a = { x: this.getStart().x, y: this.getStart().y }
+      b = { x: this.getEnd().x, y: this.getEnd().y }
+    }
+    if (
+      !finitePt(a) ||
+      !finitePt(b) ||
+      (Math.abs(a.x - b.x) < 1e-12 && Math.abs(a.y - b.y) < 1e-12)
+    ) {
+      const sx = Number.isFinite(this.getStart().x) ? this.getStart().x : 0
+      const sy = Number.isFinite(this.getStart().y) ? this.getStart().y : 0
+      a = { x: sx, y: sy }
+      b = { x: sx + 1, y: sy }
     }
 
-    const v1 = transformCorner(this.interiorStart())
-    const v2 = transformCorner(this.interiorEnd())
+    const height =
+      Number.isFinite(this.wall.height) && this.wall.height > 0 ? this.wall.height : 100
+
+    const v1 = new THREE.Vector3(a.x, 0, a.y)
+    const v2 = new THREE.Vector3(b.x, 0, b.y)
     const v3 = v2.clone()
-    v3.y = this.wall.height
+    v3.y = height
     const v4 = v1.clone()
-    v4.y = this.wall.height
+    v4.y = height
 
     const geometry = new THREE.BufferGeometry()
-
     const positions = new Float32Array([
-      v1.x,
-      v1.y,
-      v1.z,
-      v2.x,
-      v2.y,
-      v2.z,
-      v3.x,
-      v3.y,
-      v3.z,
-      v1.x,
-      v1.y,
-      v1.z,
-      v3.x,
-      v3.y,
-      v3.z,
-      v4.x,
-      v4.y,
-      v4.z
+      v1.x, v1.y, v1.z,
+      v2.x, v2.y, v2.z,
+      v3.x, v3.y, v3.z,
+      v1.x, v1.y, v1.z,
+      v3.x, v3.y, v3.z,
+      v4.x, v4.y, v4.z
     ])
-
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geometry.computeVertexNormals()
     geometry.computeBoundingBox()
@@ -141,18 +147,12 @@ export class HalfEdge {
     this.plane.visible = false
     ;(this.plane as any).edge = this // js monkey patch
 
-    this.computeTransforms(
-      this.interiorTransform,
-      this.invInteriorTransform,
-      this.interiorStart(),
-      this.interiorEnd()
-    )
-    this.computeTransforms(
-      this.exteriorTransform,
-      this.invExteriorTransform,
-      this.exteriorStart(),
-      this.exteriorEnd()
-    )
+    this.computeTransforms(this.interiorTransform, this.invInteriorTransform, a, b)
+    const extA = this.exteriorStart()
+    const extB = this.exteriorEnd()
+    const ea = finitePt(extA) ? extA : a
+    const eb = finitePt(extB) ? extB : b
+    this.computeTransforms(this.exteriorTransform, this.invExteriorTransform, ea, eb)
   }
 
   public interiorDistance(): number {
@@ -328,16 +328,25 @@ export class HalfEdge {
     const vx = v2dx * cs - v2dy * sn
     const vy = v2dx * sn + v2dy * cs
 
-    // normalize
-    const mag = Utils.distance(0, 0, vx, vy)
-    const desiredMag = this.offset / sn
-    const scalar = desiredMag / mag
-
-    const halfAngleVector = {
-      x: vx * scalar,
-      y: vy * scalar
+    const offset = Number.isFinite(this.offset) ? this.offset : 0
+    const perpFallback = (): { x: number; y: number } => {
+      const len = Utils.distance(v2startX, v2startY, v2endX, v2endY)
+      if (!(len > 1e-9) || !(offset > 0)) return { x: 0, y: 0 }
+      return {
+        x: (-(v2endY - v2startY) / len) * offset,
+        y: ((v2endX - v2startX) / len) * offset
+      }
     }
 
-    return halfAngleVector
+    // normalize — zero-length walls / straight 180° joins yield mag=0 or sn=0 → NaN
+    const mag = Utils.distance(0, 0, vx, vy)
+    if (!(mag > 1e-9) || !(Math.abs(sn) > 1e-9) || !Number.isFinite(theta)) {
+      return perpFallback()
+    }
+    const desiredMag = offset / sn
+    const scalar = desiredMag / mag
+    const out = { x: vx * scalar, y: vy * scalar }
+    if (!Number.isFinite(out.x) || !Number.isFinite(out.y)) return perpFallback()
+    return out
   }
 }

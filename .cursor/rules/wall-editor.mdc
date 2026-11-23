@@ -1,0 +1,24 @@
+---
+description: Wall Editor — open path, portal, field→function, no diagonals
+globs: app/components/blueprint3d/WallPropertiesPanel.tsx,app/components/blueprint3d/InchFieldWithCalc.tsx,app/components/blueprint3d/FeetInchesSumCalculator.tsx,app/components/blueprint3d/ExteriorWallsModal.tsx,src/model/wall.ts,src/floorplanner/floorplanner.ts,app/types/project.ts
+alwaysApply: false
+---
+
+# Wall Editor
+
+See `docs/wall-editor.md` (**How to open** first) and `PAPERCUTS.md` (*Wall Editor open/visibility hell*).
+
+## Open (only)
+
+- Click `#` badge on 2D plan, or wall row in Edit sidebar list — **opens** (no toggle-close on re-click).
+- Empty plan or panel **X** closes.
+- One `<WallPropertiesPanel />` at app shell; panel **`createPortal`s to `document.body`**.
+
+## Hard
+
+- No schedule/UI field without a row in `docs/wall-editor.md`.
+- Persist Connect: `connectsToWall` + `connectsAt` + `extends` only.
+- Persist Offset: `offsetInches` + `offsetDir` only.
+- Apply: specs → `placeAgainstWall(..., 0, false, …, lengthCm)` → offset.
+- Carpenter-square **Use sum** → lineage keys + IndexedDB immediately.
+- No diagonals; host sacred unless chain-neighbor.

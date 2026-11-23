@@ -1,0 +1,26 @@
+---
+description: Lessons learned — field→function; no diagonals; Wall Editor open path + portal
+alwaysApply: true
+---
+
+# Papercuts
+
+Before adding UI fields, controls, schedule keys, or “helpful” defaults, read `PAPERCUTS.md`.
+For the wall edit panel, follow `docs/wall-editor.md` and `.cursor/rules/wall-editor.mdc`.
+
+Hard rules:
+
+- **Field → function or delete.** Every modal `useState` and every schedule property must have exactly: one UI setter, one restore reader, one Apply/persist writer, and (if geometric) one named model call. Do **not** dual-write the same concept into two keys (e.g. Offset → `offsetInches` **and** `fromEndInches`).
+- Do **not** add a control or schedule field unless you can state its **unique** usage in one sentence vs every existing control **and** name the application function that consumes it.
+- If the user gave a section/layout outline, treat omitted items as **intentionally omitted**.
+- Never ship two inch boxes (or two flows / two keys) a user would both call the same thing (e.g. “offset”) without consolidating first.
+- Prefer delete/consolidate over keep-both / “mirror for compatibility.”
+- **No diagonal walls** unless the user explicitly asks for angled geometry. Plan walls are E–W or N–S only. A mutate that skews a segment is a bug — fix the call order; do not leave diagonals on the canvas.
+- **Host is sacred.** Applying wall N must not change the Connect host’s length or axis (unless the user opts into chain-neighbor move).
+- **Neighbors are sacred too.** Apply/`setSpanFrom` must not drag walls that share the edited wall’s free tip (split the corner instead). Editing W12 must not move W13/W17.
+- **One add, one edit/apply, one delete** per entity. No Place + Move + Apply. Fields set draft state; a single Apply writes them.
+- **Helper text on title hover only.** Never helper paragraphs in modal bodies or below titles/fields.
+- **Wall Editor open path (only):** click the numbered `#` badge, or the wall row in the Edit sidebar list. Badge click **opens** — never toggle-closes (double-click must leave the panel open). Close via empty canvas or **X**.
+- **Floating editors:** `createPortal(..., document.body)` + `fixed right-3 top-14 z-[70]`. Never mount under `#floorplanner`. One panel instance — not separate 2D/3D copies.
+- **Open before fields.** If the editor is not visible/openable, fix open/portal first; do not debug Apply on an invisible modal.
+- **Hot reload for UI work:** default Docker = Dockerfile.dev. Do not rebuild prod for every panel tweak.

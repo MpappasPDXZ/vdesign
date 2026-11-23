@@ -1,6 +1,6 @@
 'use client'
 
-import { Move, Pencil, Check } from 'lucide-react'
+import { Move, Pencil, Trash2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
@@ -12,7 +12,7 @@ interface FloorplannerControlsProps {
   className?: string
 }
 
-/** Compact floating 2D toolbar — Move / Draw on canvas; wall delete is via double-click inspector. */
+/** Compact floating 2D toolbar — Move / Draw / Delete (also in left sidebar Add/Remove). */
 export function FloorplannerControls({
   mode,
   onModeChange,
@@ -51,6 +51,18 @@ export function FloorplannerControls({
       >
         <Pencil className="h-3.5 w-3.5" />
         Draw
+      </Button>
+      <Button
+        size="sm"
+        variant={mode === 'delete' ? 'default' : 'ghost'}
+        onClick={() => onModeChange('delete')}
+        className="h-8 gap-1.5 px-2.5 text-xs"
+        title={t('deleteWalls')}
+        aria-label={t('deleteWalls')}
+        aria-pressed={mode === 'delete'}
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+        Delete
       </Button>
       <div className="mx-0.5 h-4 w-px bg-border" />
       <Button

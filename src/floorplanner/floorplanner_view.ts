@@ -29,6 +29,8 @@ const wallWidth = 5
 const wallWidthHover = 7
 const wallColor = '#dddddd'
 const wallColorHover = '#008cba'
+/** Connect host while Wall Editor is open (distinct from selected blue). */
+const wallColorConnectHost = '#ea580c'
 const edgeColor = '#888888'
 const edgeColorHover = '#008cba'
 const edgeWidth = 1
@@ -289,16 +291,21 @@ export class FloorplannerView {
     }
   }
 
+  /** Pixel stroke width for a wall body (matches thickness visually). */
+  private wallStrokeWidth(wall: Wall): number {
+    return Math.max(
+      wallWidth,
+      Math.min(14, (wall.thickness / 2.54) * (this.viewmodel.pixelsPerCm || 0.5) * 0.35)
+    )
+  }
+
   /** */
   private drawWall(wall: Wall) {
     const hover = wall === this.viewmodel.activeWall
     const selected = wall === this.viewmodel.selectedWall
+    const connectHost = wall === this.viewmodel.connectHostWall
     let color = wall.getDisplayColor() || wallColor
-    // Scale stroke with thickness so Apply thickness is visible without reload
-    const thickPx = Math.max(
-      wallWidth,
-      Math.min(14, (wall.thickness / 2.54) * (this.viewmodel.pixelsPerCm || 0.5) * 0.35)
-    )
+    const thickPx = this.wallStrokeWidth(wall)
     let width = thickPx
     if (hover && this.viewmodel.mode == floorplannerModes.DELETE) {
       color = deleteColor
@@ -306,17 +313,22 @@ export class FloorplannerView {
     } else if (selected) {
       color = '#1d4ed8'
       width = Math.max(thickPx, wallWidthHover) + 1
+    } else if (connectHost) {
+      color = wallColorConnectHost
+      width = Math.max(thickPx, wallWidthHover) + 1
     } else if (hover) {
       color = wallColorHover
       width = Math.max(thickPx, wallWidthHover)
     }
+    // Square caps close L/T outer corners (butt caps leave an open 45° notch)
     this.drawLine(
       this.viewmodel.convertX(wall.getStartX()),
       this.viewmodel.convertY(wall.getStartY()),
       this.viewmodel.convertX(wall.getEndX()),
       this.viewmodel.convertY(wall.getEndY()),
       width,
-      color
+      color,
+      'square'
     )
     if (!hover && wall.frontEdge) {
       this.drawEdge(wall.frontEdge, hover)
@@ -392,8 +404,34 @@ export class FloorplannerView {
     )
   }
 
+  /**
+   * Fill wall junctions so outer L-corners don't show an empty diamond.
+   * Drawn as a square the size of the thickest meeting wall stroke.
+   */
+  private drawCornerJunctionFill(corner: Corner): void {
+    const walls = corner.getWalls()
+    if (walls.length < 2) return
+    let maxW = 0
+    let fillColor = wallColor
+    for (const wall of walls) {
+      const w = this.wallStrokeWidth(wall)
+      if (w >= maxW) {
+        maxW = w
+        fillColor = wall.getDisplayColor() || wallColor
+      }
+    }
+    if (maxW <= 0) return
+    const cx = this.viewmodel.convertX(corner.x)
+    const cy = this.viewmodel.convertY(corner.y)
+    const r = maxW / 2
+    this.context.fillStyle = fillColor
+    this.context.fillRect(cx - r, cy - r, maxW, maxW)
+  }
+
   /** */
   private drawCorner(corner: Corner) {
+    this.drawCornerJunctionFill(corner)
+
     const hover = corner === this.viewmodel.activeCorner
     let color = cornerColor
     if (hover && this.viewmodel.mode == floorplannerModes.DELETE) {
@@ -401,10 +439,12 @@ export class FloorplannerView {
     } else if (hover) {
       color = cornerColorHover
     }
+    const radius = hover ? cornerRadiusHover : cornerRadius
+    if (radius <= 0) return
     this.drawCircle(
       this.viewmodel.convertX(corner.x),
       this.viewmodel.convertY(corner.y),
-      hover ? cornerRadiusHover : cornerRadius,
+      radius,
       color
     )
   }
@@ -436,7 +476,8 @@ export class FloorplannerView {
     endX: number,
     endY: number,
     width: number,
-    color: string
+    color: string,
+    lineCap: CanvasLineCap = 'butt'
   ) {
     // width is an integer
     // color is a hex string, i.e. #ff0000
@@ -445,7 +486,11 @@ export class FloorplannerView {
     this.context.lineTo(endX, endY)
     this.context.lineWidth = width
     this.context.strokeStyle = color
+    this.context.lineCap = lineCap
+    this.context.lineJoin = 'miter'
     this.context.stroke()
+    // Restore default so grid/edges stay butt-capped
+    this.context.lineCap = 'butt'
   }
 
   /** */
