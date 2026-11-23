@@ -714,6 +714,16 @@ export const ITEMS: Item[] = [
     category: 'venue'
   },
   {
+    key: 'venueTurf196x40',
+    name: "Turf Area (19'6\"×40')",
+    description:
+      "Full hollow-core / training turf pad: 19′6″ wide × 40′ long (2713 S 224th basement left bay).",
+    image: '/icons/venue-turf.svg',
+    model: 'procedural:plane:594.36:2:1219.2:1b7a3d',
+    type: '8',
+    category: 'venue'
+  },
+  {
     key: 'venueHomePlate',
     name: 'Home Plate Area',
     description: 'Batter box / home plate marker pad.',

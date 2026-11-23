@@ -15,7 +15,28 @@
       "newPlan": "New Plan",
       "savePlan": "Save Plan",
       "downloadPlan": "Download Plan",
-      "loadPlan": "Load Plan"
+      "loadPlan": "Load Plan",
+      "importPlan": "Import"
+    },
+    "underlay": {
+      "showBlueprint": "Show blueprint",
+      "opacity": "Opacity"
+    },
+    "seedProjects": {
+      "title": "Sample / Cursor projects",
+      "load": "Load",
+      "empty": "No seed projects found",
+      "loadError": "Failed to load project",
+      "importFile": "Import JSON file…",
+      "importSuccess": "Project loaded",
+      "importError": "Could not import that file"
+    },
+    "wallSchedule": {
+      "title": "Walls",
+      "length": "Len",
+      "thickness": "Thk",
+      "lengthUnknown": "len ?",
+      "thicknessUnknown": "thk ?"
     },
     "floorplanner": {
       "moveWalls": "Move Walls",
@@ -129,6 +150,7 @@
       "loadedSuccess": "\"{name}\" loaded successfully",
       "loadError": "Failed to load \"{name}\"",
       "venueTurfMat": "Turf Mat (10×20 ft)",
+      "venueTurf196x40": "Turf Area (19'6\"×40')",
       "venueHomePlate": "Home Plate Area",
       "venueLScreen": "L-Screen",
       "venuePitchingMachine": "Pitching Machine",

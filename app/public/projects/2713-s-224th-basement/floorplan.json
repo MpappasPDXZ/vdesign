@@ -1,0 +1,375 @@
+{
+  "meta": {
+    "name": "2713 S 224th — Basement",
+    "address": "2713 S 224th, Elkhorn, NE 68022",
+    "level": "Basement",
+    "notes": "Default project. Blue badges W1…Wn match wallSchedule and drawn walls."
+  },
+  "convention": {
+    "startWall": "north",
+    "direction": "clockwise",
+    "origin": "NW corner",
+    "axes": "+X east, +Y south (plan)",
+    "dims": "outer face until thickness provided"
+  },
+  "underlay": {
+    "url": "/projects/2713-s-224th-basement/blueprint.png",
+    "opacity": 0.4,
+    "xCm": 0,
+    "yCm": 0,
+    "widthCm": 2206.625,
+    "heightCm": 1219.2
+  },
+  "areas": [
+    {
+      "name": "Turf",
+      "xCm": 331.47,
+      "yCm": 609.6
+    },
+    {
+      "name": "Open Basement",
+      "xCm": 1434.7825,
+      "yCm": 609.6
+    }
+  ],
+  "openings": [
+    {
+      "id": "turf-north-mo",
+      "betweenWalls": [
+        1,
+        2
+      ],
+      "outerLength": "16'-1\"",
+      "role": "Turf N — M.O.",
+      "notes": "Gap between W1 and W2 on north turf wall"
+    }
+  ],
+  "wallSchedule": [
+    {
+      "n": 1,
+      "role": "Turf N — west solid",
+      "outerLength": "2'-6\"",
+      "thickness": null,
+      "notes": "From NW; 16'-1\" M.O. opens to the east of this segment"
+    },
+    {
+      "n": 2,
+      "role": "Turf N — east of M.O.",
+      "outerLength": "2'-5\"",
+      "thickness": null,
+      "notes": ""
+    },
+    {
+      "n": 3,
+      "role": "Turf N — east stub",
+      "outerLength": "9\"",
+      "thickness": null,
+      "notes": ""
+    },
+    {
+      "n": 4,
+      "role": "Main N — seg 1",
+      "outerLength": "9'-4\"",
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 5,
+      "role": "Main N — seg 2",
+      "outerLength": "15'-2\"",
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 6,
+      "role": "Main N — seg 3",
+      "outerLength": "15'-11 3/4\"",
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 7,
+      "role": "Main N — last seg",
+      "outerLength": "10'-2\"",
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 8,
+      "role": "East perimeter",
+      "outerLength": "40'-0\"",
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 9,
+      "role": "South — main",
+      "outerLength": null,
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 10,
+      "role": "South — turf",
+      "outerLength": null,
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 11,
+      "role": "West perimeter",
+      "outerLength": "40'-0\"",
+      "thickness": null,
+      "notes": "Provisional"
+    },
+    {
+      "n": 12,
+      "role": "Party wall turf|main",
+      "outerLength": "40'-0\"",
+      "thickness": null,
+      "notes": "Interior"
+    }
+  ],
+  "floorplan": {
+    "corners": {
+      "8b5d0453-1537-4a20-8a2a-d25c306c5d1b": {
+        "x": 0,
+        "y": 0
+      },
+      "ba5ce7db-dd94-49a6-9ae1-8d547ce5a362": {
+        "x": 76.2,
+        "y": 0
+      },
+      "ae6147b0-c62a-46e3-b869-8c1a03d71195": {
+        "x": 566.42,
+        "y": 0
+      },
+      "e9eab7ee-91ea-4ad4-84e5-8d457bddf56b": {
+        "x": 640.08,
+        "y": 0
+      },
+      "61d6b02c-7079-4559-9833-4a29d138acc4": {
+        "x": 662.94,
+        "y": 0
+      },
+      "ba29e8f5-ffc0-4d78-8b99-509c96d3bc4b": {
+        "x": 947.42,
+        "y": 0
+      },
+      "8401c32c-0386-4abe-b445-5849b40d2e26": {
+        "x": 1409.7,
+        "y": 0
+      },
+      "f54adba1-7b85-44cf-8fdf-4a8bb8884609": {
+        "x": 1896.745,
+        "y": 0
+      },
+      "d90b5b2e-f708-4504-a2aa-c369da59fe4e": {
+        "x": 2206.625,
+        "y": 0
+      },
+      "115fba35-1db2-488f-9b8c-38e30a6d9655": {
+        "x": 2206.625,
+        "y": 1219.2
+      },
+      "501b9865-41dc-4387-ab3d-99806880deae": {
+        "x": 662.94,
+        "y": 1219.2
+      },
+      "8388fd00-e56a-4a89-8482-2a05953388fc": {
+        "x": 0,
+        "y": 1219.2
+      }
+    },
+    "walls": [
+      {
+        "corner1": "8b5d0453-1537-4a20-8a2a-d25c306c5d1b",
+        "corner2": "ba5ce7db-dd94-49a6-9ae1-8d547ce5a362",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "ae6147b0-c62a-46e3-b869-8c1a03d71195",
+        "corner2": "e9eab7ee-91ea-4ad4-84e5-8d457bddf56b",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "e9eab7ee-91ea-4ad4-84e5-8d457bddf56b",
+        "corner2": "61d6b02c-7079-4559-9833-4a29d138acc4",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "61d6b02c-7079-4559-9833-4a29d138acc4",
+        "corner2": "ba29e8f5-ffc0-4d78-8b99-509c96d3bc4b",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "ba29e8f5-ffc0-4d78-8b99-509c96d3bc4b",
+        "corner2": "8401c32c-0386-4abe-b445-5849b40d2e26",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "8401c32c-0386-4abe-b445-5849b40d2e26",
+        "corner2": "f54adba1-7b85-44cf-8fdf-4a8bb8884609",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "f54adba1-7b85-44cf-8fdf-4a8bb8884609",
+        "corner2": "d90b5b2e-f708-4504-a2aa-c369da59fe4e",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "d90b5b2e-f708-4504-a2aa-c369da59fe4e",
+        "corner2": "115fba35-1db2-488f-9b8c-38e30a6d9655",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "115fba35-1db2-488f-9b8c-38e30a6d9655",
+        "corner2": "501b9865-41dc-4387-ab3d-99806880deae",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "501b9865-41dc-4387-ab3d-99806880deae",
+        "corner2": "8388fd00-e56a-4a89-8482-2a05953388fc",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "8388fd00-e56a-4a89-8482-2a05953388fc",
+        "corner2": "8b5d0453-1537-4a20-8a2a-d25c306c5d1b",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      },
+      {
+        "corner1": "61d6b02c-7079-4559-9833-4a29d138acc4",
+        "corner2": "501b9865-41dc-4387-ab3d-99806880deae",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        }
+      }
+    ],
+    "wallTextures": [],
+    "floorTextures": {},
+    "newFloorTextures": {}
+  },
+  "items": [
+    {
+      "item_name": "Turf Area (fit to bay)",
+      "item_type": 8,
+      "model_url": "procedural:plane:662.94:2:1219.20:1b7a3d",
+      "xpos": 331.47,
+      "ypos": 0,
+      "zpos": 609.6,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Turf pad in west bay"
+    }
+  ]
+}

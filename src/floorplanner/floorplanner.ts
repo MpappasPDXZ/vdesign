@@ -2,6 +2,8 @@ import { Floorplan } from '../model/floorplan'
 import { Wall } from '../model/wall'
 import { Corner } from '../model/corner'
 import { FloorplannerView, floorplannerModes } from './floorplanner_view'
+import type { UnderlayConfig } from './underlay'
+import type { AreaLabel } from './area_label'
 
 type FloorplannerMode = (typeof floorplannerModes)[keyof typeof floorplannerModes]
 
@@ -355,5 +357,25 @@ export class Floorplanner {
   /** Whether typed length input can commit a wall segment. */
   public canCommitDrawLength(): boolean {
     return this.mode === floorplannerModes.DRAW && this.lastNode != null
+  }
+
+  public setUnderlay(config: UnderlayConfig | null): void {
+    this.view.setUnderlay(config)
+  }
+
+  public getUnderlay(): UnderlayConfig | null {
+    return this.view.getUnderlay()
+  }
+
+  public setUnderlayOpacity(opacity: number): void {
+    this.view.setUnderlayOpacity(opacity)
+  }
+
+  public setAreaLabels(labels: AreaLabel[]): void {
+    this.view.setAreaLabels(labels)
+  }
+
+  public setShowWallNumbers(show: boolean): void {
+    this.view.setShowWallNumbers(show)
   }
 }

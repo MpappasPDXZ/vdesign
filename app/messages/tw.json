@@ -15,7 +15,28 @@
       "newPlan": "新建方案",
       "savePlan": "保存方案",
       "downloadPlan": "下载方案",
-      "loadPlan": "加载方案"
+      "loadPlan": "加载方案",
+      "importPlan": "匯入"
+    },
+    "underlay": {
+      "showBlueprint": "顯示藍圖",
+      "opacity": "透明度"
+    },
+    "seedProjects": {
+      "title": "範例 / Cursor 專案",
+      "load": "載入",
+      "empty": "尚無範例專案",
+      "loadError": "載入專案失敗",
+      "importFile": "匯入 JSON 檔案…",
+      "importSuccess": "專案已載入",
+      "importError": "無法匯入該檔案"
+    },
+    "wallSchedule": {
+      "title": "牆體",
+      "length": "長",
+      "thickness": "厚",
+      "lengthUnknown": "長 ?",
+      "thicknessUnknown": "厚 ?"
     },
     "floorplanner": {
       "moveWalls": "移动墙体",
@@ -129,6 +150,7 @@
       "loadedSuccess": "\"{name}\"加载成功",
       "loadError": "加载\"{name}\"失败",
       "venueTurfMat": "人造草皮墊 (10×20 ft)",
+      "venueTurf196x40": "草皮區 (19'6\"×40')",
       "venueHomePlate": "本壘板區域",
       "venueLScreen": "L 型防護網",
       "venuePitchingMachine": "投球機",

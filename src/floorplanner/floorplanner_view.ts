@@ -6,6 +6,8 @@ import { HalfEdge } from '../model/half_edge'
 import { Dimensioning } from '../core/dimensioning'
 import { Utils } from '../core/utils'
 import type { Floorplanner } from './floorplanner'
+import type { UnderlayConfig } from './underlay'
+import type { AreaLabel } from './area_label'
 
 /** */
 export const floorplannerModes = {
@@ -52,6 +54,17 @@ export class FloorplannerView {
   /** Resize handler reference for cleanup */
   private resizeHandler: () => void
 
+  /** Blueprint underlay (optional) */
+  private underlay: UnderlayConfig | null = null
+  private underlayImage: HTMLImageElement | null = null
+  private underlayLoaded = false
+
+  /** Named area labels (turf, mechanical, etc.) */
+  private areaLabels: AreaLabel[] = []
+
+  /** Show W1, W2, … badges on wall midpoints */
+  private showWallNumbers = true
+
   /** */
   constructor(
     private floorplan: Floorplan,
@@ -67,6 +80,50 @@ export class FloorplannerView {
     }
     window.addEventListener('resize', this.resizeHandler)
     this.handleWindowResize()
+  }
+
+  /** Set or clear the blueprint underlay image. */
+  public setUnderlay(config: UnderlayConfig | null): void {
+    this.underlay = config
+    this.underlayImage = null
+    this.underlayLoaded = false
+    if (!config?.url) {
+      this.draw()
+      return
+    }
+    const img = new Image()
+    img.onload = () => {
+      this.underlayImage = img
+      this.underlayLoaded = true
+      this.draw()
+    }
+    img.onerror = () => {
+      console.warn('Failed to load underlay:', config.url)
+      this.underlayImage = null
+      this.underlayLoaded = false
+      this.draw()
+    }
+    img.src = config.url
+  }
+
+  public getUnderlay(): UnderlayConfig | null {
+    return this.underlay
+  }
+
+  public setUnderlayOpacity(opacity: number): void {
+    if (!this.underlay) return
+    this.underlay = { ...this.underlay, opacity: Math.max(0, Math.min(1, opacity)) }
+    this.draw()
+  }
+
+  public setAreaLabels(labels: AreaLabel[]): void {
+    this.areaLabels = labels || []
+    this.draw()
+  }
+
+  public setShowWallNumbers(show: boolean): void {
+    this.showWallNumbers = show
+    this.draw()
   }
 
   /** Cleanup method to remove event listeners */
@@ -100,6 +157,7 @@ export class FloorplannerView {
   public draw() {
     this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
 
+    this.drawUnderlay()
     this.drawGrid()
 
     this.floorplan.getRooms().forEach((room) => {
@@ -121,6 +179,75 @@ export class FloorplannerView {
     this.floorplan.getWalls().forEach((wall) => {
       this.drawWallLabels(wall)
     })
+
+    if (this.showWallNumbers) {
+      this.drawWallNumbers()
+    }
+
+    this.drawAreaLabels()
+  }
+
+  /** Number walls in array order (matches floorplan.json wallSchedule). */
+  private drawWallNumbers(): void {
+    const walls = this.floorplan.getWalls()
+    this.context.save()
+    walls.forEach((wall, index) => {
+      const mx = (wall.getStartX() + wall.getEndX()) / 2
+      const my = (wall.getStartY() + wall.getEndY()) / 2
+      const x = this.viewmodel.convertX(mx)
+      const y = this.viewmodel.convertY(my)
+      const n = String(index + 1)
+      const r = 11
+      this.context.beginPath()
+      this.context.arc(x, y, r, 0, Math.PI * 2)
+      this.context.fillStyle = '#1d4ed8'
+      this.context.fill()
+      this.context.strokeStyle = '#ffffff'
+      this.context.lineWidth = 2
+      this.context.stroke()
+      this.context.fillStyle = '#ffffff'
+      this.context.font = 'bold 11px Arial'
+      this.context.textAlign = 'center'
+      this.context.textBaseline = 'middle'
+      this.context.fillText(n, x, y + 0.5)
+    })
+    this.context.restore()
+  }
+
+  private drawAreaLabels(): void {
+    if (!this.areaLabels.length) return
+    this.context.save()
+    this.context.font = 'bold 13px Arial'
+    this.context.textAlign = 'center'
+    this.context.textBaseline = 'middle'
+    for (const label of this.areaLabels) {
+      const x = this.viewmodel.convertX(label.xCm)
+      const y = this.viewmodel.convertY(label.yCm)
+      this.context.strokeStyle = 'rgba(255,255,255,0.9)'
+      this.context.lineWidth = 4
+      this.context.strokeText(label.name, x, y)
+      this.context.fillStyle = '#0f172a'
+      this.context.fillText(label.name, x, y)
+    }
+    this.context.restore()
+  }
+
+  private drawUnderlay(): void {
+    if (!this.underlay || !this.underlayLoaded || !this.underlayImage) return
+
+    const x = this.viewmodel.convertX(this.underlay.xCm)
+    const y = this.viewmodel.convertY(this.underlay.yCm)
+    const w =
+      this.viewmodel.convertX(this.underlay.xCm + this.underlay.widthCm) -
+      this.viewmodel.convertX(this.underlay.xCm)
+    const h =
+      this.viewmodel.convertY(this.underlay.yCm + this.underlay.heightCm) -
+      this.viewmodel.convertY(this.underlay.yCm)
+
+    this.context.save()
+    this.context.globalAlpha = this.underlay.opacity
+    this.context.drawImage(this.underlayImage, x, y, w, h)
+    this.context.restore()
   }
 
   /** */

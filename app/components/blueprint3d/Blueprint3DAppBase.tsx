@@ -11,7 +11,16 @@ import { ContextMenu } from './ContextMenu'
 import { BedSizeInput } from './BedSizeInput'
 import { FloorplannerControls } from './FloorplannerControls'
 import { LengthInput } from './LengthInput'
+import { UnderlayControls } from './UnderlayControls'
 import { TextureSelector } from './TextureSelector'
+import {
+  normalizeAreas,
+  normalizeUnderlay,
+  parseProjectJson,
+  toSerializedRoom
+} from '@/lib/load-project'
+import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
+import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
 import { SaveFloorplanDialog } from './SaveFloorplanDialog'
 import { TouchHelp } from './TouchHelp'
 import { ControlsHelp } from './ControlsHelp'
@@ -67,8 +76,10 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const contentRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<HTMLDivElement>(null)
   const floorplannerCanvasRef = useRef<HTMLCanvasElement>(null)
+  const importFileRef = useRef<HTMLInputElement>(null)
   const blueprint3dRef = useRef<Blueprint3d | null>(null)
   const loadingToastsRef = useRef<Array<{ toastId: string | number; itemName: string }>>([])
+  const underlayConfigRef = useRef<UnderlayConfig | null>(null)
 
   const [activeTab, setActiveTab] = useState<'projects' | 'edit' | 'items'>(
     openMyFloorplans ? 'projects' : 'edit'
@@ -81,12 +92,17 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const [itemsLoading, setItemsLoading] = useState(0)
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('3d')
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+  const [underlayVisible, setUnderlayVisible] = useState(false)
+  const [underlayOpacity, setUnderlayOpacity] = useState(0.4)
+  const [hasUnderlay, setHasUnderlay] = useState(false)
 
   const [currentBlueprint, setCurrentBlueprint] = useState<{
     id: string
     name: string
     roomType: RoomType
   } | null>(null)
+
+  const tSeed = useTranslations('BluePrint.seedProjects')
 
   const [currentMode, setCurrentMode] = useState<Blueprint3DMode>(mode)
 
@@ -407,9 +423,34 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     [generateTopDownThumbnail, t]
   )
 
-  // Load from saved floorplan
+  const applyUnderlay = useCallback((underlay: UnderlayConfig | null) => {
+    underlayConfigRef.current = underlay
+    setHasUnderlay(!!underlay)
+    setUnderlayVisible(!!underlay)
+    if (underlay) setUnderlayOpacity(underlay.opacity)
+    const fp = blueprint3dRef.current?.floorplanner
+    if (!fp) return
+    if (underlay) {
+      fp.setUnderlay({ ...underlay })
+    } else {
+      fp.setUnderlay(null)
+    }
+  }, [])
+
+  const applyAreas = useCallback((areas: AreaLabel[]) => {
+    blueprint3dRef.current?.floorplanner?.setAreaLabels(areas)
+  }, [])
+
+  // Load from saved floorplan / imported project
   const handleLoadFloorplan = useCallback(
-    (data: string, loadedMode?: RoomType, blueprintId?: string, blueprintName?: string) => {
+    (
+      data: string,
+      loadedMode?: RoomType,
+      blueprintId?: string,
+      blueprintName?: string,
+      underlay?: UnderlayConfig | null,
+      areas?: AreaLabel[]
+    ) => {
       if (!blueprint3dRef.current) return
       blueprint3dRef.current.model.loadSerialized(data)
       if (loadedMode) setCurrentMode(loadedMode as Blueprint3DMode)
@@ -419,11 +460,81 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           name: blueprintName,
           roomType: loadedMode || RoomType.BEDROOM
         })
+      } else if (blueprintName) {
+        setCurrentBlueprint({
+          id: blueprintId || `import-${Date.now()}`,
+          name: blueprintName,
+          roomType: loadedMode || RoomType.BEDROOM
+        })
       }
+      applyUnderlay(underlay === undefined ? null : underlay)
+      const nextAreas = areas ?? []
+      applyAreas(nextAreas)
       setActiveTab('edit')
+      setViewMode('2d')
+      requestAnimationFrame(() => {
+        blueprint3dRef.current?.floorplanner?.reset()
+        const cfg = underlayConfigRef.current
+        if (cfg) {
+          blueprint3dRef.current?.floorplanner?.setUnderlay({ ...cfg })
+        }
+        applyAreas(nextAreas)
+      })
     },
-    []
+    [applyAreas, applyUnderlay]
   )
+
+  const handleImportClick = useCallback(() => {
+    importFileRef.current?.click()
+  }, [])
+
+  const handleImportFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      e.target.value = ''
+      if (!file) return
+      try {
+        const project = parseProjectJson(await file.text())
+        handleLoadFloorplan(
+          toSerializedRoom(project),
+          RoomType.BEDROOM,
+          undefined,
+          project.meta?.name || file.name.replace(/\.json$/i, ''),
+          normalizeUnderlay(project.underlay),
+          normalizeAreas(project.areas)
+        )
+        toast.success(tSeed('importSuccess'))
+      } catch (err) {
+        console.error(err)
+        toast.error(tSeed('importError'))
+      }
+    },
+    [handleLoadFloorplan, tSeed]
+  )
+
+  const handleUnderlayToggle = useCallback(
+    (visible: boolean) => {
+      setUnderlayVisible(visible)
+      const cfg = underlayConfigRef.current
+      if (!blueprint3dRef.current?.floorplanner) return
+      if (visible && cfg) {
+        blueprint3dRef.current.floorplanner.setUnderlay({ ...cfg, opacity: underlayOpacity })
+      } else {
+        blueprint3dRef.current.floorplanner.setUnderlay(null)
+        // Keep config so toggle can restore
+        if (cfg) underlayConfigRef.current = cfg
+      }
+    },
+    [underlayOpacity]
+  )
+
+  const handleUnderlayOpacity = useCallback((opacity: number) => {
+    setUnderlayOpacity(opacity)
+    if (underlayConfigRef.current) {
+      underlayConfigRef.current = { ...underlayConfigRef.current, opacity }
+    }
+    blueprint3dRef.current?.floorplanner?.setUnderlayOpacity(opacity)
+  }, [])
 
   const handleUnitChange = useCallback(
     (unit: string) => {
@@ -537,6 +648,13 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
   return (
     <div className="relative h-full w-full">
+      <input
+        ref={importFileRef}
+        type="file"
+        accept="application/json,.json"
+        className="hidden"
+        onChange={handleImportFileChange}
+      />
       {/* Top Navigation Bar */}
       {!isFullscreen && (
         <div className="absolute top-0 left-0 right-0 z-50">
@@ -548,6 +666,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             onSettingsClick={() => setSettingsOpen(true)}
             onSave={handleSave}
             onNew={handleNew}
+            onImport={handleImportClick}
             currentBlueprintName={currentBlueprint?.name}
           />
         </div>
@@ -564,10 +683,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         >
           {activeTab === 'projects' && (
             <ProjectsView
-              onBlueprintLoad={(layoutData, roomType, id, name) => {
-                handleLoadFloorplan(layoutData, roomType, id, name)
-                setActiveTab('edit')
-                setViewMode('3d')
+              onBlueprintLoad={(layoutData, roomType, id, name, underlay, areas) => {
+                handleLoadFloorplan(layoutData, roomType, id, name, underlay, areas)
               }}
             />
           )}
@@ -629,6 +746,14 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                       {tFloorplanner('escHint')}
                     </div>
                   </div>
+                )}
+                {hasUnderlay && (
+                  <UnderlayControls
+                    visible={underlayVisible}
+                    opacity={underlayOpacity}
+                    onToggle={handleUnderlayToggle}
+                    onOpacityChange={handleUnderlayOpacity}
+                  />
                 )}
                 <ControlsHelp viewMode="2d" />
               </>

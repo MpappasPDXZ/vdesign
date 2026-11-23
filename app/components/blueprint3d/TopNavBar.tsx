@@ -1,6 +1,6 @@
 'use client'
 
-import { Settings, FilePlus } from 'lucide-react'
+import { Settings, FilePlus, Upload } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
@@ -15,6 +15,7 @@ interface TopNavBarProps {
   onSettingsClick: () => void
   onSave: () => void
   onNew: () => void
+  onImport?: () => void
   currentBlueprintName?: string | null
 }
 
@@ -26,6 +27,7 @@ export function TopNavBar({
   onSettingsClick,
   onSave,
   onNew,
+  onImport,
   currentBlueprintName
 }: TopNavBarProps) {
   const t = useTranslations('BluePrint.sidebar')
@@ -110,6 +112,18 @@ export function TopNavBar({
             <FilePlus className={cn('h-4 w-4', !isMobile && 'mr-1.5')} />
             {!isMobile && tMain('newPlan')}
           </Button>
+
+          {onImport && (
+            <Button
+              onClick={onImport}
+              variant="outline"
+              size={isMobile ? 'sm' : 'sm'}
+              className={cn(isMobile && 'h-8 px-3 text-xs')}
+            >
+              <Upload className={cn('h-4 w-4', !isMobile && 'mr-1.5')} />
+              {!isMobile && tMain('importPlan')}
+            </Button>
+          )}
 
           {/* Save Button */}
           <Button

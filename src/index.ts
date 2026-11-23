@@ -42,6 +42,9 @@ export { Skybox } from './three/skybox'
 // Floorplanner modules
 export { Floorplanner } from './floorplanner/floorplanner'
 export { FloorplannerView, floorplannerModes } from './floorplanner/floorplanner_view'
+export type { UnderlayConfig } from './floorplanner/underlay'
+export { defaultUnderlayOpacity } from './floorplanner/underlay'
+export type { AreaLabel } from './floorplanner/area_label'
 
 // Main Blueprint3D class
 export { Blueprint3d, type Options } from './blueprint3d'
