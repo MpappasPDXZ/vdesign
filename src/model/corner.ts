@@ -115,6 +115,11 @@ export class Corner implements Point {
     return this.wallStarts.length + this.wallEnds.length
   }
 
+  /** All walls attached to this corner (start or end). */
+  public getWalls(): Wall[] {
+    return [...this.wallStarts, ...this.wallEnds]
+  }
+
   public getFloorplan(): Floorplan {
     return this.floorplan
   }

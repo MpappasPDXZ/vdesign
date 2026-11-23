@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
 import { TopNavBar } from './TopNavBar'
 import { AppSidebar } from './AppSidebar'
 import { ItemsDrawer } from './ItemsDrawer'
@@ -113,14 +114,24 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const [helpOpen, setHelpOpen] = useState(false)
   const [underlayState, setUnderlayState] = useState<UnderlayConfig | null>(null)
   const [recoverySavedAt, setRecoverySavedAt] = useState<number | null>(null)
+  const [canUndo, setCanUndo] = useState(false)
   const blueprintImageObjectUrlRef = useRef<string | null>(null)
   const recoveryOfferedRef = useRef(false)
+  const undoStackRef = useRef<
+    Array<{ roomJson: string; wallSchedule: WallScheduleEntry[]; selectedWallNumber: number | null }>
+  >([])
+  const wallScheduleRef = useRef(wallSchedule)
+  wallScheduleRef.current = wallSchedule
+  const selectedWallNumberRef = useRef(selectedWallNumber)
+  selectedWallNumberRef.current = selectedWallNumber
 
   const [currentBlueprint, setCurrentBlueprint] = useState<{
     id: string
     name: string
     roomType: RoomType
   } | null>(null)
+  const currentBlueprintRef = useRef(currentBlueprint)
+  currentBlueprintRef.current = currentBlueprint
 
   const tSeed = useTranslations('BluePrint.seedProjects')
   const tOverlays = useTranslations('BluePrint.overlays')
@@ -443,56 +454,6 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     [onViewModeChange]
   )
 
-  const handleWallPropsChanged = useCallback(() => {
-    const b = blueprint3dRef.current
-    if (!b || !selectedWall) return
-    b.model.floorplan.update()
-    // Redraw immediately and again next frame (rooms/edges finish rebuilding)
-    b.floorplanner?.selectWall(selectedWall)
-    b.floorplanner?.redraw()
-    requestAnimationFrame(() => {
-      b.floorplanner?.redraw()
-    })
-    const n = selectedWallNumber
-    if (n != null) {
-      setWallSchedule((prev) =>
-        prev.map((entry) =>
-          entry.n === n
-            ? {
-                ...entry,
-                name: selectedWall.name || entry.name,
-                role: selectedWall.name || entry.role,
-                outerLength: `${cmToInches(selectedWall.getLength())}"`,
-                thickness: `${cmToInches(selectedWall.thickness)}"`,
-                wallType: selectedWall.wallType,
-                exposure: selectedWall.exposure
-              }
-            : entry
-        )
-      )
-    }
-  }, [selectedWall, selectedWallNumber])
-
-  const handleDeleteWall = useCallback(() => {
-    if (!selectedWall) return
-    const n = selectedWallNumber
-    const wall = selectedWall
-    setSelectedWall(null)
-    setSelectedWallNumber(null)
-    wall.remove()
-    const fp = blueprint3dRef.current?.floorplanner
-    blueprint3dRef.current?.model.floorplan.update()
-    fp?.selectWall(null)
-    fp?.redraw()
-    if (n != null) {
-      setWallSchedule((prev) =>
-        prev
-          .filter((entry) => entry.n !== n)
-          .map((entry, idx) => ({ ...entry, n: idx + 1 }))
-      )
-    }
-  }, [selectedWall, selectedWallNumber])
-
   const handleDeleteItem = useCallback(() => {
     if (selectedItem) {
       selectedItem.removeFromScene()
@@ -617,6 +578,116 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     })
     setRecoverySavedAt(Date.now())
   }, [buildSavePayload, currentBlueprint?.id, currentBlueprint?.name])
+
+  const pushUndoSnapshot = useCallback(() => {
+    const b = blueprint3dRef.current
+    if (!b) return
+    undoStackRef.current.push({
+      roomJson: b.model.exportSerialized(),
+      wallSchedule: structuredClone(wallScheduleRef.current),
+      selectedWallNumber: selectedWallNumberRef.current
+    })
+    if (undoStackRef.current.length > 40) undoStackRef.current.shift()
+    setCanUndo(true)
+  }, [])
+
+  const persistPlanNow = useCallback(async () => {
+    const payload = buildSavePayload()
+    if (!payload) return
+    writeRecoverySnapshot(payload.layoutData, {
+      name: currentBlueprintRef.current?.name,
+      id: currentBlueprintRef.current?.id
+    })
+    setRecoverySavedAt(Date.now())
+    const bp = currentBlueprintRef.current
+    if (!bp) return
+    try {
+      await blueprintStorage.upsert(bp.id, {
+        name: bp.name,
+        layoutData: payload.layoutData,
+        thumbnailBase64: payload.thumbnailBase64,
+        roomType: bp.roomType
+      })
+    } catch (error) {
+      console.warn('[Blueprint3DAppBase] Auto-save after edit failed:', error)
+    }
+  }, [buildSavePayload])
+
+  const handleUndo = useCallback(() => {
+    const entry = undoStackRef.current.pop()
+    setCanUndo(undoStackRef.current.length > 0)
+    const b = blueprint3dRef.current
+    if (!entry || !b) return
+    b.model.loadSerialized(entry.roomJson)
+    setWallSchedule(entry.wallSchedule)
+    setSelectedWall(null)
+    setSelectedWallNumber(null)
+    b.floorplanner?.selectWall(null)
+    b.floorplanner?.reset()
+    b.floorplanner?.setShowWallNumbers(true)
+    if (underlayConfigRef.current) {
+      b.floorplanner?.setUnderlay({ ...underlayConfigRef.current })
+    }
+    b.floorplanner?.setAreaLabels(areasRef.current)
+    b.floorplanner?.redraw()
+    void persistPlanNow()
+    toast.success('Undone — plan saved')
+  }, [persistPlanNow])
+
+  const handleWallPropsChanged = useCallback(() => {
+    const b = blueprint3dRef.current
+    if (!b || !selectedWall) return
+    b.model.floorplan.update()
+    b.floorplanner?.selectWall(selectedWall)
+    b.floorplanner?.redraw()
+    requestAnimationFrame(() => {
+      b.floorplanner?.redraw()
+    })
+    const n = selectedWallNumber
+    if (n != null) {
+      setWallSchedule((prev) =>
+        prev.map((entry) =>
+          entry.n === n
+            ? {
+                ...entry,
+                name: selectedWall.name || entry.name,
+                role: selectedWall.name || entry.role,
+                outerLength: `${cmToInches(selectedWall.getLength())}"`,
+                thickness: `${cmToInches(selectedWall.thickness)}"`,
+                wallType: selectedWall.wallType,
+                exposure: selectedWall.exposure
+              }
+            : entry
+        )
+      )
+    }
+    void persistPlanNow()
+  }, [selectedWall, selectedWallNumber, persistPlanNow])
+
+  const handleDeleteWall = useCallback(() => {
+    if (!selectedWall) return
+    pushUndoSnapshot()
+    const n = selectedWallNumber
+    const wall = selectedWall
+    setSelectedWall(null)
+    setSelectedWallNumber(null)
+    wall.remove()
+    const fp = blueprint3dRef.current?.floorplanner
+    blueprint3dRef.current?.model.floorplan.update()
+    fp?.selectWall(null)
+    fp?.redraw()
+    if (n != null) {
+      setWallSchedule((prev) =>
+        prev
+          .filter((entry) => entry.n !== n)
+          .map((entry, idx) => ({ ...entry, n: idx + 1 }))
+      )
+    }
+    void persistPlanNow()
+    toast.success('Wall deleted — plan saved', {
+      action: { label: 'Undo', onClick: () => handleUndo() }
+    })
+  }, [selectedWall, selectedWallNumber, pushUndoSnapshot, persistPlanNow, handleUndo])
 
   // Debounced recovery autosave — survives refresh/crash in localStorage
   useEffect(() => {
@@ -1178,9 +1249,23 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                   setSelectedWallNumber(null)
                   blueprint3dRef.current?.floorplanner?.selectWall(null)
                 }}
+                onBeforeMutate={pushUndoSnapshot}
                 onChanged={handleWallPropsChanged}
                 onDelete={handleDeleteWall}
+                canUndo={canUndo}
+                onUndo={handleUndo}
               />
+            )}
+            {!selectedWall && canUndo && !isFullscreen && viewMode === '2d' && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="pointer-events-auto absolute right-3 top-12 z-[70] h-8 gap-1 bg-background/95 shadow-md"
+                onClick={handleUndo}
+              >
+                Undo
+              </Button>
             )}
           </div>
 
@@ -1198,8 +1283,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 setSelectedWallNumber(null)
                 blueprint3dRef.current?.floorplanner?.selectWall(null)
               }}
+              onBeforeMutate={pushUndoSnapshot}
               onChanged={handleWallPropsChanged}
               onDelete={handleDeleteWall}
+              canUndo={canUndo}
+              onUndo={handleUndo}
             />
           )}
 

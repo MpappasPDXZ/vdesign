@@ -274,10 +274,14 @@ export class Floorplanner {
 
   /** */
   private mouseup(): void {
+    // Only treat as a canvas click if mousedown started on the canvas.
+    // Otherwise dragging/selecting text in the wall edit panel and releasing
+    // over the plan closes the inspector.
+    const canvasClick = this.mouseDown && !this.mouseMoved
     this.mouseDown = false
 
     // drawing
-    if (this.mode == floorplannerModes.DRAW && !this.mouseMoved) {
+    if (this.mode == floorplannerModes.DRAW && canvasClick) {
       const corner = this.floorplan.newCorner(this.targetX, this.targetY)
       if (this.lastNode != null) {
         this.floorplan.newWall(this.lastNode, corner)
@@ -289,7 +293,7 @@ export class Floorplanner {
     }
 
     // Double-click wall to toggle property inspector (MOVE, no drag)
-    if (this.mode == floorplannerModes.MOVE && !this.mouseMoved) {
+    if (this.mode == floorplannerModes.MOVE && canvasClick) {
       const now = Date.now()
       const wall = this.activeWall
       const isDouble =

@@ -165,6 +165,129 @@ export class Wall {
     this.fireMoved()
   }
 
+  /** Walls that share a start or end corner with this wall. */
+  public getAttachedWalls(): Wall[] {
+    const set = new Set<Wall>()
+    for (const c of [this.start, this.end]) {
+      for (const w of c.getWalls()) if (w !== this) set.add(w)
+    }
+    return Array.from(set)
+  }
+
+  /**
+   * Congruent companions: walls joined at a simple 2-wall corner (chain),
+   * not at a 3+ junction (predecessor / host / perimeter stay put).
+   * @param excludeEnd skip this end (the end landing on a host when placing)
+   */
+  public getCongruentCompanions(excludeEnd?: 'start' | 'end'): Wall[] {
+    const out: Wall[] = []
+    const ends: Array<'start' | 'end'> =
+      excludeEnd === 'start' ? ['end'] : excludeEnd === 'end' ? ['start'] : ['start', 'end']
+    for (const which of ends) {
+      const corner = which === 'start' ? this.start : this.end
+      // Exactly two walls = continuation of this segment; 3+ is a structural junction
+      if (corner.wallCount() !== 2) continue
+      for (const w of corner.getWalls()) {
+        if (w !== this) out.push(w)
+      }
+    }
+    return out
+  }
+
+  /**
+   * Translate a wall group rigidly. Corners shared with walls outside the
+   * group are split first so predecessors / host / perimeter are not dragged.
+   */
+  public moveWallGroup(group: Set<Wall>, dx: number, dy: number): void {
+    if (!(Math.abs(dx) > 1e-9 || Math.abs(dy) > 1e-9)) return
+    const fp = this.start.getFloorplan()
+    for (const w of [...group]) {
+      for (const which of ['start', 'end'] as const) {
+        const corner = which === 'start' ? w.getStart() : w.getEnd()
+        const hasOutsider = corner.getWalls().some((ow) => !group.has(ow))
+        if (!hasOutsider) continue
+        const fresh = fp.newCorner(corner.x, corner.y)
+        for (const gw of [...corner.getWalls()]) {
+          if (!group.has(gw)) continue
+          if (gw.getStart() === corner) gw.setStart(fresh)
+          else if (gw.getEnd() === corner) gw.setEnd(fresh)
+        }
+      }
+    }
+    const corners = new Set<ReturnType<Wall['getStart']>>()
+    for (const w of group) {
+      corners.add(w.getStart())
+      corners.add(w.getEnd())
+    }
+    for (const c of corners) c.relativeMove(dx, dy, false)
+    for (const w of group) w.fireMoved()
+  }
+
+  /**
+   * Translate this wall. When `bringAttached`, also moves congruent companions
+   * (simple chain neighbors like W3 with W2) — never junction neighbors (W1/W10).
+   */
+  public relativeMoveWithAttached(dx: number, dy: number, bringAttached: boolean): void {
+    if (!bringAttached) {
+      this.relativeMoveIndependent(dx, dy)
+      return
+    }
+    const group = new Set<Wall>([this, ...this.getCongruentCompanions()])
+    this.moveWallGroup(group, dx, dy)
+  }
+
+  /**
+   * Dominant plan axis: east-west (faces N/S) or north-south (faces E/W).
+   */
+  public getAxis(): 'east-west' | 'north-south' {
+    const dx = Math.abs(this.getEndX() - this.getStartX())
+    const dy = Math.abs(this.getEndY() - this.getStartY())
+    return dx >= dy ? 'east-west' : 'north-south'
+  }
+
+  /**
+   * Snap wall to pure E–W or N–S, keeping center and length.
+   * east-west → faces North & South; north-south → faces East & West.
+   */
+  public setAxis(axis: 'east-west' | 'north-south'): void {
+    const len = this.getLength()
+    if (!(len > 0)) return
+    const cx = (this.getStartX() + this.getEndX()) / 2
+    const cy = (this.getStartY() + this.getEndY()) / 2
+    const half = len / 2
+    let x0: number
+    let y0: number
+    let x1: number
+    let y1: number
+    if (axis === 'east-west') {
+      // Prefer keeping western end as start
+      x0 = cx - half
+      y0 = cy
+      x1 = cx + half
+      y1 = cy
+    } else {
+      // Prefer northern end as start (top)
+      x0 = cx
+      y0 = cy - half
+      x1 = cx
+      y1 = cy + half
+    }
+    const fp = this.start.getFloorplan()
+    const assign = (which: 'start' | 'end', x: number, y: number) => {
+      const corner = which === 'start' ? this.start : this.end
+      if (corner.wallCount() <= 1) {
+        corner.move(x, y, false)
+        return
+      }
+      const fresh = fp.newCorner(x, y)
+      if (which === 'start') this.setStart(fresh)
+      else this.setEnd(fresh)
+    }
+    assign('start', x0, y0)
+    assign('end', x1, y1)
+    this.fireMoved()
+  }
+
   /** Northernmost end (then westernmost) — "top" of wall on plan. */
   public getTopPoint(): { x: number; y: number } {
     const sx = this.getStartX()
@@ -199,16 +322,37 @@ export class Wall {
 
   /**
    * Place this wall so its nearer end sits on `host` at `inchesFromTop`
-   * from the host's top. Does not drag host corners (independent translate).
+   * from the host's top.
+   *
+   * Congruency: when `bringAttached`, only walls on the *free* end that share
+   * a simple 2-wall corner come along (e.g. W3 with W2). The host, and any
+   * predecessor at a 3+ junction (e.g. W1 at the party-wall node), stay put.
    */
-  public placeAgainstWall(host: Wall, inchesFromTop: number): void {
+  public placeAgainstWall(
+    host: Wall,
+    inchesFromTop: number,
+    bringAttached = false
+  ): void {
     const P = host.pointFromTop(inchesFromTop)
     const dStart =
       (this.getStartX() - P.x) ** 2 + (this.getStartY() - P.y) ** 2
     const dEnd = (this.getEndX() - P.x) ** 2 + (this.getEndY() - P.y) ** 2
-    const ax = dStart <= dEnd ? this.getStartX() : this.getEndX()
-    const ay = dStart <= dEnd ? this.getStartY() : this.getEndY()
-    this.relativeMoveIndependent(P.x - ax, P.y - ay)
+    const placeOnStart = dStart <= dEnd
+    const ax = placeOnStart ? this.getStartX() : this.getEndX()
+    const ay = placeOnStart ? this.getStartY() : this.getEndY()
+    const dx = P.x - ax
+    const dy = P.y - ay
+    if (!bringAttached) {
+      this.relativeMoveIndependent(dx, dy)
+      return
+    }
+    // Free end = opposite the end landing on the host; companions there only
+    const companions = this.getCongruentCompanions(placeOnStart ? 'start' : 'end').filter(
+      (w) => w !== host
+    )
+    const group = new Set<Wall>([this, ...companions])
+    group.delete(host)
+    this.moveWallGroup(group, dx, dy)
   }
 
   public fireMoved(): void {

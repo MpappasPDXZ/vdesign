@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Calculator, Check, Link2, Trash2, X } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Calculator, Check, Link2, Trash2, Undo2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -28,6 +28,10 @@ interface WallPropertiesPanelProps {
   onClose: () => void
   onChanged: () => void
   onDelete?: () => void
+  /** Snapshot before Apply / Place / Move so Undo can restore. */
+  onBeforeMutate?: () => void
+  canUndo?: boolean
+  onUndo?: () => void
 }
 
 function defaultName(wall: Wall, wallNumber?: number | null): string {
@@ -91,7 +95,10 @@ export function WallPropertiesPanel({
   walls = [],
   onClose,
   onChanged,
-  onDelete
+  onDelete,
+  onBeforeMutate,
+  canUndo = false,
+  onUndo
 }: WallPropertiesPanelProps) {
   const t = useTranslations('BluePrint.wallProps')
   const [name, setName] = useState(defaultName(wall, wallNumber))
@@ -104,9 +111,10 @@ export function WallPropertiesPanel({
   const [calcTarget, setCalcTarget] = useState<CalcTarget>('connect')
   const [moveDir, setMoveDir] = useState<Cardinal>('S')
   const [moveInches, setMoveInches] = useState(88)
-  const [moveConnected, setMoveConnected] = useState(false)
+  const [bringAttached, setBringAttached] = useState(true)
   const [connectTo, setConnectTo] = useState<number | ''>('')
   const [fromTopInches, setFromTopInches] = useState(88)
+  const [axis, setAxis] = useState<'east-west' | 'north-south'>('east-west')
 
   const otherWalls = useMemo(
     () => walls.filter((w) => w.wall !== wall),
@@ -119,6 +127,7 @@ export function WallPropertiesPanel({
     setThicknessInches(cmToInches(wall.thickness))
     setWallType(wall.wallType || 'generic')
     setExposure(wall.exposure || 'exterior')
+    setAxis(wall.getAxis())
     setError(null)
     setShowCalc(false)
     setConnectTo(suggestHost(wall, otherWalls))
@@ -127,6 +136,7 @@ export function WallPropertiesPanel({
   const syncFromWall = () => {
     setLengthInches(cmToInches(wall.getLength()))
     setThicknessInches(cmToInches(wall.thickness))
+    setAxis(wall.getAxis())
   }
 
   const apply = () => {
@@ -138,14 +148,19 @@ export function WallPropertiesPanel({
       setError(t('invalidThickness'))
       return
     }
+    onBeforeMutate?.()
     wall.name = name.trim()
     wall.setLength(inchesToCm(lengthInches))
     wall.thickness = inchesToCm(thicknessInches)
     wall.wallType = wallType
     wall.exposure = exposure
+    if (wall.getAxis() !== axis) wall.setAxis(axis)
     setError(null)
     onChanged()
     syncFromWall()
+    toast.success(t('applyDone'), {
+      action: onUndo ? { label: t('undo'), onClick: () => onUndo() } : undefined
+    })
   }
 
   const applyConnect = () => {
@@ -162,11 +177,14 @@ export function WallPropertiesPanel({
       setError(t('invalidConnect'))
       return
     }
-    wall.placeAgainstWall(host, fromTopInches)
+    onBeforeMutate?.()
+    wall.placeAgainstWall(host, fromTopInches, bringAttached)
     setError(null)
     onChanged()
     syncFromWall()
-    toast.success(t('connectDone', { n: connectTo, inches: roundIn(fromTopInches) }))
+    toast.success(t('connectDone', { n: connectTo, inches: roundIn(fromTopInches) }), {
+      action: onUndo ? { label: t('undo'), onClick: () => onUndo() } : undefined
+    })
   }
 
   const moveWall = () => {
@@ -174,14 +192,16 @@ export function WallPropertiesPanel({
       setError(t('invalidMove'))
       return
     }
+    onBeforeMutate?.()
     const before = { x: wall.getStartX(), y: wall.getStartY() }
     const { dx, dy } = offsetCm(moveDir, moveInches)
-    if (moveConnected) wall.relativeMove(dx, dy)
-    else wall.relativeMoveIndependent(dx, dy)
+    wall.relativeMoveWithAttached(dx, dy, bringAttached)
     setError(null)
     onChanged()
     syncFromWall()
-    toast.success(t('moveDone', { dir: moveDir, inches: roundIn(moveInches) }))
+    toast.success(t('moveDone', { dir: moveDir, inches: roundIn(moveInches) }), {
+      action: onUndo ? { label: t('undo'), onClick: () => onUndo() } : undefined
+    })
     if (
       Math.abs(wall.getStartX() - before.x) < 1e-6 &&
       Math.abs(wall.getStartY() - before.y) < 1e-6
@@ -208,6 +228,9 @@ export function WallPropertiesPanel({
       className={cn(
         'pointer-events-auto absolute right-3 top-12 z-[70] max-h-[calc(100vh-4rem)] w-[min(100%,280px)] overflow-y-auto rounded-md border border-border bg-background/95 p-2 shadow-lg backdrop-blur-sm'
       )}
+      onMouseDown={(e) => e.stopPropagation()}
+      onMouseUp={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="mb-1.5 flex items-center gap-1">
         <span
@@ -221,6 +244,19 @@ export function WallPropertiesPanel({
           <Check className="h-3 w-3" />
           {t('apply')}
         </Button>
+        {canUndo && onUndo && (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-6 px-2 text-[10px]"
+            onClick={onUndo}
+            title={t('undo')}
+          >
+            <Undo2 className="h-3 w-3" />
+            {t('undo')}
+          </Button>
+        )}
         {onDelete && (
           <Button
             type="button"
@@ -276,6 +312,31 @@ export function WallPropertiesPanel({
               className={fieldClass}
             />
           </label>
+        </div>
+
+        <div className="space-y-0.5">
+          <span className="text-[10px] text-muted-foreground">{t('orientation')}</span>
+          <div className="grid grid-cols-2 gap-1">
+            <Button
+              type="button"
+              size="sm"
+              variant={axis === 'east-west' ? 'default' : 'outline'}
+              className="h-7 px-1 text-[10px]"
+              onClick={() => setAxis('east-west')}
+            >
+              {t('orientationEWShort')}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={axis === 'north-south' ? 'default' : 'outline'}
+              className="h-7 px-1 text-[10px]"
+              onClick={() => setAxis('north-south')}
+            >
+              {t('orientationNSShort')}
+            </Button>
+          </div>
+          <span className="text-[9px] leading-tight text-muted-foreground">{t('orientationHint')}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-1">
@@ -361,6 +422,15 @@ export function WallPropertiesPanel({
             </div>
           </label>
           <p className="text-[9px] leading-tight text-muted-foreground">{t('connectHint')}</p>
+          <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={bringAttached}
+              onChange={(e) => setBringAttached(e.target.checked)}
+              className="size-3 accent-primary"
+            />
+            {t('bringAttached')}
+          </label>
         </div>
 
         {/* Move N/E/S/W */}
@@ -398,15 +468,7 @@ export function WallPropertiesPanel({
               {t('moveGo')}
             </Button>
           </div>
-          <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-            <input
-              type="checkbox"
-              checked={moveConnected}
-              onChange={(e) => setMoveConnected(e.target.checked)}
-              className="size-3 accent-primary"
-            />
-            {t('moveConnected')}
-          </label>
+          <p className="text-[9px] leading-tight text-muted-foreground">{t('bringAttachedHint')}</p>
         </div>
 
         <button
