@@ -15,7 +15,7 @@ import {
   parseProjectJson,
   toSerializedRoom
 } from '@/lib/load-project'
-import type { SeedProjectInfo, VdesignProject } from '@/types/project'
+import type { SeedProjectInfo, VdesignProject, WallScheduleEntry } from '@/types/project'
 
 interface ProjectsViewProps {
   onBlueprintLoad: (
@@ -24,7 +24,8 @@ interface ProjectsViewProps {
     id?: string,
     name?: string,
     underlay?: UnderlayConfig | null,
-    areas?: AreaLabel[]
+    areas?: AreaLabel[],
+    wallSchedule?: WallScheduleEntry[]
   ) => void
 }
 
@@ -51,7 +52,8 @@ export function ProjectsView({ onBlueprintLoad }: ProjectsViewProps) {
         id,
         name || project.meta?.name || 'Imported project',
         underlay,
-        areas
+        areas,
+        project.wallSchedule || []
       )
       toast.success(t('importSuccess'))
     },
@@ -150,8 +152,16 @@ export function ProjectsView({ onBlueprintLoad }: ProjectsViewProps) {
         </section>
 
         <MyFloorplans
-          onLoadFloorplan={(data, roomType, id, name) =>
-            onBlueprintLoad(data, roomType ?? RoomType.BEDROOM, id, name, null, [])
+          onLoadFloorplan={(data, roomType, id, name, underlay, areas, wallSchedule) =>
+            onBlueprintLoad(
+              data,
+              roomType ?? RoomType.BEDROOM,
+              id,
+              name,
+              underlay ?? null,
+              areas ?? [],
+              wallSchedule
+            )
           }
         />
       </div>

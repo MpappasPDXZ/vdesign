@@ -15,6 +15,11 @@ export interface SavedFloorplan {
     corner2: string
     frontTexture?: WallTexture
     backTexture?: WallTexture
+    thickness?: number
+    height?: number
+    wallType?: string
+    exposure?: string
+    name?: string
   }>
   wallTextures?: unknown[]
   floorTextures?: Record<string, FloorTexture>
@@ -227,7 +232,12 @@ export class Floorplan {
         corner1: wall.getStart().id,
         corner2: wall.getEnd().id,
         frontTexture: wall.frontTexture,
-        backTexture: wall.backTexture
+        backTexture: wall.backTexture,
+        thickness: wall.thickness,
+        height: wall.height,
+        wallType: wall.wallType,
+        exposure: wall.exposure,
+        name: wall.name || undefined
       })
     })
     floorplan.newFloorTextures = this.floorTextures
@@ -253,6 +263,21 @@ export class Floorplan {
       }
       if (wall.backTexture) {
         newWall.backTexture = wall.backTexture
+      }
+      if (wall.thickness != null) {
+        newWall.thickness = wall.thickness
+      }
+      if (wall.height != null) {
+        newWall.height = wall.height
+      }
+      if (wall.wallType) {
+        newWall.wallType = wall.wallType as import('./wall').WallType
+      }
+      if (wall.exposure === 'interior' || wall.exposure === 'exterior') {
+        newWall.exposure = wall.exposure
+      }
+      if (wall.name) {
+        newWall.name = wall.name
       }
     })
 

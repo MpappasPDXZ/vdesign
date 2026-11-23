@@ -45,6 +45,8 @@ export { FloorplannerView, floorplannerModes } from './floorplanner/floorplanner
 export type { UnderlayConfig } from './floorplanner/underlay'
 export { defaultUnderlayOpacity } from './floorplanner/underlay'
 export type { AreaLabel } from './floorplanner/area_label'
+export type { OverlayKind, OverlayDescriptor, BlueprintOverlay } from './floorplanner/overlay'
+export { blueprintFromUnderlay } from './floorplanner/overlay'
 
 // Main Blueprint3D class
 export { Blueprint3d, type Options } from './blueprint3d'

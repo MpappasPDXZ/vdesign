@@ -1,5 +1,6 @@
 services:
   # Production: http://localhost:3000
+  # projects/ is bind-mounted so floorplan.json / overlays update without rebuild
   web:
     build:
       context: .
@@ -7,6 +8,8 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    volumes:
+      - ./app/public/projects:/app/app/public/projects:ro
     environment:
       - NODE_ENV=production
       - PORT=3000

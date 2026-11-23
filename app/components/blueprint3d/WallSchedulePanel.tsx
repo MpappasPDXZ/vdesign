@@ -34,7 +34,7 @@ export function WallSchedulePanel({ walls, className }: WallSchedulePanelProps) 
               {w.n}
             </span>
             <div className="min-w-0 flex-1">
-              <div className="font-medium leading-tight">{w.role}</div>
+              <div className="font-medium leading-tight">{w.name || w.role}</div>
               <div className="mt-0.5 text-xs text-muted-foreground">
                 {w.outerLength ? (
                   <span>
@@ -51,6 +51,8 @@ export function WallSchedulePanel({ walls, className }: WallSchedulePanelProps) 
                 ) : (
                   <span className="italic">{t('thicknessUnknown')}</span>
                 )}
+                {w.wallType ? ` · ${w.wallType}` : ''}
+                {w.exposure ? ` · ${w.exposure}` : ''}
               </div>
               {w.notes && <div className="mt-0.5 text-[11px] text-muted-foreground">{w.notes}</div>}
             </div>

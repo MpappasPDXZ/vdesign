@@ -122,7 +122,6 @@ async function update(
   id: string,
   partial: Partial<BlueprintPayload>
 ): Promise<BlueprintDetail> {
-  const db = await openDB()
   const existing = await get(id)
   if (!existing) throw new Error(`Blueprint ${id} not found`)
 
@@ -138,12 +137,46 @@ async function update(
     updatedAt: now
   }
 
+  const db = await openDB()
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite')
     const store = tx.objectStore(STORE_NAME)
     const request = store.put(updated)
 
     request.onsuccess = () => resolve(updated)
+    request.onerror = () => reject(request.error)
+  })
+}
+
+/** Create or update by id (used when saving the default project for the first time). */
+async function upsert(
+  id: string,
+  payload: BlueprintPayload
+): Promise<BlueprintDetail> {
+  const existing = await get(id)
+  if (existing) return update(id, payload)
+
+  const now = Math.floor(Date.now() / 1000)
+  const record: BlueprintDetail = {
+    id,
+    name: payload.name,
+    description: payload.description ?? null,
+    thumbnailUrl: payload.thumbnailBase64 ?? null,
+    previewCleanUrl: payload.thumbnailBase64 ?? null,
+    roomType: payload.roomType ?? RoomType.BEDROOM,
+    layoutData: payload.layoutData,
+    layoutDataSimple: null,
+    createdAt: now,
+    updatedAt: now
+  }
+
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite')
+    const store = tx.objectStore(STORE_NAME)
+    const request = store.put(record)
+
+    request.onsuccess = () => resolve(record)
     request.onerror = () => reject(request.error)
   })
 }
@@ -160,4 +193,4 @@ async function remove(id: string): Promise<void> {
   })
 }
 
-export const blueprintStorage = { list, get, create, update, delete: remove }
+export const blueprintStorage = { list, get, create, update, upsert, delete: remove }

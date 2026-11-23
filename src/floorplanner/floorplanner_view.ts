@@ -116,6 +116,29 @@ export class FloorplannerView {
     this.draw()
   }
 
+  /** Update underlay fields. Reloads image only when url changes. */
+  public updateUnderlay(partial: Partial<UnderlayConfig>): void {
+    if (!this.underlay && !partial.url) return
+    const next: UnderlayConfig = {
+      url: partial.url ?? this.underlay?.url ?? '',
+      opacity: partial.opacity ?? this.underlay?.opacity ?? 0.4,
+      xCm: partial.xCm ?? this.underlay?.xCm ?? 0,
+      yCm: partial.yCm ?? this.underlay?.yCm ?? 0,
+      widthCm: partial.widthCm ?? this.underlay?.widthCm ?? 100,
+      heightCm: partial.heightCm ?? this.underlay?.heightCm ?? 100
+    }
+    if (partial.opacity != null) {
+      next.opacity = Math.max(0, Math.min(1, next.opacity))
+    }
+    const urlChanged = !this.underlay || this.underlay.url !== next.url
+    this.underlay = next
+    if (urlChanged) {
+      this.setUnderlay(next)
+      return
+    }
+    this.draw()
+  }
+
   public setAreaLabels(labels: AreaLabel[]): void {
     this.areaLabels = labels || []
     this.draw()
@@ -269,18 +292,30 @@ export class FloorplannerView {
   /** */
   private drawWall(wall: Wall) {
     const hover = wall === this.viewmodel.activeWall
-    let color = wallColor
+    const selected = wall === this.viewmodel.selectedWall
+    let color = wall.getDisplayColor() || wallColor
+    // Scale stroke with thickness so Apply thickness is visible without reload
+    const thickPx = Math.max(
+      wallWidth,
+      Math.min(14, (wall.thickness / 2.54) * (this.viewmodel.pixelsPerCm || 0.5) * 0.35)
+    )
+    let width = thickPx
     if (hover && this.viewmodel.mode == floorplannerModes.DELETE) {
       color = deleteColor
+      width = Math.max(thickPx, wallWidthHover)
+    } else if (selected) {
+      color = '#1d4ed8'
+      width = Math.max(thickPx, wallWidthHover) + 1
     } else if (hover) {
       color = wallColorHover
+      width = Math.max(thickPx, wallWidthHover)
     }
     this.drawLine(
       this.viewmodel.convertX(wall.getStartX()),
       this.viewmodel.convertY(wall.getStartY()),
       this.viewmodel.convertX(wall.getEndX()),
       this.viewmodel.convertY(wall.getEndY()),
-      hover ? wallWidthHover : wallWidth,
+      width,
       color
     )
     if (!hover && wall.frontEdge) {

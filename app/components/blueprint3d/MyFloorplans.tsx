@@ -6,6 +6,9 @@ import { toast } from 'sonner'
 import { blueprintStorage } from '@/services/storage'
 import type { BlueprintListItem } from '@/types/blueprint'
 import { RoomType } from '@blueprint3d/types/room_types'
+import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
+import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
+import type { WallScheduleEntry } from '@/types/project'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,7 +26,15 @@ import {
 } from '@/components/ui/select'
 
 interface MyFloorplansProps {
-  onLoadFloorplan: (data: string, roomType?: RoomType, id?: string, name?: string) => void
+  onLoadFloorplan: (
+    data: string,
+    roomType?: RoomType,
+    id?: string,
+    name?: string,
+    underlay?: UnderlayConfig | null,
+    areas?: AreaLabel[],
+    wallSchedule?: WallScheduleEntry[]
+  ) => void
 }
 
 type ViewMode = 'grid' | 'list'
@@ -60,11 +71,19 @@ export function MyFloorplans({ onLoadFloorplan }: MyFloorplansProps) {
         toast.error(t('loadNotFound'), { id: toastId })
         return
       }
+      const layout = result.layoutData || {}
+      const room = {
+        floorplan: layout.floorplan,
+        items: layout.items ?? []
+      }
       onLoadFloorplan(
-        JSON.stringify(result.layoutData),
+        JSON.stringify(room),
         result.roomType || RoomType.BEDROOM,
         id,
-        name
+        name,
+        layout.underlay ?? null,
+        layout.areas ?? [],
+        layout.wallSchedule ?? []
       )
       toast.success(t('loadedSuccess', { name }), { id: toastId })
     } catch (error) {

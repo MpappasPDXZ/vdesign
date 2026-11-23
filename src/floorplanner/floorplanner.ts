@@ -4,6 +4,7 @@ import { Corner } from '../model/corner'
 import { FloorplannerView, floorplannerModes } from './floorplanner_view'
 import type { UnderlayConfig } from './underlay'
 import type { AreaLabel } from './area_label'
+import { EventEmitter } from '../core/events'
 
 type FloorplannerMode = (typeof floorplannerModes)[keyof typeof floorplannerModes]
 
@@ -45,6 +46,17 @@ export class Floorplanner {
   /** */
   private modeResetCallbacks: Array<(mode: FloorplannerMode) => void> = []
 
+  /** Fired on double-click to open/close the wall inspector. */
+  public wallSelectedCallbacks = new EventEmitter<Wall | null>()
+
+  /** Currently selected wall for property editing */
+  public selectedWall: Wall | null = null
+
+  /** Double-click detection */
+  private lastClickTime = 0
+  private lastClickWall: Wall | null = null
+  private static readonly DOUBLE_CLICK_MS = 400
+
   /** */
   private canvasElement: HTMLCanvasElement
 
@@ -79,7 +91,7 @@ export class Floorplanner {
   private cmPerPixel: number
 
   /** */
-  private pixelsPerCm: number
+  public pixelsPerCm: number
 
   /** Add a callback for mode reset */
   public addModeResetCallback(callback: (mode: FloorplannerMode) => void): void {
@@ -186,11 +198,17 @@ export class Floorplanner {
 
   /** */
   private mousemove(event: MouseEvent): void {
-    this.mouseMoved = true
-
     // update mouse
     this.rawMouseX = event.clientX
     this.rawMouseY = event.clientY
+
+    // Treat only real drags as movement (browser fires mousemove on clicks)
+    if (
+      this.mouseDown &&
+      (Math.abs(this.rawMouseX - this.lastX) > 3 || Math.abs(this.rawMouseY - this.lastY) > 3)
+    ) {
+      this.mouseMoved = true
+    }
 
     const rect = this.canvasElement.getBoundingClientRect()
     this.mouseX = (event.clientX - rect.left) * this.cmPerPixel + this.originX * this.cmPerPixel
@@ -269,6 +287,48 @@ export class Floorplanner {
       }
       this.lastNode = corner
     }
+
+    // Double-click wall to toggle property inspector (MOVE, no drag)
+    if (this.mode == floorplannerModes.MOVE && !this.mouseMoved) {
+      const now = Date.now()
+      const wall = this.activeWall
+      const isDouble =
+        !!wall &&
+        wall === this.lastClickWall &&
+        now - this.lastClickTime < Floorplanner.DOUBLE_CLICK_MS
+
+      this.lastClickTime = now
+      this.lastClickWall = wall
+
+      if (isDouble && wall) {
+        if (this.selectedWall === wall) {
+          this.selectedWall = null
+          this.wallSelectedCallbacks.fire(null)
+        } else {
+          this.selectedWall = wall
+          this.wallSelectedCallbacks.fire(wall)
+        }
+        this.view.draw()
+      } else if (!wall && !this.activeCorner) {
+        // click empty space closes inspector
+        if (this.selectedWall) {
+          this.selectedWall = null
+          this.wallSelectedCallbacks.fire(null)
+          this.view.draw()
+        }
+      }
+    }
+  }
+
+  public selectWall(wall: Wall | null): void {
+    this.selectedWall = wall
+    this.wallSelectedCallbacks.fire(wall)
+    this.view.draw()
+  }
+
+  /** Redraw the 2D canvas without resetting pan/zoom. */
+  public redraw(): void {
+    this.view.draw()
   }
 
   /** */
@@ -369,6 +429,10 @@ export class Floorplanner {
 
   public setUnderlayOpacity(opacity: number): void {
     this.view.setUnderlayOpacity(opacity)
+  }
+
+  public updateUnderlay(partial: Partial<UnderlayConfig>): void {
+    this.view.updateUnderlay(partial)
   }
 
   public setAreaLabels(labels: AreaLabel[]): void {

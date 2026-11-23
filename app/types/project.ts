@@ -23,10 +23,16 @@ export interface VdesignProject {
 export interface WallScheduleEntry {
   n: number
   role: string
+  /** Display name, e.g. basement #11 west, exterior wall */
+  name?: string | null
   /** Outer face length when known, e.g. 2'-6" */
   outerLength?: string | null
   /** Wall thickness when known, e.g. 8" */
   thickness?: string | null
+  /** Construction type, e.g. concrete */
+  wallType?: string | null
+  /** interior | exterior */
+  exposure?: string | null
   notes?: string
 }
 

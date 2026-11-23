@@ -106,8 +106,17 @@ export class Corner implements Point {
    * @param dx The delta x.
    * @param dy The delta y.
    */
-  public relativeMove(dx: number, dy: number): void {
-    this.move(this.x + dx, this.y + dy)
+  public relativeMove(dx: number, dy: number, merge = true): void {
+    this.move(this.x + dx, this.y + dy, merge)
+  }
+
+  /** Number of walls attached to this corner. */
+  public wallCount(): number {
+    return this.wallStarts.length + this.wallEnds.length
+  }
+
+  public getFloorplan(): Floorplan {
+    return this.floorplan
   }
 
   // @ts-ignore - fireAction is declared but not used, keeping for future use
@@ -135,10 +144,12 @@ export class Corner implements Point {
    * @param newX The new x position.
    * @param newY The new y position.
    */
-  public move(newX: number, newY: number): void {
+  public move(newX: number, newY: number, merge = true): void {
     this.x = newX
     this.y = newY
-    this.mergeWithIntersected()
+    if (merge) {
+      this.mergeWithIntersected()
+    }
     this.moved_callbacks.fire(this.x, this.y)
 
     this.wallStarts.forEach((wall) => {

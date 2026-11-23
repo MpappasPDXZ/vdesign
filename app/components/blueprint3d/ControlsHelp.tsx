@@ -240,7 +240,7 @@ export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) 
                 <p className="text-xs text-muted-foreground text-center">
                   {viewMode === '2d'
                     ? 'Tip: Click "Done" when finished to switch to 3D view'
-                    : 'Tip: Switch between 2D and 3D views using the toggle at the top'
+                    : 'Tip: Switch between 2D and 3D views using the toggle at the top right'
                   }
                 </p>
               </div>

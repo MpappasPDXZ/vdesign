@@ -1,9 +1,9 @@
 {
   "meta": {
-    "name": "2713 S 224th — Basement",
+    "name": "2713 S 224th \u2014 Basement",
     "address": "2713 S 224th, Elkhorn, NE 68022",
     "level": "Basement",
-    "notes": "Default project. Blue badges W1…Wn match wallSchedule and drawn walls."
+    "notes": "Exterior concrete defaults to 8\" thick; W9 west + W10 party wall are 12\". Turf N W1 / south W8: 258\" \u00d7 8\". West W9: 41'-4\" \u00d7 12\". Double-click wall in 2D to edit. Turf overlay: turf-overlay.png aligned NW (0,0) to turf bay 258\" \u00d7 41'-4\"."
   },
   "convention": {
     "startWall": "north",
@@ -13,178 +13,179 @@
     "dims": "outer face until thickness provided"
   },
   "underlay": {
-    "url": "/projects/2713-s-224th-basement/blueprint.png",
-    "opacity": 0.4,
+    "url": "/projects/2713-s-224th-basement/turf-overlay.png",
+    "opacity": 0.45,
     "xCm": 0,
     "yCm": 0,
-    "widthCm": 2206.625,
-    "heightCm": 1219.2
+    "widthCm": 655.32,
+    "heightCm": 1259.84
   },
   "areas": [
     {
       "name": "Turf",
-      "xCm": 331.47,
-      "yCm": 609.6
+      "xCm": 327.66,
+      "yCm": 629.9200000000001
     },
     {
       "name": "Open Basement",
-      "xCm": 1434.7825,
-      "yCm": 609.6
+      "xCm": 1430.9725,
+      "yCm": 629.9200000000001
     }
   ],
   "openings": [
     {
-      "id": "turf-north-mo",
-      "betweenWalls": [
-        1,
-        2
-      ],
-      "outerLength": "16'-1\"",
-      "role": "Turf N — M.O.",
-      "notes": "Gap between W1 and W2 on north turf wall"
+      "id": "west-mo",
+      "onWall": 9,
+      "outerLength": "44 1/4\"",
+      "role": "West \u2014 M.O.",
+      "notes": "Planned opening on W9; centered on former 20'-4\" / 21'-0\" break"
     }
   ],
   "wallSchedule": [
     {
       "n": 1,
-      "role": "Turf N — west solid",
-      "outerLength": "2'-6\"",
-      "thickness": null,
-      "notes": "From NW; 16'-1\" M.O. opens to the east of this segment"
+      "role": "Turf N",
+      "outerLength": "258\"",
+      "thickness": "8\"",
+      "notes": "Matches W8 south turf: 258\" \u00b7 8\" \u00b7 concrete \u00b7 exterior",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #1 turf north, exterior wall"
     },
     {
       "n": 2,
-      "role": "Turf N — east of M.O.",
-      "outerLength": "2'-5\"",
-      "thickness": null,
-      "notes": ""
-    },
-    {
-      "n": 3,
-      "role": "Turf N — east stub",
-      "outerLength": "9\"",
-      "thickness": null,
-      "notes": ""
-    },
-    {
-      "n": 4,
-      "role": "Main N — seg 1",
+      "role": "Main N \u2014 seg 1",
       "outerLength": "9'-4\"",
       "thickness": null,
       "notes": "Provisional"
     },
     {
-      "n": 5,
-      "role": "Main N — seg 2",
+      "n": 3,
+      "role": "Main N \u2014 seg 2",
       "outerLength": "15'-2\"",
       "thickness": null,
       "notes": "Provisional"
     },
     {
-      "n": 6,
-      "role": "Main N — seg 3",
+      "n": 4,
+      "role": "Main N \u2014 seg 3",
       "outerLength": "15'-11 3/4\"",
       "thickness": null,
       "notes": "Provisional"
     },
     {
-      "n": 7,
-      "role": "Main N — last seg",
+      "n": 5,
+      "role": "Main N \u2014 last seg",
       "outerLength": "10'-2\"",
       "thickness": null,
       "notes": "Provisional"
     },
     {
-      "n": 8,
+      "n": 6,
       "role": "East perimeter",
-      "outerLength": "40'-0\"",
+      "outerLength": "41'-4\"",
+      "thickness": null,
+      "notes": "Matches west total depth"
+    },
+    {
+      "n": 7,
+      "role": "South \u2014 main",
+      "outerLength": null,
       "thickness": null,
       "notes": "Provisional"
+    },
+    {
+      "n": 8,
+      "role": "South \u2014 turf",
+      "outerLength": "258\"",
+      "thickness": "8\"",
+      "notes": "Matches W1 turf north: 258\" \u00b7 8\" \u00b7 concrete \u00b7 exterior",
+      "name": "basement #8 south turf, exterior wall",
+      "wallType": "concrete",
+      "exposure": "exterior"
     },
     {
       "n": 9,
-      "role": "South — main",
-      "outerLength": null,
-      "thickness": null,
-      "notes": "Provisional"
+      "role": "West perimeter",
+      "outerLength": "41'-4\"",
+      "thickness": "12\"",
+      "wallType": "concrete",
+      "notes": "N\u2192S from NW; 12\" thick; 44 1/4\" M.O. planned",
+      "name": "basement #9 west, exterior wall",
+      "exposure": "exterior"
     },
     {
       "n": 10,
-      "role": "South — turf",
-      "outerLength": null,
-      "thickness": null,
-      "notes": "Provisional"
-    },
-    {
-      "n": 11,
-      "role": "West perimeter",
-      "outerLength": "40'-0\"",
-      "thickness": null,
-      "notes": "Provisional"
-    },
-    {
-      "n": 12,
       "role": "Party wall turf|main",
-      "outerLength": "40'-0\"",
-      "thickness": null,
-      "notes": "Interior"
+      "outerLength": "41'-4\"",
+      "thickness": "12\"",
+      "notes": "12\" concrete party wall (turf|main)",
+      "exposure": "interior",
+      "wallType": "concrete",
+      "name": "basement #10 party wall, interior"
     }
   ],
   "floorplan": {
     "corners": {
-      "8b5d0453-1537-4a20-8a2a-d25c306c5d1b": {
+      "b58e2ef2-40cb-4ea6-aa1a-7d3cc3ff0bd1": {
         "x": 0,
         "y": 0
       },
-      "ba5ce7db-dd94-49a6-9ae1-8d547ce5a362": {
-        "x": 76.2,
+      "55a058a0-3dc5-4a13-bc62-c49cfa2a3785": {
+        "x": 655.32,
         "y": 0
       },
-      "ae6147b0-c62a-46e3-b869-8c1a03d71195": {
-        "x": 566.42,
-        "y": 0
+      "c364b18d-631c-4ec7-b17a-7ebbdc893db8": {
+        "x": 0,
+        "y": 1259.84
       },
-      "e9eab7ee-91ea-4ad4-84e5-8d457bddf56b": {
-        "x": 640.08,
-        "y": 0
-      },
-      "61d6b02c-7079-4559-9833-4a29d138acc4": {
-        "x": 662.94,
-        "y": 0
-      },
-      "ba29e8f5-ffc0-4d78-8b99-509c96d3bc4b": {
+      "b788f928-4ef0-4988-8d24-a09578ac7ba9": {
         "x": 947.42,
         "y": 0
       },
-      "8401c32c-0386-4abe-b445-5849b40d2e26": {
+      "bad8bd01-23d9-4365-a0c4-27abecef0880": {
         "x": 1409.7,
         "y": 0
       },
-      "f54adba1-7b85-44cf-8fdf-4a8bb8884609": {
+      "eaff84b1-6bec-4656-a4bb-1b650fe9e206": {
         "x": 1896.745,
         "y": 0
       },
-      "d90b5b2e-f708-4504-a2aa-c369da59fe4e": {
+      "674bcc5e-fece-4f65-950b-e8a327fcee6b": {
         "x": 2206.625,
         "y": 0
       },
-      "115fba35-1db2-488f-9b8c-38e30a6d9655": {
+      "b5291d5d-649e-4ed7-92a3-b0052c8786d0": {
         "x": 2206.625,
-        "y": 1219.2
+        "y": 1259.84
       },
-      "501b9865-41dc-4387-ab3d-99806880deae": {
-        "x": 662.94,
-        "y": 1219.2
-      },
-      "8388fd00-e56a-4a89-8482-2a05953388fc": {
-        "x": 0,
-        "y": 1219.2
+      "3436c86c-9bf7-4cc7-82ee-10992d22be27": {
+        "x": 655.32,
+        "y": 1259.84
       }
     },
     "walls": [
       {
-        "corner1": "8b5d0453-1537-4a20-8a2a-d25c306c5d1b",
-        "corner2": "ba5ce7db-dd94-49a6-9ae1-8d547ce5a362",
+        "corner1": "b58e2ef2-40cb-4ea6-aa1a-7d3cc3ff0bd1",
+        "corner2": "55a058a0-3dc5-4a13-bc62-c49cfa2a3785",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #1 turf north, exterior wall"
+      },
+      {
+        "corner1": "55a058a0-3dc5-4a13-bc62-c49cfa2a3785",
+        "corner2": "b788f928-4ef0-4988-8d24-a09578ac7ba9",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -197,8 +198,8 @@
         }
       },
       {
-        "corner1": "ae6147b0-c62a-46e3-b869-8c1a03d71195",
-        "corner2": "e9eab7ee-91ea-4ad4-84e5-8d457bddf56b",
+        "corner1": "b788f928-4ef0-4988-8d24-a09578ac7ba9",
+        "corner2": "bad8bd01-23d9-4365-a0c4-27abecef0880",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -211,8 +212,8 @@
         }
       },
       {
-        "corner1": "e9eab7ee-91ea-4ad4-84e5-8d457bddf56b",
-        "corner2": "61d6b02c-7079-4559-9833-4a29d138acc4",
+        "corner1": "bad8bd01-23d9-4365-a0c4-27abecef0880",
+        "corner2": "eaff84b1-6bec-4656-a4bb-1b650fe9e206",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -225,8 +226,8 @@
         }
       },
       {
-        "corner1": "61d6b02c-7079-4559-9833-4a29d138acc4",
-        "corner2": "ba29e8f5-ffc0-4d78-8b99-509c96d3bc4b",
+        "corner1": "eaff84b1-6bec-4656-a4bb-1b650fe9e206",
+        "corner2": "674bcc5e-fece-4f65-950b-e8a327fcee6b",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -239,8 +240,8 @@
         }
       },
       {
-        "corner1": "ba29e8f5-ffc0-4d78-8b99-509c96d3bc4b",
-        "corner2": "8401c32c-0386-4abe-b445-5849b40d2e26",
+        "corner1": "674bcc5e-fece-4f65-950b-e8a327fcee6b",
+        "corner2": "b5291d5d-649e-4ed7-92a3-b0052c8786d0",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -253,8 +254,8 @@
         }
       },
       {
-        "corner1": "8401c32c-0386-4abe-b445-5849b40d2e26",
-        "corner2": "f54adba1-7b85-44cf-8fdf-4a8bb8884609",
+        "corner1": "b5291d5d-649e-4ed7-92a3-b0052c8786d0",
+        "corner2": "3436c86c-9bf7-4cc7-82ee-10992d22be27",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -267,8 +268,8 @@
         }
       },
       {
-        "corner1": "f54adba1-7b85-44cf-8fdf-4a8bb8884609",
-        "corner2": "d90b5b2e-f708-4504-a2aa-c369da59fe4e",
+        "corner1": "3436c86c-9bf7-4cc7-82ee-10992d22be27",
+        "corner2": "c364b18d-631c-4ec7-b17a-7ebbdc893db8",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -278,11 +279,15 @@
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
           "scale": 0
-        }
+        },
+        "thickness": 20.32,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #8 south turf, exterior wall"
       },
       {
-        "corner1": "d90b5b2e-f708-4504-a2aa-c369da59fe4e",
-        "corner2": "115fba35-1db2-488f-9b8c-38e30a6d9655",
+        "corner1": "b58e2ef2-40cb-4ea6-aa1a-7d3cc3ff0bd1",
+        "corner2": "c364b18d-631c-4ec7-b17a-7ebbdc893db8",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -292,11 +297,15 @@
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
           "scale": 0
-        }
+        },
+        "thickness": 30.48,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #9 west, exterior wall"
       },
       {
-        "corner1": "115fba35-1db2-488f-9b8c-38e30a6d9655",
-        "corner2": "501b9865-41dc-4387-ab3d-99806880deae",
+        "corner1": "55a058a0-3dc5-4a13-bc62-c49cfa2a3785",
+        "corner2": "3436c86c-9bf7-4cc7-82ee-10992d22be27",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -306,49 +315,11 @@
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
           "scale": 0
-        }
-      },
-      {
-        "corner1": "501b9865-41dc-4387-ab3d-99806880deae",
-        "corner2": "8388fd00-e56a-4a89-8482-2a05953388fc",
-        "frontTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
         },
-        "backTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        }
-      },
-      {
-        "corner1": "8388fd00-e56a-4a89-8482-2a05953388fc",
-        "corner2": "8b5d0453-1537-4a20-8a2a-d25c306c5d1b",
-        "frontTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "backTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        }
-      },
-      {
-        "corner1": "61d6b02c-7079-4559-9833-4a29d138acc4",
-        "corner2": "501b9865-41dc-4387-ab3d-99806880deae",
-        "frontTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "backTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        }
+        "thickness": 30.48,
+        "wallType": "concrete",
+        "exposure": "interior",
+        "name": "basement #10 party wall, interior"
       }
     ],
     "wallTextures": [],
@@ -359,17 +330,76 @@
     {
       "item_name": "Turf Area (fit to bay)",
       "item_type": 8,
-      "model_url": "procedural:plane:662.94:2:1219.20:1b7a3d",
-      "xpos": 331.47,
+      "model_url": "procedural:plane:655.32:2:1259.84:1b7a3d",
+      "xpos": 327.66,
       "ypos": 0,
-      "zpos": 609.6,
+      "zpos": 629.92,
       "rotation": 0,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
       "fixed": false,
       "resizable": true,
-      "description": "Turf pad in west bay"
+      "description": "Turf pad sized to 258\" bay"
     }
-  ]
+  ],
+  "verification": {
+    "west": {
+      "user": "41'-4\"",
+      "totalFtIn": "41'-4\"",
+      "thickness": "12\"",
+      "wallType": "concrete",
+      "mo": "44 1/4\"",
+      "totalCm": 1259.84,
+      "thicknessCm": 30.48,
+      "name": "basement #9 west, exterior wall",
+      "exposure": "exterior"
+    },
+    "partyWall": {
+      "wall": 10,
+      "thickness": "12\"",
+      "thicknessCm": 30.48,
+      "wallType": "concrete",
+      "exposure": "interior",
+      "name": "basement #10 party wall, interior"
+    },
+    "concreteThickness": {
+      "defaultExteriorIn": 8,
+      "walls12in": [9, 10]
+    },
+    "turfSouth": {
+      "wall": 10,
+      "lengthIn": 258,
+      "lengthCm": 655.32,
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "thicknessIn": 8,
+      "thicknessCm": 20.32,
+      "matchesWalls": [
+        1,
+        2,
+        3
+      ]
+    },
+    "turfNorth": {
+      "walls": [
+        1,
+        2,
+        3
+      ],
+      "thicknessIn": 8,
+      "thicknessCm": 20.32,
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "matchesWall": 10
+    },
+    "turfOverlay": {
+      "url": "/projects/2713-s-224th-basement/turf-overlay.png",
+      "align": "NW exterior = image top-left",
+      "widthCm": 655.32,
+      "heightCm": 1259.84,
+      "widthIn": 258,
+      "heightFtIn": "41'-4\""
+    }
+  }
 }
