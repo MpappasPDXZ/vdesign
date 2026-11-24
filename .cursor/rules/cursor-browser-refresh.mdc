@@ -1,0 +1,13 @@
+---
+description: After plan/UI saves, refresh Cursor browser yourself — never ask the user
+alwaysApply: true
+---
+
+# Cursor browser refresh
+
+After any plan save (`POST /api/plans`), item move, or change that should appear in the running app:
+
+1. Use **cursor-ide-browser** on the localhost app tab in the **same turn** as the save.
+2. Click **Load latest** (via `browser_click`, or `Runtime.evaluate` if overlays block clicks). Esc/close blocking modals first if needed.
+3. Switch to **3D** when the change is about items/meshes.
+4. **Never** ask or tell the user to Load latest, hard-refresh, or open the browser.

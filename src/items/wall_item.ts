@@ -105,14 +105,15 @@ export abstract class WallItem extends Item {
   }
 
   /** */
-  // @ts-ignore - updateEdgeVisibility is declared but not used, keeping for future use
-  private updateEdgeVisibility(visible: boolean, front: boolean) {
+  /** Called from Edge when camera faces this wall side — keep openings visible either way. */
+  public updateEdgeVisibility(visible: boolean, front: boolean) {
     if (front) {
       this.frontVisible = visible
     } else {
       this.backVisible = visible
     }
-    this.visible = this.frontVisible || this.backVisible
+    // Entrances cut the wall; always show the leaf/opening mesh once attached
+    this.visible = true
   }
 
   /** */

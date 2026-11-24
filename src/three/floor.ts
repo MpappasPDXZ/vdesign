@@ -44,11 +44,16 @@ export class Floor {
     floorTexture.magFilter = THREE.LinearFilter
     const floorMaterialTop = new THREE.MeshPhongMaterial({
       map: floorTexture,
-      side: THREE.DoubleSide,
-      // ambient: 0xffffff, TODO_Ekki
-      color: 0xffffff, // Changed from 0xcccccc to 0xffffff for brighter floor
-      specular: 0x111111,  // Very subtle specular to avoid moiré
-      shininess: 3  // Very matte finish to reduce artifacts
+      // ShapeGeometry normals stay +Z; after rotation.x=+π/2 that is world −Y, so
+      // BackSide is the upward face the camera sees. (FrontSide = invisible floors.)
+      side: THREE.BackSide,
+      color: 0xffffff,
+      specular: 0x111111,
+      shininess: 3,
+      // Bias floors toward camera so they win over wall foot strips / neighbor rooms
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -2
     })
 
     const textureScale = textureSettings.scale
@@ -65,10 +70,14 @@ export class Floor {
 
     const floor = new THREE.Mesh(geometry, floorMaterialTop)
 
+    // ShapeGeometry is in XY; +PI/2 puts +Z local → world up. FrontSide then faces upward.
     floor.rotation.set(Math.PI / 2, 0, 0)
+    // Hair above y=0 so wall base fillers (sunk) and thin carpet bottoms don't share a plane
+    floor.position.y = 0.05
     floor.scale.set(textureScale, textureScale, textureScale)
     floor.receiveShadow = true
     floor.castShadow = false
+    floor.renderOrder = 1
     return floor
   }
 

@@ -6,6 +6,9 @@ export interface RepoSaveResult {
   relativeLatest: string
   relativeVersion: string
   walls: number
+  mtimeMs?: number
+  merged?: boolean
+  mergeNotes?: string[]
   error?: string
 }
 
@@ -14,6 +17,10 @@ export async function saveProjectToRepo(opts: {
   project: VdesignProject
   name: string
   id?: string
+  /** From last Load latest — lets server skip merge when still current. */
+  baseMtimeMs?: number
+  /** Default true on server. Pass false only for intentional full replace. */
+  merge?: boolean
 }): Promise<RepoSaveResult> {
   const res = await fetch('/api/plans', {
     method: 'POST',
@@ -21,7 +28,9 @@ export async function saveProjectToRepo(opts: {
     body: JSON.stringify({
       project: opts.project,
       name: opts.name,
-      id: opts.id
+      id: opts.id,
+      baseMtimeMs: opts.baseMtimeMs,
+      merge: opts.merge
     })
   })
   const data = (await res.json().catch(() => ({}))) as RepoSaveResult & { error?: string }

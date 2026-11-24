@@ -8,6 +8,13 @@ import { Utils } from '../core/utils'
 import type { Floorplanner } from './floorplanner'
 import type { UnderlayConfig } from './underlay'
 import type { AreaLabel } from './area_label'
+import type { ItemFootprint } from './item_footprint'
+
+const footprintFill = 'rgba(92, 92, 98, 0.22)'
+const footprintStroke = 'rgba(71, 71, 77, 0.85)'
+const footprintLabelFill = '#1e293b'
+const footprintMinLabelPx = 8
+const footprintMaxLabelPx = 12
 
 /** */
 export const floorplannerModes = {
@@ -66,6 +73,9 @@ export class FloorplannerView {
 
   /** Show W1, W2, … badges on wall midpoints */
   private showWallNumbers = true
+
+  /** Live footprints for non-wall scene items (2D overlay). */
+  private itemFootprintProvider: (() => ItemFootprint[]) | null = null
 
   /** */
   constructor(
@@ -151,6 +161,12 @@ export class FloorplannerView {
     this.draw()
   }
 
+  /** Provide non-wall item footprints each redraw (or null to clear). */
+  public setItemFootprintProvider(provider: (() => ItemFootprint[]) | null): void {
+    this.itemFootprintProvider = provider
+    this.draw()
+  }
+
   /** Cleanup method to remove event listeners */
   public destroy() {
     if (this.resizeHandler) {
@@ -205,11 +221,120 @@ export class FloorplannerView {
       this.drawWallLabels(wall)
     })
 
+    // Entrances after wall strokes so gaps/glyphs sit on top of the centerline
+    this.floorplan.getWalls().forEach((wall) => {
+      this.drawWallEntrances(wall)
+    })
+
+    this.drawItemFootprints()
+
     if (this.showWallNumbers) {
       this.drawWallNumbers()
     }
 
     this.drawAreaLabels()
+  }
+
+  /** Rotated footprints + clipped center labels for floor items. */
+  private drawItemFootprints(): void {
+    if (!this.itemFootprintProvider) return
+    const footprints = this.itemFootprintProvider()
+    if (!footprints?.length) return
+
+    const ppc = this.viewmodel.pixelsPerCm || 0.5
+    for (const fp of footprints) {
+      if (!(fp.widthCm > 0) || !(fp.depthCm > 0)) continue
+      const cx = this.viewmodel.convertX(fp.xCm)
+      const cy = this.viewmodel.convertY(fp.zCm)
+      const halfW = (fp.widthCm / 2) * ppc
+      const halfD = (fp.depthCm / 2) * ppc
+
+      this.context.save()
+      this.context.translate(cx, cy)
+      // Canvas Y-down: negate Three.js Y rotation so local +X/+Z match the plan.
+      this.context.rotate(-fp.rotationY)
+
+      this.context.beginPath()
+      this.context.rect(-halfW, -halfD, halfW * 2, halfD * 2)
+      this.context.fillStyle = footprintFill
+      this.context.fill()
+      this.context.lineWidth = 1.25
+      this.context.strokeStyle = footprintStroke
+      this.context.stroke()
+
+      const label = (fp.label || '').trim()
+      if (label) {
+        this.drawFootprintLabel(label, halfW, halfD)
+      }
+      this.context.restore()
+    }
+  }
+
+  /**
+   * Centered label inside the current footprint (caller has translated/rotated).
+   * Runs along the longer footprint axis so narrow items (bike, etc.) stay readable.
+   * Shrinks font then ellipsizes so text never overruns the box.
+   */
+  private drawFootprintLabel(label: string, halfW: number, halfD: number): void {
+    const pad = 4
+    const alongDepth = halfD > halfW
+    const maxAlong = Math.max(0, (alongDepth ? halfD : halfW) * 2 - pad * 2)
+    const maxAcross = Math.max(0, (alongDepth ? halfW : halfD) * 2 - pad * 2)
+    if (maxAlong < 10 || maxAcross < footprintMinLabelPx) return
+
+    let fontPx = Math.min(
+      footprintMaxLabelPx,
+      Math.floor(maxAcross * 0.55),
+      Math.floor(maxAlong / 5)
+    )
+    fontPx = Math.max(footprintMinLabelPx, fontPx)
+
+    this.context.font = `${fontPx}px Arial`
+    this.context.textAlign = 'center'
+    this.context.textBaseline = 'middle'
+
+    let text = this.ellipsizeToWidth(label, maxAlong)
+    while (fontPx > footprintMinLabelPx && this.context.measureText(text).width > maxAlong) {
+      fontPx -= 1
+      this.context.font = `${fontPx}px Arial`
+      text = this.ellipsizeToWidth(label, maxAlong)
+    }
+    if (!text || this.context.measureText(text).width > maxAlong) return
+
+    // Clip to footprint so any residual ink stays inside.
+    this.context.save()
+    this.context.beginPath()
+    this.context.rect(-halfW, -halfD, halfW * 2, halfD * 2)
+    this.context.clip()
+
+    // Align baseline with the long axis; flip so text prefers left→right on screen.
+    const m = this.context.getTransform()
+    if (alongDepth) {
+      // Canvas Y = local Z here; ±90° puts text +X onto ±local Z.
+      this.context.rotate(m.b >= 0 ? Math.PI / 2 : -Math.PI / 2)
+    } else if (m.a < 0) {
+      this.context.rotate(Math.PI)
+    }
+
+    this.context.fillStyle = footprintLabelFill
+    this.context.fillText(text, 0, 0)
+    this.context.restore()
+  }
+
+  private ellipsizeToWidth(text: string, maxW: number): string {
+    if (this.context.measureText(text).width <= maxW) return text
+    const ellipsis = '…'
+    if (this.context.measureText(ellipsis).width > maxW) return ''
+    let lo = 0
+    let hi = text.length
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2)
+      const candidate = text.slice(0, mid).trimEnd() + ellipsis
+      if (this.context.measureText(candidate).width <= maxW) lo = mid
+      else hi = mid - 1
+    }
+    if (lo <= 0) return ellipsis
+    return text.slice(0, lo).trimEnd() + ellipsis
   }
 
   /** Number walls in array order (matches floorplan.json wallSchedule). */
@@ -320,22 +445,142 @@ export class FloorplannerView {
       color = wallColorHover
       width = Math.max(thickPx, wallWidthHover)
     }
-    // Square caps close L/T outer corners (butt caps leave an open 45° notch)
-    this.drawLine(
-      this.viewmodel.convertX(wall.getStartX()),
-      this.viewmodel.convertY(wall.getStartY()),
-      this.viewmodel.convertX(wall.getEndX()),
-      this.viewmodel.convertY(wall.getEndY()),
-      width,
-      color,
-      'square'
-    )
+    // Square caps close L/T outer corners (butt caps leave an open 45° notch).
+    // Leave gaps where wall-hosted entrances sit so Load latest shows openings in 2D.
+    const openings = this.wallEntranceSpans(wall)
+    if (openings.length === 0) {
+      this.drawLine(
+        this.viewmodel.convertX(wall.getStartX()),
+        this.viewmodel.convertY(wall.getStartY()),
+        this.viewmodel.convertX(wall.getEndX()),
+        this.viewmodel.convertY(wall.getEndY()),
+        width,
+        color,
+        'square'
+      )
+    } else {
+      this.drawWallSegmentsWithGaps(wall, openings, width, color)
+    }
     if (!hover && wall.frontEdge) {
       this.drawEdge(wall.frontEdge, hover)
     }
     if (!hover && wall.backEdge) {
       this.drawEdge(wall.backEdge, hover)
     }
+  }
+
+  /** Along-wall spans [t0,t1] in 0..1 for each InWall item on this wall. */
+  private wallEntranceSpans(wall: Wall): { t0: number; t1: number }[] {
+    const sx = wall.getStartX()
+    const sy = wall.getStartY()
+    const ex = wall.getEndX()
+    const ey = wall.getEndY()
+    const len = Math.hypot(ex - sx, ey - sy)
+    if (len < 1e-6 || !wall.items?.length) return []
+    const dx = ex - sx
+    const dy = ey - sy
+    const spans: { t0: number; t1: number }[] = []
+    for (const item of wall.items) {
+      const halfW = typeof item.getWidth === 'function' ? item.getWidth() / 2 : 40
+      const px = item.position.x
+      const pz = item.position.z
+      const t = ((px - sx) * dx + (pz - sy) * dy) / (len * len)
+      const along = t * len
+      const t0 = Math.max(0, (along - halfW) / len)
+      const t1 = Math.min(1, (along + halfW) / len)
+      if (t1 > t0) spans.push({ t0, t1 })
+    }
+    spans.sort((a, b) => a.t0 - b.t0)
+    return spans
+  }
+
+  private drawWallSegmentsWithGaps(
+    wall: Wall,
+    spans: { t0: number; t1: number }[],
+    width: number,
+    color: string
+  ): void {
+    const sx = wall.getStartX()
+    const sy = wall.getStartY()
+    const ex = wall.getEndX()
+    const ey = wall.getEndY()
+    let cursor = 0
+    const drawSeg = (a: number, b: number) => {
+      if (b - a < 1e-4) return
+      this.drawLine(
+        this.viewmodel.convertX(sx + (ex - sx) * a),
+        this.viewmodel.convertY(sy + (ey - sy) * a),
+        this.viewmodel.convertX(sx + (ex - sx) * b),
+        this.viewmodel.convertY(sy + (ey - sy) * b),
+        width,
+        color,
+        'square'
+      )
+    }
+    for (const span of spans) {
+      drawSeg(cursor, span.t0)
+      cursor = Math.max(cursor, span.t1)
+    }
+    drawSeg(cursor, 1)
+  }
+
+  /** Door/stairs glyph + badge on each wall-hosted entrance (2D). */
+  private drawWallEntrances(wall: Wall): void {
+    if (!wall.items?.length) return
+    const sx = wall.getStartX()
+    const sy = wall.getStartY()
+    const ex = wall.getEndX()
+    const ey = wall.getEndY()
+    const len = Math.hypot(ex - sx, ey - sy)
+    if (len < 1e-6) return
+    const ux = (ex - sx) / len
+    const uy = (ey - sy) / len
+    // Perpendicular unit (plan)
+    const px = -uy
+    const py = ux
+
+    this.context.save()
+    wall.items.forEach((item) => {
+      const cx = this.viewmodel.convertX(item.position.x)
+      const cy = this.viewmodel.convertY(item.position.z)
+      const halfW = typeof item.getWidth === 'function' ? item.getWidth() / 2 : 40
+      // Tick marks at opening ends
+      const ax = this.viewmodel.convertX(item.position.x - ux * halfW)
+      const ay = this.viewmodel.convertY(item.position.z - uy * halfW)
+      const bx = this.viewmodel.convertX(item.position.x + ux * halfW)
+      const by = this.viewmodel.convertY(item.position.z + uy * halfW)
+      const tick = 5
+      const nx = px * tick
+      const ny = py * tick
+      this.context.strokeStyle = '#0f766e'
+      this.context.lineWidth = 2
+      this.context.beginPath()
+      this.context.moveTo(ax - nx, ay - ny)
+      this.context.lineTo(ax + nx, ay + ny)
+      this.context.moveTo(bx - nx, by - ny)
+      this.context.lineTo(bx + nx, by + ny)
+      // Swing arc hint
+      this.context.moveTo(ax, ay)
+      this.context.quadraticCurveTo(cx + nx * 2.5, cy + ny * 2.5, bx, by)
+      this.context.stroke()
+
+      // Badge — S for stairs opening, E for door
+      const label = item.metadata?.entranceKind === 'stairs' ? 'S' : 'E'
+      const r = 9
+      this.context.beginPath()
+      this.context.arc(cx, cy, r, 0, Math.PI * 2)
+      this.context.fillStyle = '#0f766e'
+      this.context.fill()
+      this.context.strokeStyle = '#ffffff'
+      this.context.lineWidth = 1.5
+      this.context.stroke()
+      this.context.fillStyle = '#ffffff'
+      this.context.font = 'bold 10px Arial'
+      this.context.textAlign = 'center'
+      this.context.textBaseline = 'middle'
+      this.context.fillText(label, cx, cy + 0.5)
+    })
+    this.context.restore()
   }
 
   /** */

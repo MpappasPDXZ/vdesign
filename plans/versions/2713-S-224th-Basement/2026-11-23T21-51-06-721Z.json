@@ -1,0 +1,2801 @@
+{
+  "floorplan": {
+    "corners": {
+      "b58e2ef2-40cb-4ea6-aa1a-7d3cc3ff0bd1": {
+        "x": 0,
+        "y": 0
+      },
+      "55a058a0-3dc5-4a13-bc62-c49cfa2a3785": {
+        "x": 655.32,
+        "y": 0
+      },
+      "c364b18d-631c-4ec7-b17a-7ebbdc893db8": {
+        "x": 0,
+        "y": 1259.84
+      },
+      "c5ca7e67-1ba1-ff3c-e874-9ff92f059799": {
+        "x": 655.32,
+        "y": 1115.568
+      },
+      "25b32241-9042-6d2d-3ba8-f98015275103": {
+        "x": 655.32,
+        "y": 1259.84
+      },
+      "aa5941c8-ae39-eefa-3f51-442327f2bc8d": {
+        "x": 655.3199999999999,
+        "y": 1158.2400000000002
+      },
+      "5b7f8fef-7ff6-f518-b4f5-8d5d47a1ef4e": {
+        "x": 2164.08,
+        "y": 1635.76
+      },
+      "59961c22-6ef9-e399-5ff8-2ef6a619d82e": {
+        "x": 1813.56,
+        "y": 1635.76
+      },
+      "70996b10-0696-f72f-a369-e939afee8b14": {
+        "x": 1813.56,
+        "y": 1503.68
+      },
+      "66210fe2-a6bd-7732-9c1f-535edf107cdb": {
+        "x": 1590.04,
+        "y": 1503.68
+      },
+      "ea55b1ab-aa57-c6e5-4147-289f5088b9de": {
+        "x": 1590.04,
+        "y": 1727.2
+      },
+      "ec8daf00-cd15-396b-720c-7ca7ee2d7ca2": {
+        "x": 1366.52,
+        "y": 1727.2
+      },
+      "4c68b564-1b1e-cd1f-5ccf-237f8bbd8ce2": {
+        "x": 1366.52,
+        "y": 1259.8400000000001
+      },
+      "e6b99746-0263-eabc-58be-f29b1a172421": {
+        "x": 731.52,
+        "y": 1158.2400000000002
+      },
+      "020fb58f-5fca-f1e8-3303-fabf0bfd5aa7": {
+        "x": 731.52,
+        "y": 1259.8400000000001
+      },
+      "d14d8b99-9c91-0831-4dad-2f3bfa99bb28": {
+        "x": 1074.7586666666666,
+        "y": 1259.8400000000001
+      },
+      "4ab89d0a-3789-271b-e950-25fd767a9545": {
+        "x": 1673.352,
+        "y": 1259.8400000000001
+      },
+      "7bb61996-b43b-d942-8c36-0e797b36c233": {
+        "x": 1674.368,
+        "y": 953.008
+      },
+      "90f12ac3-c639-8313-b327-89a808d673e3": {
+        "x": 1634.744,
+        "y": 883.9200000000001
+      },
+      "96f30721-fe3f-638c-2c6f-f8bd8dfb8ed1": {
+        "x": 1366.52,
+        "y": 1288.288
+      },
+      "3057bf33-6ee0-b143-281b-ea22a7734057": {
+        "x": 2164.08,
+        "y": 1288.288
+      },
+      "8f659c92-5114-56b9-47e4-d3ceb52400ea": {
+        "x": 1801.368,
+        "y": 1288.288
+      },
+      "a221b684-4f82-73d4-007d-b22d5c1da26a": {
+        "x": 1801.368,
+        "y": 890.778
+      },
+      "052492d7-f027-9f92-c4d1-4bb6491a0074": {
+        "x": 2164.08,
+        "y": 890.778
+      },
+      "0ffbbff9-ffc4-52cc-4ef9-e5aea67cde45": {
+        "x": 655.32,
+        "y": 879.8560000000001
+      },
+      "b7845946-bd70-13fa-0488-ba5659730179": {
+        "x": 655.32,
+        "y": 886.968
+      },
+      "46b8a915-8a14-6c07-6380-5f2a00e5e9fb": {
+        "x": 971.5500000000001,
+        "y": 886.968
+      },
+      "a47c5ce1-5540-bdba-100e-5a05147493f3": {
+        "x": 1092.2,
+        "y": 805.1800000000001
+      },
+      "1053f1e1-697f-1b0e-790c-cb6917f736e9": {
+        "x": 655.32,
+        "y": 655.8280000000001
+      },
+      "60ad8497-1bfd-b258-0041-d7321b448473": {
+        "x": 655.32,
+        "y": 718.312
+      },
+      "6dda722d-aa9a-dea6-650b-097f9139afd3": {
+        "x": 971.5500000000001,
+        "y": 718.312
+      },
+      "e208e17c-d517-fc79-c798-14bbe612d5cd": {
+        "x": 1674.368,
+        "y": 1288.288
+      },
+      "b6de0543-00a4-d20c-a702-38dff56eccb1": {
+        "x": 655.32,
+        "y": 223.52
+      },
+      "285b15c9-f845-b1d7-51cb-f2a17aa9faa5": {
+        "x": 1112.52,
+        "y": 71.12
+      },
+      "cb4966f6-c15d-5925-210d-7276962e2792": {
+        "x": 1595.12,
+        "y": 71.12
+      },
+      "f359fe32-b5bf-894b-6c7d-25c610c9c603": {
+        "x": 1595.12,
+        "y": 335.28000000000003
+      },
+      "db0074be-e73c-2fd3-3e5e-061e0bfff703": {
+        "x": 2164.08,
+        "y": 335.28000000000003
+      },
+      "c26cefc4-4efe-a97b-905c-eb016f99fc2a": {
+        "x": 1073.912,
+        "y": 883.9200000000001
+      },
+      "f3b322b4-4a9a-7a97-b34d-eb95788949c2": {
+        "x": 1112.52,
+        "y": 223.52
+      },
+      "cca08613-b314-0be8-a03e-e9f9ef917f97": {
+        "x": 971.5500000000001,
+        "y": 655.8280000000001
+      },
+      "010a9aff-5057-3abc-2bca-c0f27a68fabc": {
+        "x": 1074.42,
+        "y": 739.648
+      },
+      "ca4ab742-c1f1-62e7-850a-bf2f810d4597": {
+        "x": 971.5500000000001,
+        "y": 739.648
+      },
+      "cb0c50bc-d369-fec4-3184-d858def634ad": {
+        "x": 1092.2,
+        "y": 223.52
+      },
+      "5834abf8-8613-4d77-bc90-e644268c02bb": {
+        "x": 1073.912,
+        "y": 782.3199999999999
+      },
+      "32ab4f2e-5ef5-404b-8806-98a2f20b30f7": {
+        "x": 1092.2,
+        "y": 883.9200000000001
+      },
+      "1d5323e4-c3ff-4dee-b41d-13ce00c50ccc": {
+        "x": 1092.2,
+        "y": 873.7600000000001
+      }
+    },
+    "walls": [
+      {
+        "corner1": "b58e2ef2-40cb-4ea6-aa1a-7d3cc3ff0bd1",
+        "corner2": "55a058a0-3dc5-4a13-bc62-c49cfa2a3785",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #1 turf north, exterior wall"
+      },
+      {
+        "corner1": "b6de0543-00a4-d20c-a702-38dff56eccb1",
+        "corner2": "f3b322b4-4a9a-7a97-b34d-eb95788949c2",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #2 stub off party, exterior wall"
+      },
+      {
+        "corner1": "285b15c9-f845-b1d7-51cb-f2a17aa9faa5",
+        "corner2": "f3b322b4-4a9a-7a97-b34d-eb95788949c2",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #3 off W2, exterior wall"
+      },
+      {
+        "corner1": "285b15c9-f845-b1d7-51cb-f2a17aa9faa5",
+        "corner2": "cb4966f6-c15d-5925-210d-7276962e2792",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #4 off W3, exterior wall"
+      },
+      {
+        "corner1": "cb4966f6-c15d-5925-210d-7276962e2792",
+        "corner2": "f359fe32-b5bf-894b-6c7d-25c610c9c603",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #5 off W4, exterior wall"
+      },
+      {
+        "corner1": "f359fe32-b5bf-894b-6c7d-25c610c9c603",
+        "corner2": "db0074be-e73c-2fd3-3e5e-061e0bfff703",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #6 off W5, exterior wall"
+      },
+      {
+        "corner1": "db0074be-e73c-2fd3-3e5e-061e0bfff703",
+        "corner2": "052492d7-f027-9f92-c4d1-4bb6491a0074",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #7 off W6, exterior wall"
+      },
+      {
+        "corner1": "5b7f8fef-7ff6-f518-b4f5-8d5d47a1ef4e",
+        "corner2": "59961c22-6ef9-e399-5ff8-2ef6a619d82e",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #8 off W7, exterior wall"
+      },
+      {
+        "corner1": "59961c22-6ef9-e399-5ff8-2ef6a619d82e",
+        "corner2": "70996b10-0696-f72f-a369-e939afee8b14",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #9 off W8, exterior wall"
+      },
+      {
+        "corner1": "70996b10-0696-f72f-a369-e939afee8b14",
+        "corner2": "66210fe2-a6bd-7732-9c1f-535edf107cdb",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #10 off W9, exterior wall"
+      },
+      {
+        "corner1": "66210fe2-a6bd-7732-9c1f-535edf107cdb",
+        "corner2": "ea55b1ab-aa57-c6e5-4147-289f5088b9de",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #11"
+      },
+      {
+        "corner1": "ea55b1ab-aa57-c6e5-4147-289f5088b9de",
+        "corner2": "ec8daf00-cd15-396b-720c-7ca7ee2d7ca2",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #12"
+      },
+      {
+        "corner1": "25b32241-9042-6d2d-3ba8-f98015275103",
+        "corner2": "c364b18d-631c-4ec7-b17a-7ebbdc893db8",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #13 south turf, exterior wall"
+      },
+      {
+        "corner1": "b58e2ef2-40cb-4ea6-aa1a-7d3cc3ff0bd1",
+        "corner2": "c364b18d-631c-4ec7-b17a-7ebbdc893db8",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 30.48,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #14 west, exterior wall"
+      },
+      {
+        "corner1": "55a058a0-3dc5-4a13-bc62-c49cfa2a3785",
+        "corner2": "1053f1e1-697f-1b0e-790c-cb6917f736e9",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 30.48,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "interior",
+        "name": "basement #15 party wall, interior"
+      },
+      {
+        "corner1": "25b32241-9042-6d2d-3ba8-f98015275103",
+        "corner2": "c5ca7e67-1ba1-ff3c-e874-9ff92f059799",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "c5ca7e67-1ba1-ff3c-e874-9ff92f059799",
+        "corner2": "25b32241-9042-6d2d-3ba8-f98015275103",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "ec8daf00-cd15-396b-720c-7ca7ee2d7ca2",
+        "corner2": "96f30721-fe3f-638c-2c6f-f8bd8dfb8ed1",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #18"
+      },
+      {
+        "corner1": "4c68b564-1b1e-cd1f-5ccf-237f8bbd8ce2",
+        "corner2": "d14d8b99-9c91-0831-4dad-2f3bfa99bb28",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #19"
+      },
+      {
+        "corner1": "020fb58f-5fca-f1e8-3303-fabf0bfd5aa7",
+        "corner2": "e6b99746-0263-eabc-58be-f29b1a172421",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 335,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "basement #20"
+      },
+      {
+        "corner1": "e6b99746-0263-eabc-58be-f29b1a172421",
+        "corner2": "aa5941c8-ae39-eefa-3f51-442327f2bc8d",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #21"
+      },
+      {
+        "corner1": "d14d8b99-9c91-0831-4dad-2f3bfa99bb28",
+        "corner2": "020fb58f-5fca-f1e8-3303-fabf0bfd5aa7",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "c26cefc4-4efe-a97b-905c-eb016f99fc2a",
+        "corner2": "32ab4f2e-5ef5-404b-8806-98a2f20b30f7",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #25"
+      },
+      {
+        "corner1": "d14d8b99-9c91-0831-4dad-2f3bfa99bb28",
+        "corner2": "4ab89d0a-3789-271b-e950-25fd767a9545",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #27"
+      },
+      {
+        "corner1": "e208e17c-d517-fc79-c798-14bbe612d5cd",
+        "corner2": "7bb61996-b43b-d942-8c36-0e797b36c233",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #27"
+      },
+      {
+        "corner1": "90f12ac3-c639-8313-b327-89a808d673e3",
+        "corner2": "7bb61996-b43b-d942-8c36-0e797b36c233",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "96f30721-fe3f-638c-2c6f-f8bd8dfb8ed1",
+        "corner2": "4c68b564-1b1e-cd1f-5ccf-237f8bbd8ce2",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "96f30721-fe3f-638c-2c6f-f8bd8dfb8ed1",
+        "corner2": "8f659c92-5114-56b9-47e4-d3ceb52400ea",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "3057bf33-6ee0-b143-281b-ea22a7734057",
+        "corner2": "5b7f8fef-7ff6-f518-b4f5-8d5d47a1ef4e",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "3057bf33-6ee0-b143-281b-ea22a7734057",
+        "corner2": "8f659c92-5114-56b9-47e4-d3ceb52400ea",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "3057bf33-6ee0-b143-281b-ea22a7734057",
+        "corner2": "8f659c92-5114-56b9-47e4-d3ceb52400ea",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #33"
+      },
+      {
+        "corner1": "a221b684-4f82-73d4-007d-b22d5c1da26a",
+        "corner2": "052492d7-f027-9f92-c4d1-4bb6491a0074",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "052492d7-f027-9f92-c4d1-4bb6491a0074",
+        "corner2": "3057bf33-6ee0-b143-281b-ea22a7734057",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "0ffbbff9-ffc4-52cc-4ef9-e5aea67cde45",
+        "corner2": "c5ca7e67-1ba1-ff3c-e874-9ff92f059799",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "b7845946-bd70-13fa-0488-ba5659730179",
+        "corner2": "46b8a915-8a14-6c07-6380-5f2a00e5e9fb",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #38"
+      },
+      {
+        "corner1": "46b8a915-8a14-6c07-6380-5f2a00e5e9fb",
+        "corner2": "6dda722d-aa9a-dea6-650b-097f9139afd3",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #39"
+      },
+      {
+        "corner1": "1053f1e1-697f-1b0e-790c-cb6917f736e9",
+        "corner2": "60ad8497-1bfd-b258-0041-d7321b448473",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "6dda722d-aa9a-dea6-650b-097f9139afd3",
+        "corner2": "cca08613-b314-0be8-a03e-e9f9ef917f97",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #42"
+      },
+      {
+        "corner1": "6dda722d-aa9a-dea6-650b-097f9139afd3",
+        "corner2": "60ad8497-1bfd-b258-0041-d7321b448473",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #43"
+      },
+      {
+        "corner1": "60ad8497-1bfd-b258-0041-d7321b448473",
+        "corner2": "0ffbbff9-ffc4-52cc-4ef9-e5aea67cde45",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "cb0c50bc-d369-fec4-3184-d858def634ad",
+        "corner2": "a47c5ce1-5540-bdba-100e-5a05147493f3",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 13.97,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #45"
+      },
+      {
+        "corner1": "cca08613-b314-0be8-a03e-e9f9ef917f97",
+        "corner2": "1053f1e1-697f-1b0e-790c-cb6917f736e9",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior"
+      },
+      {
+        "corner1": "ca4ab742-c1f1-62e7-850a-bf2f810d4597",
+        "corner2": "010a9aff-5057-3abc-2bca-c0f27a68fabc",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #46"
+      },
+      {
+        "corner1": "4ab89d0a-3789-271b-e950-25fd767a9545",
+        "corner2": "e208e17c-d517-fc79-c798-14bbe612d5cd",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "partition",
+        "exposure": "interior",
+        "name": "gym SE closer"
+      },
+      {
+        "corner1": "aa5941c8-ae39-eefa-3f51-442327f2bc8d",
+        "corner2": "b7845946-bd70-13fa-0488-ba5659730179",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "partition",
+        "exposure": "interior",
+        "name": "recovery west closer"
+      },
+      {
+        "corner1": "32ab4f2e-5ef5-404b-8806-98a2f20b30f7",
+        "corner2": "1d5323e4-c3ff-4dee-b41d-13ce00c50ccc",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 13.97,
+        "height": 335,
+        "wallType": "wood",
+        "exposure": "interior",
+        "name": "gym north opening west jamb"
+      },
+      {
+        "corner1": "32ab4f2e-5ef5-404b-8806-98a2f20b30f7",
+        "corner2": "90f12ac3-c639-8313-b327-89a808d673e3",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #25 (E)"
+      }
+    ],
+    "wallTextures": [],
+    "floorTextures": {},
+    "newFloorTextures": {
+      "4ab89d0a-3789-271b-e950-25fd767a9545,7bb61996-b43b-d942-8c36-0e797b36c233,90f12ac3-c639-8313-b327-89a808d673e3,c26cefc4-4efe-a97b-905c-eb016f99fc2a,d14d8b99-9c91-0831-4dad-2f3bfa99bb28,e208e17c-d517-fc79-c798-14bbe612d5cd": {
+        "url": "/models/textures/black-rubber-floor.png",
+        "scale": 120
+      },
+      "020fb58f-5fca-f1e8-3303-fabf0bfd5aa7,46b8a915-8a14-6c07-6380-5f2a00e5e9fb,aa5941c8-ae39-eefa-3f51-442327f2bc8d,b7845946-bd70-13fa-0488-ba5659730179,c26cefc4-4efe-a97b-905c-eb016f99fc2a,d14d8b99-9c91-0831-4dad-2f3bfa99bb28,e6b99746-0263-eabc-58be-f29b1a172421": {
+        "url": "/models/textures/black-rubber-floor.png",
+        "scale": 120
+      }
+    }
+  },
+  "items": [
+    {
+      "item_name": "Gym entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:76.20:203.20:20.32:64748b",
+      "xpos": 1651.9810549391639,
+      "ypos": 101.6,
+      "zpos": 920.0033693298477,
+      "rotation": -1.0500679353878255,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Gym entrance — mid-span W28 chamfer; 30×80"
+    },
+    {
+      "item_name": "Utilities/Storage entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:121.92:203.20:20.32:0ea5e9",
+      "xpos": 1918.97,
+      "ypos": 101.6,
+      "zpos": 1290.488,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Blueprint 4068-2 — 4′0″×6′8″ on W31 north; open util/storage"
+    },
+    {
+      "item_name": "Bedroom entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:81.28:203.20:20.32:a78bfa",
+      "xpos": 1021.586136526943,
+      "ypos": 101.6,
+      "zpos": 736.9941007962346,
+      "rotation": -3.141592653589793,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Bedroom entrance — mid-span W46; 32×80"
+    },
+    {
+      "item_name": "Turf entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:91.44:203.20:20.32:16a34a",
+      "xpos": 653.3244132350316,
+      "ypos": 101.6,
+      "zpos": 1007.2575925304851,
+      "rotation": -1.5707963267948966,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Turf entrance — W37; 36×80"
+    },
+    {
+      "item_name": "Bathroom entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:81.28:203.20:20.32:cbd5e1",
+      "xpos": 968.5500000000001,
+      "ypos": 101.6,
+      "zpos": 802.1320000000001,
+      "rotation": -1.5707963267948966,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Bathroom entrance — mid-span W39; 32×80"
+    },
+    {
+      "item_name": "Basement U-Stairs",
+      "item_type": 8,
+      "model_url": "procedural:ustairs:362.71:397.51:121.92:284.48:16:c4783a",
+      "xpos": 1982.724,
+      "ypos": 145.79600524902344,
+      "zpos": 1089.533,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "U-stairs per blueprint: 16 risers, 4′ flights, open west to hall (former W34 not a wall). Ascends from basement toward main."
+    },
+    {
+      "item_name": "Theatre TV (W6)",
+      "item_type": 2,
+      "model_url": "procedural:box:320:180:10:111827",
+      "xpos": 1879.6,
+      "ypos": 175,
+      "zpos": 353.28,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Wall-mounted theatre screen on wall #6"
+    },
+    {
+      "item_name": "Basement U-Stairs",
+      "item_type": 8,
+      "model_url": "procedural:ustairs:362.71:397.51:121.92:284.48:16:94a3b8",
+      "xpos": 1982.724,
+      "ypos": 145.79600524902344,
+      "zpos": 1089.533,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "U-stairs per blueprint: 16 risers, 4′ flights, open west to hall (former W34 not a wall). Ascends from basement toward main."
+    },
+    {
+      "item_name": "Furnace",
+      "item_type": 8,
+      "model_url": "procedural:box:76.2:182.88:76.2:6b7280",
+      "xpos": 1455,
+      "ypos": 0,
+      "zpos": 1375,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "description": "Blueprint: furnace NW corner of unfinished storage"
+    },
+    {
+      "item_name": "Floor Drain",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:20:4:20:111827",
+      "xpos": 1520,
+      "ypos": 0,
+      "zpos": 1440,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Blueprint: floor drain SE of furnace"
+    },
+    {
+      "item_name": "Water Heater",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:55.88:152.4:55.88:94a3b8",
+      "xpos": 1435,
+      "ypos": 0,
+      "zpos": 1525,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "description": "Blueprint: water heater along west wall"
+    },
+    {
+      "item_name": "Sump Pump",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:76.2:60.96:76.2:1f2937",
+      "xpos": 2095,
+      "ypos": 0,
+      "zpos": 1575,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "description": "Blueprint: sump pump SE corner of storage"
+    },
+    {
+      "item_name": "Green Couch L — W7",
+      "item_type": 8,
+      "model_url": "procedural:box:90.0:78.0:300.0:0A1F14",
+      "xpos": 2108.92,
+      "ypos": 39,
+      "zpos": 645.778,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Dark hunter along wall 7; equal arm, no corner stack"
+    },
+    {
+      "item_name": "Green Couch L — W32",
+      "item_type": 8,
+      "model_url": "procedural:box:300.0:78.0:90.0:0A1F14",
+      "xpos": 2003.92,
+      "ypos": 39,
+      "zpos": 840.778,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Dark hunter along wall 32; equal arm, owns corner"
+    },
+    {
+      "item_name": "Bar Fridge — Zephyr body",
+      "item_type": 8,
+      "model_url": "procedural:box:91.0:213.0:72.0:1f2937",
+      "xpos": 1176.16,
+      "ypos": 0,
+      "zpos": 119.25999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Zephyr glass-front commercial fridge body"
+    },
+    {
+      "item_name": "Bar Fridge — glass door",
+      "item_type": 8,
+      "model_url": "procedural:box:85.0:193.0:4:7dd3fc:0.45",
+      "xpos": 1176.16,
+      "ypos": 10,
+      "zpos": 155.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Glass door front"
+    },
+    {
+      "item_name": "Bar Base — under granite",
+      "item_type": 8,
+      "model_url": "procedural:box:205.27999999999975:87.0:61.0:6b4423",
+      "xpos": 1324.3,
+      "ypos": 0,
+      "zpos": 111.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Base cabinets under granite run"
+    },
+    {
+      "item_name": "Bar Granite counter",
+      "item_type": 8,
+      "model_url": "procedural:box:205.27999999999975:4.0:63.0:5c6370",
+      "xpos": 1324.3,
+      "ypos": 87,
+      "zpos": 112.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Granite countertop with sink"
+    },
+    {
+      "item_name": "Bar Sink",
+      "item_type": 8,
+      "model_url": "procedural:box:56.0:20.0:40.0:374151",
+      "xpos": 1324.3,
+      "ypos": 69,
+      "zpos": 108.71,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Undermount sink in granite"
+    },
+    {
+      "item_name": "Bar Cabinet — base right",
+      "item_type": 8,
+      "model_url": "procedural:box:150.0:91.0:61.0:6b4423",
+      "xpos": 1501.9399999999998,
+      "ypos": 0,
+      "zpos": 111.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Base cabinets right of sink"
+    },
+    {
+      "item_name": "Bar Upper — cabinets",
+      "item_type": 8,
+      "model_url": "procedural:box:355.27999999999975:76.0:35.0:6b4423",
+      "xpos": 1399.3,
+      "ypos": 210,
+      "zpos": 98.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Wall cabinets above granite and right run"
+    },
+    {
+      "item_name": "Bar Island — base",
+      "item_type": 8,
+      "model_url": "procedural:box:340.0:87.0:112.0:3f3f46",
+      "xpos": 1353.8,
+      "ypos": 0,
+      "zpos": 302.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island base cabinet"
+    },
+    {
+      "item_name": "Bar Island — light countertop",
+      "item_type": 8,
+      "model_url": "procedural:box:348.0:4.0:120.0:f3ebe0",
+      "xpos": 1353.8,
+      "ypos": 87,
+      "zpos": 302.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Light countertop — seating for 8"
+    },
+    {
+      "item_name": "Blazzed HD1-S Smith Machine",
+      "item_type": 8,
+      "model_url": "procedural:box:223.52:228.60:175.26:111827",
+      "xpos": 1239.52,
+      "ypos": 114.3,
+      "zpos": 981.7099999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Blazzed HD1-S — 69\"D × 88\"W × 90\"H; 600 lb smith; 11\"–78\" bar range; dual 200 lb stacks; against W47 west/left"
+    },
+    {
+      "item_name": "HD1-S front uprights",
+      "item_type": 8,
+      "model_url": "procedural:box:120.02:213.36:7.62:374151",
+      "xpos": 1239.52,
+      "ypos": 106.68,
+      "zpos": 1064.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Olympic upright width 47.25\""
+    },
+    {
+      "item_name": "Jordan Strength DB/KB Rack",
+      "item_type": 8,
+      "model_url": "procedural:box:136.42:110.08:80.75:0a0a0a",
+      "xpos": 1541.1322999999998,
+      "ypos": 55.0418,
+      "zpos": 934.4532999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Jordan Strength 4-tier — 53.71×31.79×43.34\"; 5–50 lb dumbbells; kettlebells on top tier; 330 lb/shelf"
+    },
+    {
+      "item_name": "Jordan KB 18 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:20.32:17.27:20.32:1c1917",
+      "xpos": 1489.9735249999997,
+      "ypos": 118.2116,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Jordan KB 26 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:22.86:19.43:22.86:1c1917",
+      "xpos": 1507.0264499999996,
+      "ypos": 119.22760000000001,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Jordan KB 35 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:25.40:21.59:25.40:1c1917",
+      "xpos": 1524.0793749999998,
+      "ypos": 120.2436,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Jordan KB 44 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:27.94:23.75:27.94:1c1917",
+      "xpos": 1541.1322999999998,
+      "ypos": 121.2596,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Jordan KB 53 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:30.48:25.91:30.48:1c1917",
+      "xpos": 1558.1852249999997,
+      "ypos": 122.2756,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Jordan KB 62 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:33.02:28.07:33.02:1c1917",
+      "xpos": 1575.2381499999997,
+      "ypos": 123.2916,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Jordan KB 70 lb",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:35.56:30.23:35.56:1c1917",
+      "xpos": 1592.2910749999996,
+      "ypos": 124.30760000000001,
+      "zpos": 929.3732999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Kettlebell on top tier of Jordan rack"
+    },
+    {
+      "item_name": "Treadmill",
+      "item_type": 8,
+      "model_url": "procedural:box:88.90:139.70:205.74:3f3f46",
+      "xpos": 1448.054,
+      "ypos": 69.85,
+      "zpos": 1131.5699999999997,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Commercial-class treadmill footprint ~81\"L × 35\"W × ~55–60\"H (Star Trac-class)"
+    },
+    {
+      "item_name": "Elliptical",
+      "item_type": 8,
+      "model_url": "procedural:box:76.20:172.72:193.04:52525b",
+      "xpos": 1566.164,
+      "ypos": 86.36,
+      "zpos": 1137.9199999999998,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Elliptical / cross-trainer footprint ~76\"L × 30\"W × ~68–72\"H"
+    },
+    {
+      "item_name": "Sauna — 2-person",
+      "item_type": 8,
+      "model_url": "procedural:box:152.40:213.36:121.92:7c4a1a",
+      "xpos": 1049.5200000000002,
+      "ypos": 106.68,
+      "zpos": 1173.4799999999998,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "2-person dry sauna ~60\"×48\"×84\" cedar; east of cold plunge on recovery south | east of NuRecover plunge+chiller"
+    },
+    {
+      "item_name": "Bar Stool — west 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1151.8,
+      "ypos": 0,
+      "zpos": 284.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating west (left)"
+    },
+    {
+      "item_name": "Bar Stool — east 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1555.8,
+      "ypos": 0,
+      "zpos": 284.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating east (right)"
+    },
+    {
+      "item_name": "Bar Stool — west 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1151.8,
+      "ypos": 0,
+      "zpos": 320.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating west (left)"
+    },
+    {
+      "item_name": "Bar Stool — east 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1555.8,
+      "ypos": 0,
+      "zpos": 320.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating east (right)"
+    },
+    {
+      "item_name": "Bar Stool — north 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1301.6,
+      "ypos": 0,
+      "zpos": 214.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating north (top/middle)"
+    },
+    {
+      "item_name": "Bar Stool — south 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1301.6,
+      "ypos": 0,
+      "zpos": 390.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating south (below/middle)"
+    },
+    {
+      "item_name": "Bar Stool — north 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1406,
+      "ypos": 0,
+      "zpos": 214.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating north (top/middle)"
+    },
+    {
+      "item_name": "Bar Stool — south 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1406,
+      "ypos": 0,
+      "zpos": 390.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating south (below/middle)"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "L-Screen (RH pitcher)",
+      "model_url": "procedural:box:213.36:213.36:12:1f2937",
+      "xpos": 300,
+      "zpos": 240,
+      "description": "L-screen north end — RH pitcher throws south to clay mat"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "L-Screen Wing",
+      "model_url": "procedural:box:12:213.36:121.92:1f2937",
+      "xpos": 412.68,
+      "zpos": 294.96,
+      "description": "L-screen return wing (east) for RH pitcher"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Pitching Rubber",
+      "model_url": "procedural:plane:60.96:2:15.24:f5f5f4",
+      "xpos": 327.66,
+      "zpos": 200,
+      "description": "Pitching rubber — north end, facing south"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Home Plate",
+      "model_url": "procedural:plane:43.18:2:43.18:fafafa",
+      "xpos": 327.66,
+      "zpos": 1089.84,
+      "description": "Home plate on clay mat (south)"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Batting Tee",
+      "model_url": "procedural:cylinder:30:110:30:3b82f6",
+      "xpos": 377.66,
+      "zpos": 1049.84,
+      "description": "Tee on south clay hitting mat"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Ball Bucket",
+      "model_url": "procedural:cylinder:35:45:35:111827",
+      "xpos": 257.66,
+      "zpos": 1059.84,
+      "description": "Ball bucket by clay mat"
+    },
+    {
+      "item_name": "NuRecover Plunge + Chiller",
+      "item_type": 8,
+      "model_url": "procedural:box:151.00:54.00:69.00:0e7490",
+      "xpos": 791.7800000000001,
+      "ypos": 27,
+      "zpos": 1194.86,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "NuRecover Plunge Ice Bath — 151×69×54 cm (59.4×27.2×21.3\"); 345L; with Chiller Pro 0.3 HP to 5°C; ozone+filtration; recovery south"
+    },
+    {
+      "item_name": "NuRecover Chiller Pro",
+      "item_type": 8,
+      "model_url": "procedural:box:40.00:55.00:40.00:1f2937",
+      "xpos": 907.6000000000001,
+      "ypos": 27.5,
+      "zpos": 1194.86,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "NuRecover Chiller Pro — 0.3 HP; 21°C→5°C; built-in pump + filtration; sits beside plunge"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Cage Mesh — North",
+      "model_url": "procedural:box:609.60:335.28:2.00:0a0a0a:0.82",
+      "xpos": 330.20000000000005,
+      "zpos": 21.32,
+      "description": "Black vinyl mesh 4″ off W1 interior face"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Cage Mesh — West",
+      "model_url": "procedural:box:2.00:335.28:1219.20:0a0a0a:0.82",
+      "xpos": 26.4,
+      "zpos": 629.9199999999998,
+      "description": "Black vinyl mesh 4″ off W14 interior face (was buried in 12″ wall)"
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Cage Mesh — South",
+      "model_url": "procedural:box:609.60:335.28:2.00:0a0a0a:0.82",
+      "xpos": 330.20000000000005,
+      "zpos": 1238.5199999999998,
+      "description": "Black vinyl mesh 4″ off W13 interior face"
+    }
+  ],
+  "underlay": {
+    "url": "/projects/2713-s-224th-basement/turf-overlay.png",
+    "opacity": 0.45,
+    "xCm": 0,
+    "yCm": 0,
+    "widthCm": 655.32,
+    "heightCm": 1259.84
+  },
+  "areas": [
+    {
+      "name": "Turf",
+      "xCm": 327.66,
+      "yCm": 629.92
+    },
+    {
+      "name": "Bathroom",
+      "xCm": 813.435,
+      "yCm": 802.132
+    },
+    {
+      "name": "Utilities/Storage",
+      "xCm": 1900,
+      "yCm": 1450,
+      "notes": "STORAGE — UNFINISHED — DROP CEILING PER CODE. One open room (no util/storage partition)."
+    },
+    {
+      "name": "Theatre",
+      "xCm": 1927.357,
+      "yCm": 592.534
+    },
+    {
+      "name": "Bar",
+      "xCm": 1354.328,
+      "yCm": 477.52
+    },
+    {
+      "name": "Stairs",
+      "xCm": 1942.724,
+      "yCm": 1089.533
+    },
+    {
+      "name": "Recovery",
+      "xCm": 864.616,
+      "yCm": 1073.405
+    },
+    {
+      "name": "Bedroom",
+      "xCm": 864.87,
+      "yCm": 439.675
+    },
+    {
+      "name": "Gym",
+      "xCm": 1374.1399999999999,
+      "yCm": 1086.104
+    },
+    {
+      "name": "Turf Clay Mat",
+      "xCm": 327.66,
+      "yCm": 1089.84
+    }
+  ],
+  "entrances": [
+    {
+      "id": "stairs-u-hall",
+      "n": 1,
+      "kind": "stairs",
+      "wallN": 0,
+      "name": "Basement stairs (U)",
+      "widthInches": 48,
+      "heightInches": 112,
+      "sillInches": 0,
+      "notes": "Blueprint: U-stair 16 risers × 7″, 4′ flights, open to hall on west (no wall). Well 13′-0½″ N–S. Ascends to main."
+    },
+    {
+      "id": "gym-door-w28",
+      "n": 2,
+      "kind": "door",
+      "wallN": 28,
+      "name": "Gym entrance",
+      "offsetInches": 15.7,
+      "widthInches": 30,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Gym entrance — mid-span W28 chamfer; 30×80"
+    },
+    {
+      "id": "util-door-w31",
+      "n": 3,
+      "kind": "door",
+      "wallN": 31,
+      "name": "Utilities/Storage entrance",
+      "offsetInches": 46.3,
+      "widthInches": 48,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Blueprint 4068-2 — 4′0″×6′8″ double opening on north wall into hall; 48×80",
+      "fromTip": "W"
+    },
+    {
+      "id": "bed-door-w46",
+      "n": 4,
+      "kind": "door",
+      "wallN": 45,
+      "name": "Bedroom entrance",
+      "offsetInches": 20.3,
+      "widthInches": 32,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Bedroom entrance — mid-span W46; 32×80"
+    },
+    {
+      "id": "turf-door-w37",
+      "n": 5,
+      "kind": "door",
+      "wallN": 36,
+      "name": "Turf entrance",
+      "offsetInches": 51,
+      "widthInches": 36,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Turf entrance — W37; 36×80"
+    },
+    {
+      "id": "bath-door-w39",
+      "n": 6,
+      "kind": "door",
+      "wallN": 38,
+      "name": "Bathroom entrance",
+      "offsetInches": 33.4,
+      "widthInches": 32,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Bathroom entrance — mid-span W39; 32×80"
+    }
+  ],
+  "floorFinishes": [
+    {
+      "url": "/models/textures/charcoal-rubber-floor.png",
+      "scale": 100,
+      "area": "Gym",
+      "notes": "Charcoal SBR crumb rubber (lightened for visibility)",
+      "rectCm": {
+        "x": 1370,
+        "z": 1072,
+        "width": 600,
+        "depth": 365
+      }
+    },
+    {
+      "url": "/models/textures/charcoal-rubber-floor.png",
+      "scale": 100,
+      "area": "Recovery",
+      "notes": "Charcoal SBR crumb rubber (lightened for visibility)",
+      "rectCm": {
+        "x": 870,
+        "z": 1072,
+        "width": 400,
+        "depth": 365
+      }
+    },
+    {
+      "area": "Theatre",
+      "url": "/models/textures/tile-theatre-light.png",
+      "scale": 70,
+      "notes": "Light grey porcelain tile"
+    },
+    {
+      "area": "Bar",
+      "url": "/models/textures/lvp-bar-light.png",
+      "scale": 100,
+      "notes": "Light warm LVP"
+    },
+    {
+      "area": "Turf",
+      "url": "/models/textures/turf-field.png",
+      "scale": 80,
+      "notes": "Realistic turf texture — full left bay (inset ~4″ for cage)",
+      "rectCm": {
+        "x": 327.66,
+        "z": 630,
+        "width": 635,
+        "depth": 1239.68
+      }
+    },
+    {
+      "area": "Turf Clay Mat",
+      "url": "/models/textures/clay-hitting-mat.png",
+      "scale": 60,
+      "notes": "Orange clay hitting mat — south end of turf bay",
+      "rectCm": {
+        "x": 327.66,
+        "z": 1089.84,
+        "width": 243.84,
+        "depth": 304.8
+      }
+    }
+  ],
+  "wallSchedule": [
+    {
+      "n": 1,
+      "role": "Turf N",
+      "outerLength": "258\"",
+      "thickness": "8\"",
+      "notes": "Matches W8 south turf: 258\" · 8\" · concrete · exterior",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #1 turf north, exterior wall"
+    },
+    {
+      "n": 2,
+      "role": "basement #2 stub off party, exterior wall",
+      "outerLength": "180\"",
+      "thickness": "8\"",
+      "notes": "E–W 180\" from party W15 at 88\" from north tip; 8\" concrete exterior",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #2 stub off party, exterior wall",
+      "orientation": "east-west",
+      "connectsToWall": 15,
+      "connectsAt": "N",
+      "offsetInches": 88,
+      "offsetDir": "S",
+      "extends": "east",
+      "offsetLineage": {
+        "lines": [
+          "7'4\""
+        ],
+        "totalInches": 88
+      },
+      "lengthLineage": {
+        "lines": [
+          "9'4\"",
+          "5'8\""
+        ],
+        "totalInches": 180
+      }
+    },
+    {
+      "n": 3,
+      "role": "basement #3 off W2, exterior wall",
+      "outerLength": "60\"",
+      "thickness": "8\"",
+      "notes": "N–S north from bottom (east) end of W2; 60\" · 8\" concrete exterior",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #3 off W2, exterior wall",
+      "orientation": "north-south",
+      "connectsToWall": 4,
+      "connectsAt": "W",
+      "offsetInches": 0,
+      "extends": "south",
+      "offsetDir": "W"
+    },
+    {
+      "n": 4,
+      "role": "basement #4 off W3, exterior wall",
+      "outerLength": "190\"",
+      "thickness": "8\"",
+      "notes": "E–W from top of W3, pushes East; 15'-10\" · 8\" concrete exterior; succeeded by W5",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #4 off W3, exterior wall",
+      "orientation": "east-west",
+      "connectsToWall": 3,
+      "connectsAt": "N",
+      "fromEndIn": 0,
+      "extends": "east",
+      "lengthLineage": {
+        "lines": [
+          "15'10\""
+        ],
+        "totalInches": 190
+      },
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 5,
+      "role": "basement #5 off W4, exterior wall",
+      "outerLength": "104\"",
+      "thickness": "8\"",
+      "notes": "N–S from bottom (east/free) end of W4; 18'-8\" · 8\" concrete exterior",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #5 off W4, exterior wall",
+      "orientation": "north-south",
+      "connectsToWall": 4,
+      "connectsAt": "E",
+      "fromEndIn": 0,
+      "extends": "south",
+      "lengthLineage": {
+        "lines": [
+          "8'8\""
+        ],
+        "totalInches": 104
+      },
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 6,
+      "role": "basement #6 off W5, exterior wall",
+      "outerLength": "224\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #6 off W5, exterior wall",
+      "orientation": "north-south",
+      "connectsToWall": 5,
+      "connectsAt": "S",
+      "fromEndIn": 0,
+      "extends": "east",
+      "notes": "42'-8\" N–S from free (south/bottom) end of W5; user called this top of W5",
+      "lengthLineage": {
+        "lines": [
+          "18'8\""
+        ],
+        "totalInches": 224
+      },
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 7,
+      "role": "basement #7 off W6, exterior wall",
+      "outerLength": "218.7\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #7 off W6, exterior wall",
+      "orientation": "east-west",
+      "connectsToWall": 6,
+      "connectsAt": "E",
+      "fromEndIn": 0,
+      "notes": "10'-10\" E–W from bottom of W6",
+      "lengthLineage": {
+        "lines": [
+          "42'8\""
+        ],
+        "totalInches": 512
+      },
+      "extends": "south",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 8,
+      "role": "basement #8 off W7, exterior wall",
+      "outerLength": "138\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #8 off W7, exterior wall",
+      "orientation": "north-south",
+      "connectsToWall": 7,
+      "connectsAt": "S",
+      "fromEndIn": 0,
+      "extends": "west",
+      "notes": "3'-10\" N–S from bottom (east) of W7 — jog at W6 SW / W7 start; Utilities/Storage room perimeter",
+      "lengthLineage": {
+        "lines": [
+          "11'6\""
+        ],
+        "totalInches": 138
+      },
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 9,
+      "role": "basement #9 off W8, exterior wall",
+      "outerLength": "52\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #9 off W8, exterior wall",
+      "orientation": "east-west",
+      "connectsToWall": 8,
+      "connectsAt": "W",
+      "fromEndIn": 0,
+      "notes": "15'-4\" E–W from south edge (bottom) of W8; Utilities/Storage room perimeter",
+      "lengthLineage": {
+        "lines": [
+          "4'4\""
+        ],
+        "totalInches": 52
+      },
+      "extends": "north",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 10,
+      "role": "basement #10 off W9, exterior wall",
+      "outerLength": "88\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #10 off W9, exterior wall",
+      "orientation": "north-south",
+      "connectsToWall": 9,
+      "connectsAt": "N",
+      "fromEndIn": 0,
+      "extends": "west",
+      "notes": "5'-8\" N–S from west edge (top) of W9; Utilities/Storage room perimeter",
+      "lengthLineage": {
+        "lines": [
+          "7'4\""
+        ],
+        "totalInches": 88
+      },
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 11,
+      "role": "basement #11",
+      "outerLength": "88\"",
+      "thickness": "8\"",
+      "notes": "Former W6; Utilities/Storage room perimeter",
+      "lengthLineage": {
+        "lines": [
+          "6'8\"",
+          "0'8\""
+        ],
+        "totalInches": 88
+      },
+      "connectsToWall": 10,
+      "connectsAt": "W",
+      "extends": "south",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #11",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 12,
+      "role": "basement #12",
+      "outerLength": "88\"",
+      "thickness": "8\"",
+      "notes": "Former W7; Utilities/Storage room perimeter",
+      "lengthLineage": {
+        "lines": [
+          "7'4\""
+        ],
+        "totalInches": 88
+      },
+      "connectsToWall": 11,
+      "connectsAt": "S",
+      "extends": "west",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #12",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 13,
+      "role": "South — turf",
+      "outerLength": "258\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #13 south turf, exterior wall",
+      "notes": "Former W8 — next wall after interior chain W6–W10"
+    },
+    {
+      "n": 14,
+      "role": "West perimeter",
+      "outerLength": "41'-4\"",
+      "thickness": "12\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #14 west, exterior wall",
+      "notes": "Former W9"
+    },
+    {
+      "n": 15,
+      "role": "Party wall turf|main",
+      "outerLength": "41'-4\"",
+      "thickness": "12\"",
+      "wallType": "concrete",
+      "exposure": "interior",
+      "name": "basement #15 party wall, interior",
+      "notes": "Former W10"
+    },
+    {
+      "n": 16,
+      "role": "basement #18",
+      "lengthLineage": {
+        "lines": [
+          "15'4\""
+        ],
+        "totalInches": 184
+      },
+      "connectsToWall": 12,
+      "connectsAt": "W",
+      "extends": "north",
+      "outerLength": "184\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #18",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 17,
+      "role": "basement #19",
+      "lengthLineage": {
+        "lines": [
+          "19'10\""
+        ],
+        "totalInches": 238
+      },
+      "connectsToWall": 18,
+      "connectsAt": "N",
+      "extends": "west",
+      "outerLength": "238\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #19",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 18,
+      "role": "basement #18",
+      "lengthLineage": {
+        "lines": [
+          "3'4\""
+        ],
+        "totalInches": 40
+      },
+      "connectsToWall": 12,
+      "connectsAt": "W",
+      "extends": "north",
+      "outerLength": "184\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #18",
+      "offsetInches": 0,
+      "offsetDir": "S",
+      "notes": "Utilities/Storage room perimeter"
+    },
+    {
+      "n": 19,
+      "role": "basement #19",
+      "lengthLineage": {
+        "lines": [
+          "20'10\""
+        ],
+        "totalInches": 250
+      },
+      "connectsToWall": 18,
+      "connectsAt": "N",
+      "extends": "west",
+      "outerLength": "250\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #19",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 20,
+      "role": "basement #20",
+      "connectsToWall": 19,
+      "connectsAt": "W",
+      "extends": "north",
+      "outerLength": "40\"",
+      "thickness": "8\"",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "basement #20",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 21,
+      "role": "basement #21",
+      "connectsToWall": 20,
+      "connectsAt": "N",
+      "extends": "west",
+      "outerLength": "30\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #21",
+      "offsetInches": 0,
+      "offsetDir": "S",
+      "lengthLineage": {
+        "lines": [
+          "2'6\""
+        ],
+        "totalInches": 30
+      }
+    },
+    {
+      "n": 22,
+      "role": "basement #24",
+      "lengthLineage": {
+        "lines": [
+          "12'4\""
+        ],
+        "totalInches": 148
+      },
+      "connectsToWall": 23,
+      "connectsAt": "E",
+      "extends": "north",
+      "outerLength": "148\"",
+      "thickness": "3.937\"",
+      "wallType": "wood",
+      "exposure": "interior",
+      "name": "basement #24",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 23,
+      "role": "basement #25",
+      "lengthLineage": {
+        "lines": [
+          "15'11.5\""
+        ],
+        "totalInches": 191.5
+      },
+      "connectsToWall": 24,
+      "connectsAt": "N",
+      "extends": "east",
+      "outerLength": "220.8\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #25",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 24,
+      "role": "basement #27",
+      "lengthLineage": {
+        "lines": [
+          "19'8\""
+        ],
+        "totalInches": 236
+      },
+      "connectsToWall": 26,
+      "connectsAt": "S",
+      "extends": "east",
+      "outerLength": "236\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #27",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 25,
+      "role": "basement #25",
+      "connectsToWall": 24,
+      "connectsAt": "W",
+      "extends": "north",
+      "outerLength": "10\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #25",
+      "offsetInches": 6,
+      "offsetDir": "E"
+    },
+    {
+      "n": 26,
+      "role": "basement #33",
+      "lengthLineage": {
+        "lines": [
+          "13'2\""
+        ],
+        "totalInches": 158
+      },
+      "connectsToWall": 32,
+      "connectsAt": "E",
+      "extends": "west",
+      "outerLength": "142.8\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #33",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 27,
+      "role": "basement #34",
+      "lengthLineage": {
+        "lines": [
+          "13'0.5\""
+        ],
+        "totalInches": 156.5
+      },
+      "connectsToWall": 33,
+      "connectsAt": "W",
+      "extends": "north",
+      "outerLength": "156.5\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #34",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 28,
+      "role": "basement #38",
+      "lengthLineage": {
+        "lines": [
+          "7'0.5\"",
+          "3'4\""
+        ],
+        "totalInches": 124.5
+      },
+      "connectsToWall": 36,
+      "connectsAt": "S",
+      "extends": "east",
+      "outerLength": "124.5\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #38",
+      "offsetInches": 90,
+      "offsetDir": "N"
+    },
+    {
+      "n": 29,
+      "role": "basement #39",
+      "lengthLineage": {
+        "lines": [
+          "0'12\"",
+          "2'3\"",
+          "4'4\""
+        ],
+        "totalInches": 91
+      },
+      "connectsToWall": 37,
+      "connectsAt": "E",
+      "extends": "north",
+      "outerLength": "91\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #39",
+      "offsetInches": 0,
+      "offsetDir": "S",
+      "notes": "Utilities/Storage room perimeter"
+    },
+    {
+      "n": 30,
+      "role": "basement #43",
+      "offsetLineage": {
+        "lines": [
+          "2'1\""
+        ],
+        "totalInches": 25
+      },
+      "connectsToWall": 41,
+      "connectsAt": "N",
+      "extends": "west",
+      "outerLength": "124.5\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #43",
+      "offsetInches": 25,
+      "offsetDir": "S",
+      "notes": "Utilities/Storage room perimeter"
+    },
+    {
+      "n": 31,
+      "role": "basement #45",
+      "connectsToWall": 2,
+      "connectsAt": "E",
+      "extends": "south",
+      "outerLength": "225\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #45",
+      "offsetInches": 0,
+      "offsetDir": "W",
+      "notes": "Utilities/Storage room perimeter"
+    },
+    {
+      "n": 32,
+      "role": "Utilities W33",
+      "notes": "Utilities/Storage room perimeter"
+    },
+    {
+      "n": 33,
+      "role": "Bath S",
+      "name": "basement #38 bath south",
+      "outerLength": "124.5\"",
+      "thickness": "4\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "notes": "Bathroom south wall"
+    },
+    {
+      "n": 34,
+      "role": "basement #42",
+      "connectsToWall": 42,
+      "connectsAt": "E",
+      "extends": "north",
+      "outerLength": "47.179\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #42",
+      "offsetInches": 0,
+      "offsetDir": "S"
+    },
+    {
+      "n": 35,
+      "role": "Bath N",
+      "name": "basement #43 bath north",
+      "outerLength": "124.5\"",
+      "thickness": "4\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "notes": "Bathroom north wall"
+    },
+    {
+      "n": 36,
+      "role": "Bath W",
+      "name": "basement #44 bath west",
+      "outerLength": "64.0\"",
+      "thickness": "4\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "notes": "Bathroom west wall"
+    },
+    {
+      "n": 37,
+      "role": "basement #45",
+      "connectsToWall": 2,
+      "connectsAt": "E",
+      "extends": "south",
+      "outerLength": "212\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #45",
+      "offsetInches": 15,
+      "offsetDir": "W"
+    },
+    {
+      "n": 43,
+      "role": "basement #45",
+      "connectsToWall": 2,
+      "connectsAt": "E",
+      "extends": "south",
+      "outerLength": "220\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #45",
+      "offsetInches": 6,
+      "offsetDir": "W"
+    },
+    {
+      "n": 45,
+      "role": "basement #46",
+      "connectsToWall": 41,
+      "connectsAt": "E",
+      "extends": "east",
+      "outerLength": "40.5\"",
+      "thickness": "3.937\"",
+      "wallType": "generic",
+      "exposure": "exterior",
+      "name": "basement #46",
+      "offsetInches": 8,
+      "offsetDir": "S"
+    }
+  ],
+  "meta": {
+    "name": "2713-S-224th-Basement"
+  }
+}

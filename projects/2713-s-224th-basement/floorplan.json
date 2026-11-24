@@ -1090,6 +1090,11 @@
       "name": "Bathroom",
       "xCm": 813.4350000000001,
       "yCm": 802.1320000000001
+    },
+    {
+      "name": "Gym",
+      "xCm": 1374.14,
+      "yCm": 1086.104
     }
   ],
   "wallSchedule": [
@@ -1759,6 +1764,14 @@
       "heightInches": 80,
       "sillInches": 0,
       "notes": "Bathroom entrance — interior of walls 38, 39, 43, 44"
+    }
+  ],
+  "floorFinishes": [
+    {
+      "area": "Gym",
+      "url": "/models/textures/black-rubber-floor.png",
+      "scale": 120,
+      "notes": "12mm-look black SBR crumb rubber (rolled gym flooring)"
     }
   ]
 }

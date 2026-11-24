@@ -4,6 +4,7 @@ import { Corner } from '../model/corner'
 import { FloorplannerView, floorplannerModes } from './floorplanner_view'
 import type { UnderlayConfig } from './underlay'
 import type { AreaLabel } from './area_label'
+import type { ItemFootprint } from './item_footprint'
 import { EventEmitter } from '../core/events'
 
 type FloorplannerMode = (typeof floorplannerModes)[keyof typeof floorplannerModes]
@@ -446,5 +447,10 @@ export class Floorplanner {
 
   public setShowWallNumbers(show: boolean): void {
     this.view.setShowWallNumbers(show)
+  }
+
+  /** Live non-wall item footprints for the 2D overlay. */
+  public setItemFootprintProvider(provider: (() => ItemFootprint[]) | null): void {
+    this.view.setItemFootprintProvider(provider)
   }
 }

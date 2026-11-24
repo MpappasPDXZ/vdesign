@@ -40,10 +40,21 @@ export class FloorplanThree {
       threeFloor.addToScene()
     })
 
-    // draw edges
+    // draw edges (reads wall.items for openings — items must already be on walls)
     this.floorplan.wallEdges().forEach((edge) => {
       const threeEdge = new Edge(this.scene, edge, this.controls, this.renderer)
       this.edges.push(threeEdge)
+    })
+
+    // HalfEdges are recreated every update(); keep wall-item edge refs + holes in sync
+    this.floorplan.getWalls().forEach((wall) => {
+      wall.items.forEach((item) => {
+        const wallItem = item as unknown as { updateWallEdgeReference?: () => void }
+        wallItem.updateWallEdgeReference?.()
+      })
+      if (wall.items.length > 0) {
+        wall.fireRedraw()
+      }
     })
   }
 }

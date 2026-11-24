@@ -3,6 +3,27 @@ import { Utils } from '../core/utils'
 import type { HalfEdge } from '../model/half_edge'
 import type { Controls } from './controls'
 
+/**
+ * Three.js r152+ `ShapeGeometry` ignores `shape.holes` (always an 8-vert quad).
+ * Build a flat XY mesh with `ShapeUtils.triangulateShape` so wall openings cut through.
+ */
+function shapeGeometryWithHoles(shape: THREE.Shape): THREE.BufferGeometry {
+  const contour = shape.getPoints()
+  const holes = shape.holes.map((h) => h.getPoints())
+  const faces = THREE.ShapeUtils.triangulateShape(contour, holes)
+  const verts = contour.concat(...holes)
+  const positions: number[] = []
+  for (const face of faces) {
+    for (const idx of face) {
+      const v = verts[idx]
+      positions.push(v.x, v.y, 0)
+    }
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  return geometry
+}
+
 export class Edge {
   private readonly scene: THREE.Scene
   private readonly edge: HalfEdge
@@ -199,9 +220,9 @@ export class Edge {
       )
     )
 
-    // bottom
-    // put into basePlanes since this is always visible
-    this.basePlanes.push(this.buildFiller(this.edge, 0, THREE.BackSide, this.baseColor))
+    // bottom — sink below y=0 so white wall feet don't z-fight the floor
+    // (coplanar basePlanes + room floors = "white breakthrough" when orbiting)
+    this.basePlanes.push(this.buildFiller(this.edge, -0.35, THREE.BackSide, this.baseColor))
 
     // top
     this.planes.push(
@@ -276,7 +297,8 @@ export class Edge {
       shape.holes.push(new THREE.Path(holePoints))
     })
 
-    const geometry = new THREE.ShapeGeometry(shape)
+    // Three r152+ ShapeGeometry silently drops holes (always 8 verts). Triangulate ourselves.
+    const geometry = shapeGeometryWithHoles(shape)
 
     // Transform vertices
     geometry.applyMatrix4(invTransform)

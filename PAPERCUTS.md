@@ -6,6 +6,19 @@ Living list of agent mistakes that burned cycles. Read before adding UI fields o
 
 ---
 
+## 2026-11-23 — White breakthrough / floor z-fighting when orbiting 3D
+
+**What happened**  
+Orbiting showed jagged white triangles tearing through hardwood floors. Cause: wall **base fillers** (`edge.ts` `basePlanes` at `y=0`, white `MeshBasicMaterial`) sat on the same plane as room floors. Large cm-scale scenes + `far=200000` made depth fighting worse. Thin carpets (`FloorItem` bottom at exactly `y=0`) added more coplanar layers.
+
+**Rules**  
+- Wall foot strips must sit **below** the floor (`y < 0`), not coplanar.  
+- Room floors: upward face only (`BackSide` after `rotation.x=+π/2`) + slight `position.y` lift + `polygonOffset`. Do **not** use `FrontSide` with that rotation — floors vanish.  
+- Prefer `logarithmicDepthBuffer` on the WebGL renderer for big plans.  
+- Floor items: small clearance above `y=0` (`halfSize.y + ε`).
+
+---
+
 ## 2026-11-23 — Apply on wall N dragged neighbors (W12 moved W13/W17)
 
 **What happened**  
@@ -208,6 +221,30 @@ Day-to-day work uses the **default compose service** (Dockerfile.dev + bind moun
 
 ---
 
+## 2026-11-23 — Entrances in plan JSON but invisible in 2D/3D after Load latest
+
+**What happened**  
+Agent wrote `entrances[]` + type-7 `procedural:box` items into `plans/*.json`. Load latest / IndexedDB had the doors attached to the right walls (`wall.items`), but the user saw **zero** openings in both views.
+
+**Root causes (stacked)**
+
+1. **3D holes dead on Three r181** — `Edge.makeWall` used `THREE.ShapeGeometry(shape)` after pushing `shape.holes`. In Three.js r152+, `ShapeGeometry` **silently ignores holes** (always an 8-vert quad). Wall meshes never cut openings; door boxes sat inside solid walls and looked like “nothing loaded.”
+2. **2D never drew entrances** — `floorplanner_view` stroked solid walls only. No gaps, no glyphs, no badges — so Load latest in the default 2D mode looked identical with or without doors. Docs called 2D gap/badge “priority #3” but it was never shipped; agent treated “items in JSON” as done.
+3. **“Visible in scene” ≠ “visible to user”** — DevTools showed 6 door meshes with correct positions. That is not a pass. Camera-facing culling + buried meshes without holes = false confidence.
+4. **Agent verified the API/file, not the pixels** — POST `/api/plans` + `items.length === 6` was treated as success. No Load latest → 2D gap check → 3D hole check.
+
+**Rules (hard)**
+
+1. **Wall openings must use hole triangulation that works on the pinned Three version** — `ShapeUtils.triangulateShape` (or ExtrudeGeometry), **not** `ShapeGeometry` for holed walls. After any Three upgrade, assert a wall with one door has **> 8** plane vertices.
+2. **Load latest is not done until openings are visible in both 2D and 3D** — 2D: wall stroke gaps + entrance badge/glyph; 3D: hole through the wall (+ leaf mesh). Schedule/`entrances[]` alone is not a render.
+3. **Do not trust item counts** — Prove with a screenshot or by counting hole vertices / 2D gap spans after Load latest.
+4. **After `floorplan.update()`, re-bind wall items and `fireRedraw`** — HalfEdges are recreated every update; stale edge refs + skipped redraw = openings vanish on 2D↔3D toggle.
+
+**Fix direction**  
+`shapeGeometryWithHoles` in `src/three/edge.ts` · 2D gaps/glyphs in `floorplanner_view` · `FloorplanThree.redraw` re-binds items + `fireRedraw` · Load path forces wall redraw after serialize load.
+
+---
+
 ## Standing principles
 
 | # | Principle |
@@ -225,3 +262,4 @@ Day-to-day work uses the **default compose service** (Dockerfile.dev + bind moun
 | 11 | **One open path.** Wall Editor: single-click `#` badge or sidebar list. No double-click mystery. Document in `docs/wall-editor.md` first. |
 | 12 | **Open before fields.** If the panel cannot be opened/seen, fix that before any Apply/geometry work. |
 | 13 | **Hot reload for iteration.** Default Docker = Dockerfile.dev; rebuild prod only when needed. |
+| 14 | **Openings must show in 2D and 3D.** Plan JSON / item counts are not a pass — holes + 2D gaps after Load latest are. |

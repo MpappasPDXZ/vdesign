@@ -13,6 +13,10 @@
 - **Save Plan** → IndexedDB + `plans/{name}.json` + new version file  
 - **Load latest** → reads newest `plans/*.json` back into the editor  
 
+## Parallel agents (theatre / stairs / gym)
+
+Do **not** overwrite `{slug}.json` with a stale full document. Use `POST /api/plans` with `baseMtimeMs` + `merge: true` (default). See `docs/parallel-item-adds.md` and `.cursor/rules/parallel-item-adds.mdc`.
+
 ## Docker
 
 `docker-compose` mounts `./plans` → `/app/plans` (`VDESIGN_PLANS_DIR`).  

@@ -52,7 +52,7 @@
     "mainControls": {
       "newPlan": "New Plan",
       "savePlan": "Save Plan",
-      "savePlanHint": "Writes plans/{name}.json + a timestamped copy under plans/versions/ (git-friendly). Also saves in this browser.",
+      "savePlanHint": "Writes plans/slug.json + a timestamped copy under plans/versions/ (git-friendly). Also saves in this browser.",
       "savePlanRepoOk": "Saved to {path} ({walls} walls) + version history",
       "savePlanRepoFail": "Browser saved, but repo write failed: {error}",
       "savePlanWaitItems": "Items still loading — wait, then Save again (prevents wiping doors)",

@@ -1,0 +1,94 @@
+---
+description: Parallel plan agents (theatre / stairs / gym) — sequenced writes, merge-on-save, Load latest
+globs: app/components/blueprint3d/**/*.tsx,app/lib/plans-fs.ts,app/lib/plans-merge.ts,app/services/plans-repo.ts,app/app/api/plans/**/*.ts,src/model/scene.ts,src/constants.ts,plans/**/*.json
+alwaysApply: true
+---
+
+# Parallel plan agents — write sequencing
+
+Several agents (theatre room, stairs, gym, …) edit the **same** `plans/{slug}.json`. A lock alone is not enough: each agent must **own one domain**, **load latest before edit**, and **save through the merge API** — never overwrite the whole file from a stale copy.
+
+## Hard rules
+
+1. **Never** `writeFile` / overwrite `plans/{slug}.json` directly while other agents may be working. Use `POST /api/plans` (or UI **Save Plan**). Direct writes bypass merge and clobber peers.
+2. **Never** save a full project you loaded minutes ago without merging. Server merge-on-write keeps peers' additive work, but only if you go through the API.
+3. **One domain per agent.** Do not edit another agent's fields (see table below).
+4. **Always** `GET /api/plans?latest=1` (or **Load latest**) immediately before your edit batch; note `mtimeMs`.
+5. **Always** `POST /api/plans` with `baseMtimeMs` from that load. Wait for `{ ok: true }`.
+6. **Always** Load latest again after save and **verify your change and peers' changes** both still present.
+7. **Do not Save** while models are still loading (`itemsLoadingRef > 0`).
+8. On item/door/entrance add: call **`handleViewChange('3d')`** (not only `setViewMode('3d')`).
+
+## Domain ownership (claim one)
+
+| Agent | May add/change | Must not touch |
+|---|---|---|
+| **Theatre** | Theatre-zone `items[]`, Theatre `areas[]` / schedule notes for that room | `floorFinishes` (Gym), stair `entrances[]`, other rooms' furniture |
+| **Stairs** | `entrances[]` with `kind: "stairs"`, stair opening items, stair-related wall schedule | Gym finishes, theatre seating layout |
+| **Gym** | `floorFinishes` for `"Gym"`, gym equipment `items[]` | Theatre items, stair entrances, unrelated walls |
+
+Structural **wall geometry** (`floorplan.walls` / corners): **one agent at a time**, or finish walls before parallel room agents start.
+
+## Safe sequence (every agent, every batch)
+
+```
+1. GET  /api/plans?latest=1&slug=2713-S-224th-Basement   → project + mtimeMs
+2. Apply ONLY your domain delta on that JSON (append items / entrances / finishes)
+3. POST /api/plans  { project, name, baseMtimeMs: mtimeMs, merge: true }
+4. Confirm response ok (check merged / mergeNotes if present)
+5. GET  latest again — prove your rows exist AND peers' rows still exist
+6. If POST fails or verification fails: re-GET → re-apply ONLY your delta → POST once more
+```
+
+### Shell sketch
+
+```bash
+# Load
+curl -s 'http://localhost:3000/api/plans?latest=1&slug=2713-S-224th-Basement' -o /tmp/plan.json
+# edit /tmp/plan.json — additive only for YOUR domain
+MTIME=$(node -e "console.log(require('fs').statSync('plans/2713-S-224th-Basement.json').mtimeMs)")
+# Prefer mtimeMs from the GET JSON body when present; else file stat after GET
+curl -s -X POST http://localhost:3000/api/plans \
+  -H 'Content-Type: application/json' \
+  -d "$(node -e "
+    const p=require('/tmp/plan.json');
+    const project=p.project||p;
+    console.log(JSON.stringify({
+      project, name: project.meta?.name||'2713-S-224th-Basement',
+      baseMtimeMs: p.mtimeMs, merge: true
+    }))
+  ")"
+```
+
+## What the server does
+
+- Per-slug queue + `.write.lock`
+- Under the lock: re-read disk → if `baseMtimeMs` matches, write as-is; else **merge** with disk:
+  - `items` / `entrances` / `areas` / `floorFinishes` — union by key
+  - `wallSchedule` — merge by wall `#`
+  - `floorplan` — prefer richer wall count
+- Returns `mtimeMs`, `merged`, `mergeNotes`
+
+`merge: false` = full replace — **exclusive writer only** (never while theatre/stairs/gym run in parallel).
+
+## Merge checklist (additive)
+
+- Keep existing `floorplan`, `wallSchedule`, `underlay`, `areas`, `entrances`, `floorFinishes`, `items` you did not intentionally replace.
+- Append new `items[]` with unique placement (not stacked at origin).
+- Append `entrances[]` with new unique `id`s.
+- Upsert `floorFinishes` by `area` name only for your room.
+- Refuse / avoid saves with `floorplan.walls.length === 0`.
+
+## Verify after save
+
+- Your domain change is in latest JSON.
+- At least one peer field still present (e.g. Gym finish still there after theatre save; stair entrance still there after gym save).
+- UI: **Load latest** → 3D shows new mesh / finish; openings visible in 2D and 3D.
+
+## Anti-patterns (these cause clobber)
+
+- Agent A and B both Load → both edit → both Save full JSON without API merge / without re-load.
+- Writing `plans/*.json` with the Write tool “to be faster”.
+- Saving mid item-load (drops items/doors).
+- One agent “cleaning up” another’s items or finishes.
+- Parallel wall redraws from two agents.

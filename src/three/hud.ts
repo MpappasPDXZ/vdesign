@@ -15,8 +15,9 @@ export class HUD {
   private readonly tolerance = 10
   private readonly height = 5
   private readonly distance = 20
-  private readonly color = '#ffffff'
-  private readonly hoverColor = '#f1c40f'
+  /** Blue centroid handle — selected furniture look-at / drag cue */
+  private readonly color = '#3b82f6'
+  private readonly hoverColor = '#60a5fa'
   private activeObject: THREE.Object3D | null = null
 
   // Mobile detection for larger touch targets
@@ -143,13 +144,18 @@ export class HUD {
   }
 
   private makeSphere(): THREE.Mesh {
-    // Larger sphere on mobile for easier touch interaction
-    const sphereRadius = 4 * this.scaleFactor
-    const geometry = new THREE.SphereGeometry(sphereRadius, 16, 16)
+    // Centroid marker (blue) — larger for hit / visibility
+    const sphereRadius = 10 * this.scaleFactor
+    const geometry = new THREE.SphereGeometry(sphereRadius, 20, 16)
     const material = new THREE.MeshBasicMaterial({
-      color: this.getColor()
+      color: this.getColor(),
+      depthTest: false,
+      transparent: true,
+      opacity: 0.95
     })
     const sphere = new THREE.Mesh(geometry, material)
+    sphere.renderOrder = 998
+    sphere.name = 'item-centroid'
     return sphere
   }
 
@@ -159,6 +165,8 @@ export class HUD {
 
     const cone = this.makeCone(item)
     const sphere = this.makeSphere()
+    // Lift centroid above the slab so it’s obvious in 3D
+    sphere.position.y = Math.max(item.halfSize.y, 20)
 
     object.add(line)
     object.add(cone)

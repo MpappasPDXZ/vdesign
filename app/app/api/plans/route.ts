@@ -17,6 +17,10 @@ export async function POST(req: Request) {
       project?: VdesignProject
       name?: string
       id?: string
+      /** mtimeMs from Load latest — enables skip-merge when still current */
+      baseMtimeMs?: number
+      /** Default true. false = full replace (exclusive writer only). */
+      merge?: boolean
     }
     if (!body.project?.floorplan?.walls?.length) {
       return NextResponse.json(
@@ -28,7 +32,9 @@ export async function POST(req: Request) {
     const result = await writePlanToRepo({
       project: body.project,
       name,
-      id: body.id
+      id: body.id,
+      baseMtimeMs: body.baseMtimeMs,
+      merge: body.merge
     })
     return NextResponse.json({ ok: true, ...result })
   } catch (err) {

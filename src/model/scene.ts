@@ -155,12 +155,21 @@ export class Scene {
         mat.depthWrite = true
       })
 
+      // Single-material meshes must not use a material[] — Three r181 skips
+      // drawing array materials when geometry has no groups (procedural stairs/boxes).
+      const materialForMesh: THREE.Material | THREE.Material[] =
+        materials.length === 1 ? materials[0] : materials
+      if (materials.length === 1 && geometry.groups.length === 0) {
+        const vertCount = geometry.getAttribute('position')?.count ?? 0
+        if (vertCount > 0) geometry.addGroup(0, vertCount, 0)
+      }
+
       // Custom JSONLoader already returns BufferGeometry
       const item = new (Factory.getClass(itemType))(
         scope.model,
         metadata,
         geometry,
-        materials, // Use actual materials from the loaded model
+        materialForMesh,
         position,
         rotation,
         scale

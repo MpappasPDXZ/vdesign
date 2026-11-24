@@ -10,10 +10,12 @@ import { ItemsDrawer } from './ItemsDrawer'
 import { ProjectsView } from './ProjectsView'
 import { SettingsDialog } from './SettingsDialog'
 import { ContextMenu } from './ContextMenu'
+import { SectionalEditor, isSectionalCouch } from './SectionalEditor'
 import { BedSizeInput } from './BedSizeInput'
 import { LengthInput } from './LengthInput'
 import { FloorplannerControls } from './FloorplannerControls'
 import { WallPropertiesPanel, type WallConnectSave } from './WallPropertiesPanel'
+import { ItemMovePanel, isMovableFloorItem } from './ItemMovePanel'
 import { ExteriorWallsModal, EXTERIOR_WALL_TARGET } from './ExteriorWallsModal'
 import { insertWallScheduleEntry } from '@/lib/wall-schedule'
 import { TextureSelector } from './TextureSelector'
@@ -40,9 +42,11 @@ import type { OverlayDescriptor } from '@blueprint3d/floorplanner/overlay'
 import type {
   EntranceKind,
   EntranceScheduleEntry,
+  FloorFinishSpec,
   WallScheduleEntry,
   VdesignProject
 } from '@/types/project'
+import { applyFloorFinishes } from '@/lib/floor-finishes'
 import { SaveFloorplanDialog } from './SaveFloorplanDialog'
 
 const DEFAULT_PROJECT_ID = '2713-s-224th-basement'
@@ -109,6 +113,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const underlayConfigRef = useRef<UnderlayConfig | null>(null)
   const areasRef = useRef<AreaLabel[]>([])
   const entrancesRef = useRef<EntranceScheduleEntry[]>([])
+  const floorFinishesRef = useRef<FloorFinishSpec[]>([])
   /** Skip persist while GLB/procedural items are still loading — otherwise doors vanish from saves. */
   const itemsLoadingRef = useRef(0)
 
@@ -152,6 +157,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const currentBlueprintRef = useRef(currentBlueprint)
   currentBlueprintRef.current = currentBlueprint
   const persistRecoveryRef = useRef<(() => void) | null>(null)
+  const persistPlanNowRef = useRef<(() => Promise<void>) | null>(null)
+  /** plans/ mtime from last Load latest / Save — sent as baseMtimeMs for merge-on-write. */
+  const repoMtimeMsRef = useRef<number | undefined>(undefined)
 
   const tSeed = useTranslations('BluePrint.seedProjects')
   const tOverlays = useTranslations('BluePrint.overlays')
@@ -224,6 +232,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
     const blueprint3d = new Blueprint3d(opts)
     blueprint3dRef.current = blueprint3d
+    // Agent / CDP debugging — parallel item adds need a stable handle for 3D verify
+    ;(window as unknown as { __vdesignBp?: typeof blueprint3d }).__vdesignBp = blueprint3d
 
     if (onBlueprint3DReady) {
       onBlueprint3DReady(blueprint3d)
@@ -304,10 +314,13 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         const { toastId, itemName } = loadingToasts.shift()!
         toast.success(tItems('loadedSuccess', { name: itemName }), { id: toastId })
       }
-      // Once all pending loads finish, snapshot so doors aren't lost to an earlier empty save
+      // Once all pending loads finish, snapshot so doors/items aren't lost to an earlier empty save
       if (itemsLoadingRef.current === 0) {
         window.setTimeout(() => {
-          if (itemsLoadingRef.current === 0) persistRecoveryRef.current?.()
+          if (itemsLoadingRef.current === 0) {
+            persistRecoveryRef.current?.()
+            void persistPlanNowRef.current?.()
+          }
         }, 100)
       }
     })
@@ -334,6 +347,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       entrancesRef.current = Array.isArray(project.entrances)
         ? structuredClone(project.entrances)
         : []
+      floorFinishesRef.current = Array.isArray(project.floorFinishes)
+        ? structuredClone(project.floorFinishes)
+        : []
       const underlay = normalizeUnderlay(project.underlay)
       underlayConfigRef.current = underlay
       setUnderlayState(underlay)
@@ -351,6 +367,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         blueprint3d.floorplanner?.setShowWallNumbers(true)
         if (underlay) blueprint3d.floorplanner?.setUnderlay({ ...underlay })
         blueprint3d.floorplanner?.setAreaLabels(areas)
+        applyFloorFinishes(blueprint3d, floorFinishesRef.current, areas)
+        // Plan loads after empty init — refit 3D to full drawing centroid + zoom-out
+        blueprint3d.three.fitCamera?.() ?? blueprint3d.three.centerCamera?.()
       })
     }
 
@@ -449,6 +468,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           if (blueprint3dRef.current) {
             blueprint3dRef.current.floorplanner?.reset()
             blueprint3dRef.current.floorplanner?.resetOrigin()
+            // Footprints come from the live scene provider — redraw after reset.
+            blueprint3dRef.current.floorplanner?.redraw()
           }
         }, 50)
       } else {
@@ -571,6 +592,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       underlay: underlayConfigRef.current ?? undefined,
       areas: areasRef.current,
       entrances: structuredClone(entrancesRef.current),
+      floorFinishes: structuredClone(floorFinishesRef.current),
       // Ref = latest schedule (avoid stale closure after Apply patches)
       wallSchedule: structuredClone(wallScheduleRef.current),
       meta: {
@@ -627,6 +649,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       console.warn('[Blueprint3DAppBase] Auto-save after edit failed:', error)
     }
   }, [buildSavePayload])
+  persistPlanNowRef.current = persistPlanNow
 
   const handleUndo = useCallback(() => {
     const entry = undoStackRef.current.pop()
@@ -898,13 +921,19 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           const repo = await saveProjectToRepo({
             project: payload.layoutData,
             name: currentBlueprint.name,
-            id: currentBlueprint.id
+            id: currentBlueprint.id,
+            baseMtimeMs: repoMtimeMsRef.current
           })
+          if (typeof repo.mtimeMs === 'number') repoMtimeMsRef.current = repo.mtimeMs
+          const mergeHint =
+            repo.merged && repo.mergeNotes?.length
+              ? ` · merged: ${repo.mergeNotes.join('; ')}`
+              : ''
           toast.success(
-            tMain('savePlanRepoOk', {
+            `${tMain('savePlanRepoOk', {
               path: repo.relativeLatest,
               walls: repo.walls
-            }),
+            })}${mergeHint}`,
             { id: toastId, duration: 7000 }
           )
         } catch (repoErr) {
@@ -967,8 +996,10 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           const repo = await saveProjectToRepo({
             project: payload.layoutData,
             name,
-            id: result.id
+            id: result.id,
+            baseMtimeMs: repoMtimeMsRef.current
           })
+          if (typeof repo.mtimeMs === 'number') repoMtimeMsRef.current = repo.mtimeMs
           toast.success(
             tMain('savePlanRepoOk', { path: repo.relativeLatest, walls: repo.walls }),
             { id: toastId, duration: 7000 }
@@ -1033,14 +1064,21 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       setActiveTab('edit')
       setViewMode('2d')
       requestAnimationFrame(() => {
-        blueprint3dRef.current?.floorplanner?.reset()
-        blueprint3dRef.current?.floorplanner?.setShowWallNumbers(true)
+        const b = blueprint3dRef.current
+        if (!b) return
+        // Procedural entrances attach during loadSerialized; rebuild wall holes + 2D gaps
+        b.model.floorplan.getWalls().forEach((w) => {
+          if (w.items.length > 0) w.fireRedraw()
+        })
+        b.floorplanner?.reset()
+        b.floorplanner?.setShowWallNumbers(true)
         if (nextUnderlay) {
-          blueprint3dRef.current?.floorplanner?.setUnderlay({ ...nextUnderlay })
+          b.floorplanner?.setUnderlay({ ...nextUnderlay })
         } else {
-          blueprint3dRef.current?.floorplanner?.setUnderlay(null)
+          b.floorplanner?.setUnderlay(null)
         }
         applyAreas(nextAreas)
+        applyFloorFinishes(b, floorFinishesRef.current, nextAreas)
       })
     },
     [applyAreas, buildOverlayList]
@@ -1050,13 +1088,17 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     entrancesRef.current = Array.isArray(project.entrances)
       ? structuredClone(project.entrances)
       : []
+    floorFinishesRef.current = Array.isArray(project.floorFinishes)
+      ? structuredClone(project.floorFinishes)
+      : []
   }, [])
 
   const handleLoadLatestPlan = useCallback(async () => {
     const toastId = toast.loading(tMain('loadLatestPlan'))
     try {
       const hint = currentBlueprintRef.current?.name || currentBlueprintRef.current?.id
-      const { project, relativePath } = await loadLatestProjectFromRepo(hint)
+      const { project, relativePath, mtimeMs } = await loadLatestProjectFromRepo(hint)
+      repoMtimeMsRef.current = mtimeMs
       applyProjectExtras(project)
       handleLoadFloorplan(
         toSerializedRoom(project),
@@ -1574,9 +1616,10 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
       blueprint3dRef.current.model.scene.addItem(parseInt(item.type), item.model, metadata)
       setActiveTab('edit')
-      setViewMode('3d')
+      // Always pull up 3D (sync three controls — not only React display flag)
+      handleViewChange('3d')
     },
-    [tItems]
+    [tItems, handleViewChange]
   )
 
   const handleTextureSelect = useCallback(
@@ -1774,16 +1817,46 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             />
           )}
 
-          {selectedItem && !textureType && !isFullscreen && (
-            <div className="absolute right-2 md:right-4 top-16 md:top-20 z-[70]">
-              <ContextMenu
-                selectedItem={selectedItem}
-                onDelete={handleDeleteItem}
-                onResize={handleResizeItem}
-                onFixedChange={handleFixedChange}
+          {viewMode === '3d' &&
+            !isFullscreen &&
+            selectedItem &&
+            isMovableFloorItem(selectedItem) && (
+              <ItemMovePanel
+                item={selectedItem}
+                onMoved={() => {
+                  blueprint3dRef.current?.three && ((blueprint3dRef.current.three as { _needsUpdate?: boolean })._needsUpdate = true)
+                }}
               />
-            </div>
-          )}
+            )}
+
+          {selectedItem &&
+            isSectionalCouch(selectedItem) &&
+            !textureType &&
+            !isFullscreen && (
+              <SectionalEditor
+                selectedItem={selectedItem}
+                scene={blueprint3dRef.current?.model.scene}
+                onDelete={handleDeleteItem}
+                onClose={() => {
+                  selectedItem.setUnselected()
+                  setSelectedItem(null)
+                }}
+              />
+            )}
+
+          {selectedItem &&
+            !isSectionalCouch(selectedItem) &&
+            !textureType &&
+            !isFullscreen && (
+              <div className="absolute right-2 md:right-4 top-16 md:top-20 z-[70]">
+                <ContextMenu
+                  selectedItem={selectedItem}
+                  onDelete={handleDeleteItem}
+                  onResize={handleResizeItem}
+                  onFixedChange={handleFixedChange}
+                />
+              </div>
+            )}
 
           {textureType && !isFullscreen && (
             <div className="absolute right-2 md:right-4 top-16 md:top-20 z-[70] max-h-[calc(100vh-100px)] md:max-h-[calc(100vh-120px)] overflow-y-auto">
@@ -1872,7 +1945,7 @@ function ControlsHelpForced({
         <p className="mb-2 text-sm text-muted-foreground">
           {viewMode === '2d'
             ? 'Use the left menu for move / draw / delete. Click a wall # badge (or the Edit list) to open Wall Editor. Type a length while drawing, then Enter.'
-            : 'Orbit with left drag, pan with right drag, zoom with scroll. Click a wall to edit properties.'}
+            : 'Click furniture to select. Drag it, or use N/E/S/W + angle (0–360). Orbit: left-drag · pan: right-drag · zoom: scroll.'}
         </p>
         <button
           type="button"

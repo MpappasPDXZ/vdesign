@@ -26,18 +26,29 @@ export abstract class FloorItem extends Item {
   }
 
   /** */
+  /** Keep thin rugs/planes just above the room floor (avoids y=0 z-fight). */
+  private static readonly FLOOR_CLEARANCE_CM = 0.4
+
   public placeInRoom() {
     if (!this.position_set) {
       const center = this.model.floorplan.getCenter()
       this.position.x = center.x
       this.position.z = center.z
-      this.position.y = 0.5 * (this.geometry.boundingBox!.max.y - this.geometry.boundingBox!.min.y)
+      this.position.y =
+        0.5 * (this.geometry.boundingBox!.max.y - this.geometry.boundingBox!.min.y) +
+        FloorItem.FLOOR_CLEARANCE_CM
     }
   }
 
   /** Take action after a resize */
   public resized(): void {
-    this.position.y = this.halfSize.y
+    const floorY = this.halfSize.y + FloorItem.FLOOR_CLEARANCE_CM
+    // Keep authored elevated placements (rack shelves, mattress, floating vanity).
+    // Posts/boxes saved at ypos≈0 still snap onto the floor via floorY.
+    if (this.position_set && this.position.y > floorY + 1) {
+      return
+    }
+    this.position.y = floorY
   }
 
   /** */
@@ -113,40 +124,32 @@ export abstract class FloorItem extends Item {
   /** */
   public isValidPosition(vec3: THREE.Vector3): boolean {
     const corners = this.getCorners('x', 'z', vec3)
-
-    // check if we are in a room
     const rooms = this.model.floorplan.getRooms()
-    let isInARoom = false
-    for (let i = 0; i < rooms.length; i++) {
-      if (
-        Utils.pointInPolygon(vec3.x, vec3.z, rooms[i].interiorCorners) &&
-        !Utils.polygonPolygonIntersect(corners, rooms[i].interiorCorners)
-      ) {
-        isInARoom = true
+
+    // Closed rooms: keep prior “must sit inside a room” rule when rooms exist.
+    // Open bays (gym/hall/util) often have zero/few loops — still allow free moves
+    // anywhere inside the overall floorplan bounds so furniture isn’t stuck.
+    if (rooms.length > 0) {
+      for (let i = 0; i < rooms.length; i++) {
+        if (
+          Utils.pointInPolygon(vec3.x, vec3.z, rooms[i].interiorCorners) &&
+          !Utils.polygonPolygonIntersect(corners, rooms[i].interiorCorners)
+        ) {
+          return true
+        }
       }
     }
-    if (!isInARoom) {
-      //console.log('object not in a room');
-      return false
-    }
 
-    // check if we are outside all other objects
-    /*
-      if (this.obstructFloorMoves) {
-          var objects = this.model.items.getItems();
-          for (var i = 0; i < objects.length; i++) {
-              if (objects[i] === this || !objects[i].obstructFloorMoves) {
-                  continue;
-              }
-              if (!utils.polygonOutsidePolygon(corners, objects[i].getCorners('x', 'z')) ||
-                  utils.polygonPolygonIntersect(corners, objects[i].getCorners('x', 'z'))) {
-                  //console.log('object not outside other objects');
-                  return false;
-              }
-          }
-      }*/
-
-    return true
+    const size = this.model.floorplan.getSize()
+    const center = this.model.floorplan.getCenter()
+    const halfW = Math.max(size.x, 100) / 2 + 50
+    const halfD = Math.max(size.z, 100) / 2 + 50
+    return (
+      vec3.x >= center.x - halfW &&
+      vec3.x <= center.x + halfW &&
+      vec3.z >= center.z - halfD &&
+      vec3.z <= center.z + halfD
+    )
   }
 
   /** Find the closest wall edge and its distance from a given position.

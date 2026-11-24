@@ -172,6 +172,39 @@ export class Controls {
     this.phiDelta -= angle
   }
 
+  /** Azimuth around Y: 0° = from south (+Z) looking north; 90° = from east (+X). */
+  public getAzimuthalAngle(): number {
+    const offset = this.object.position.clone().sub(this.target)
+    return Math.atan2(offset.x, offset.z)
+  }
+
+  /** Polar from +Y (0 = top-down, π/2 = horizon). */
+  public getPolarAngle(): number {
+    const offset = this.object.position.clone().sub(this.target)
+    return Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y)
+  }
+
+  public getDistance(): number {
+    return this.object.position.distanceTo(this.target)
+  }
+
+  /** Set orbit angles (radians) and optional distance; keeps current target. */
+  public setSpherical(theta: number, phi: number, radius?: number): void {
+    const r = radius ?? this.getDistance()
+    const clampedPhi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, phi))
+    const offset = new THREE.Vector3(
+      r * Math.sin(clampedPhi) * Math.sin(theta),
+      r * Math.cos(clampedPhi),
+      r * Math.sin(clampedPhi) * Math.cos(theta)
+    )
+    this.object.position.copy(this.target).add(offset)
+    this.object.lookAt(this.target)
+    this.thetaDelta = 0
+    this.phiDelta = 0
+    this.needsUpdate = true
+    this.cameraMovedCallbacks.fire()
+  }
+
   // pass in distance in world space to move left
   public panLeft(distance: number): void {
     const panOffset = new THREE.Vector3()

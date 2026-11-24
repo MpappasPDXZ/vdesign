@@ -52,7 +52,7 @@
     "mainControls": {
       "newPlan": "新建方案",
       "savePlan": "保存方案",
-      "savePlanHint": "写入 plans/{name}.json 与 plans/versions/ 历史，并保存到本浏览器。",
+      "savePlanHint": "写入 plans/slug.json 与 plans/versions/ 历史，并保存到本浏览器。",
       "savePlanRepoOk": "已保存到 {path}（{walls} 面墙）并写入版本历史",
       "savePlanRepoFail": "浏览器已保存，但写入仓库失败：{error}",
       "loadLatestPlan": "加载最新",

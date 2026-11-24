@@ -62,11 +62,7 @@
         "y": 1259.8400000000001
       },
       "d14d8b99-9c91-0831-4dad-2f3bfa99bb28": {
-        "x": 1073.912,
-        "y": 1259.8400000000001
-      },
-      "4769f177-207a-7e1a-7a19-2ee16a8afa96": {
-        "x": 1073.912,
+        "x": 1074.7586666666666,
         "y": 1259.8400000000001
       },
       "4ab89d0a-3789-271b-e950-25fd767a9545": {
@@ -93,10 +89,6 @@
         "x": 1801.368,
         "y": 1288.288
       },
-      "47cc07bb-613e-4541-1cc5-5cf4b2f386ae": {
-        "x": 1801.368,
-        "y": 1288.288
-      },
       "a221b684-4f82-73d4-007d-b22d5c1da26a": {
         "x": 1801.368,
         "y": 890.778
@@ -107,7 +99,7 @@
       },
       "0ffbbff9-ffc4-52cc-4ef9-e5aea67cde45": {
         "x": 655.32,
-        "y": 879.8560000000001
+        "y": 853.95
       },
       "b7845946-bd70-13fa-0488-ba5659730179": {
         "x": 655.32,
@@ -118,8 +110,8 @@
         "y": 886.968
       },
       "a47c5ce1-5540-bdba-100e-5a05147493f3": {
-        "x": 1076.96,
-        "y": 782.3199999999999
+        "x": 1092.2,
+        "y": 805.1800000000001
       },
       "1053f1e1-697f-1b0e-790c-cb6917f736e9": {
         "x": 655.32,
@@ -127,19 +119,11 @@
       },
       "60ad8497-1bfd-b258-0041-d7321b448473": {
         "x": 655.32,
-        "y": 717.296
-      },
-      "455c822d-8d73-3226-e827-f90a942247ab": {
-        "x": 655.32,
-        "y": 719.328
+        "y": 718.312
       },
       "6dda722d-aa9a-dea6-650b-097f9139afd3": {
         "x": 971.5500000000001,
-        "y": 719.328
-      },
-      "593f6ba9-e893-7708-3142-2e6f36d039d8": {
-        "x": 1076.452,
-        "y": 1259.8400000000001
+        "y": 718.312
       },
       "e208e17c-d517-fc79-c798-14bbe612d5cd": {
         "x": 1674.368,
@@ -152,10 +136,6 @@
       "285b15c9-f845-b1d7-51cb-f2a17aa9faa5": {
         "x": 1112.52,
         "y": 71.12
-      },
-      "6d3ec9f3-91f6-4d94-19e5-e98e5604861a": {
-        "x": 2164.08,
-        "y": 890.778
       },
       "cb4966f6-c15d-5925-210d-7276962e2792": {
         "x": 1595.12,
@@ -181,10 +161,6 @@
         "x": 971.5500000000001,
         "y": 655.8280000000001
       },
-      "9f057da9-014d-9e02-82c8-6108eae700da": {
-        "x": 971.5500000000001,
-        "y": 717.296
-      },
       "010a9aff-5057-3abc-2bca-c0f27a68fabc": {
         "x": 1074.42,
         "y": 739.648
@@ -194,8 +170,28 @@
         "y": 739.648
       },
       "cb0c50bc-d369-fec4-3184-d858def634ad": {
-        "x": 1076.96,
+        "x": 1092.2,
         "y": 223.52
+      },
+      "5834abf8-8613-4d77-bc90-e644268c02bb": {
+        "x": 1073.912,
+        "y": 782.3199999999999
+      },
+      "32ab4f2e-5ef5-404b-8806-98a2f20b30f7": {
+        "x": 1092.2,
+        "y": 883.9200000000001
+      },
+      "1d5323e4-c3ff-4dee-b41d-13ce00c50ccc": {
+        "x": 1092.2,
+        "y": 873.7600000000001
+      },
+      "eaaeefa7-d24b-4218-81e8-cd585e2038c8": {
+        "x": 756.9200000000001,
+        "y": 853.95
+      },
+      "2a4adf06-9c2e-4799-818b-1606c737584f": {
+        "x": 756.9200000000001,
+        "y": 886.97
       }
     },
     "walls": [
@@ -315,7 +311,7 @@
       },
       {
         "corner1": "db0074be-e73c-2fd3-3e5e-061e0bfff703",
-        "corner2": "6d3ec9f3-91f6-4d94-19e5-e98e5604861a",
+        "corner2": "052492d7-f027-9f92-c4d1-4bb6491a0074",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -615,27 +611,8 @@
         "exposure": "exterior"
       },
       {
-        "corner1": "d14d8b99-9c91-0831-4dad-2f3bfa99bb28",
-        "corner2": "593f6ba9-e893-7708-3142-2e6f36d039d8",
-        "frontTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "backTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "thickness": 9.999979999999999,
-        "height": 335,
-        "wallType": "wood",
-        "exposure": "interior",
-        "name": "basement #24"
-      },
-      {
         "corner1": "c26cefc4-4efe-a97b-905c-eb016f99fc2a",
-        "corner2": "90f12ac3-c639-8313-b327-89a808d673e3",
+        "corner2": "32ab4f2e-5ef5-404b-8806-98a2f20b30f7",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -653,25 +630,7 @@
         "name": "basement #25"
       },
       {
-        "corner1": "4769f177-207a-7e1a-7a19-2ee16a8afa96",
-        "corner2": "c26cefc4-4efe-a97b-905c-eb016f99fc2a",
-        "frontTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "backTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "thickness": 10,
-        "height": 335,
-        "wallType": "generic",
-        "exposure": "exterior"
-      },
-      {
-        "corner1": "4769f177-207a-7e1a-7a19-2ee16a8afa96",
+        "corner1": "d14d8b99-9c91-0831-4dad-2f3bfa99bb28",
         "corner2": "4ab89d0a-3789-271b-e950-25fd767a9545",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
@@ -746,7 +705,7 @@
       },
       {
         "corner1": "96f30721-fe3f-638c-2c6f-f8bd8dfb8ed1",
-        "corner2": "47cc07bb-613e-4541-1cc5-5cf4b2f386ae",
+        "corner2": "8f659c92-5114-56b9-47e4-d3ceb52400ea",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -782,7 +741,7 @@
       },
       {
         "corner1": "3057bf33-6ee0-b143-281b-ea22a7734057",
-        "corner2": "47cc07bb-613e-4541-1cc5-5cf4b2f386ae",
+        "corner2": "8f659c92-5114-56b9-47e4-d3ceb52400ea",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -816,25 +775,6 @@
         "wallType": "generic",
         "exposure": "exterior",
         "name": "basement #33"
-      },
-      {
-        "corner1": "8f659c92-5114-56b9-47e4-d3ceb52400ea",
-        "corner2": "a221b684-4f82-73d4-007d-b22d5c1da26a",
-        "frontTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "backTexture": {
-          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
-          "stretch": true,
-          "scale": 0
-        },
-        "thickness": 9.999979999999999,
-        "height": 335,
-        "wallType": "generic",
-        "exposure": "exterior",
-        "name": "basement #34"
       },
       {
         "corner1": "a221b684-4f82-73d4-007d-b22d5c1da26a",
@@ -891,7 +831,7 @@
         "exposure": "exterior"
       },
       {
-        "corner1": "b7845946-bd70-13fa-0488-ba5659730179",
+        "corner1": "2a4adf06-9c2e-4799-818b-1606c737584f",
         "corner2": "46b8a915-8a14-6c07-6380-5f2a00e5e9fb",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
@@ -907,11 +847,11 @@
         "height": 335,
         "wallType": "generic",
         "exposure": "exterior",
-        "name": "basement #38"
+        "name": "basement #38 bath south (east of void)"
       },
       {
         "corner1": "46b8a915-8a14-6c07-6380-5f2a00e5e9fb",
-        "corner2": "9f057da9-014d-9e02-82c8-6108eae700da",
+        "corner2": "6dda722d-aa9a-dea6-650b-097f9139afd3",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -967,7 +907,7 @@
       },
       {
         "corner1": "6dda722d-aa9a-dea6-650b-097f9139afd3",
-        "corner2": "455c822d-8d73-3226-e827-f90a942247ab",
+        "corner2": "60ad8497-1bfd-b258-0041-d7321b448473",
         "frontTexture": {
           "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
           "stretch": true,
@@ -1000,7 +940,35 @@
         "thickness": 10,
         "height": 335,
         "wallType": "generic",
-        "exposure": "exterior"
+        "exposure": "exterior",
+        "name": "basement #44 bath west (to void)"
+      },
+      {
+        "corner1": "0ffbbff9-ffc4-52cc-4ef9-e5aea67cde45",
+        "corner2": "eaaeefa7-d24b-4218-81e8-cd585e2038c8",
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "bath void north (shower south)"
+      },
+      {
+        "corner1": "eaaeefa7-d24b-4218-81e8-cd585e2038c8",
+        "corner2": "2a4adf06-9c2e-4799-818b-1606c737584f",
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "bath void east"
+      },
+      {
+        "corner1": "b7845946-bd70-13fa-0488-ba5659730179",
+        "corner2": "2a4adf06-9c2e-4799-818b-1606c737584f",
+        "thickness": 10,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "bath void south"
       },
       {
         "corner1": "cb0c50bc-d369-fec4-3184-d858def634ad",
@@ -1015,7 +983,7 @@
           "stretch": true,
           "scale": 0
         },
-        "thickness": 9.999979999999999,
+        "thickness": 13.97,
         "height": 335,
         "wallType": "generic",
         "exposure": "exterior",
@@ -1057,87 +1025,1792 @@
         "wallType": "generic",
         "exposure": "exterior",
         "name": "basement #46"
+      },
+      {
+        "corner1": "4ab89d0a-3789-271b-e950-25fd767a9545",
+        "corner2": "e208e17c-d517-fc79-c798-14bbe612d5cd",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "partition",
+        "exposure": "interior",
+        "name": "gym SE closer"
+      },
+      {
+        "corner1": "aa5941c8-ae39-eefa-3f51-442327f2bc8d",
+        "corner2": "b7845946-bd70-13fa-0488-ba5659730179",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10,
+        "height": 335,
+        "wallType": "partition",
+        "exposure": "interior",
+        "name": "recovery west closer"
+      },
+      {
+        "corner1": "32ab4f2e-5ef5-404b-8806-98a2f20b30f7",
+        "corner2": "1d5323e4-c3ff-4dee-b41d-13ce00c50ccc",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 13.97,
+        "height": 335,
+        "wallType": "wood",
+        "exposure": "interior",
+        "name": "gym north opening west jamb"
+      },
+      {
+        "corner1": "32ab4f2e-5ef5-404b-8806-98a2f20b30f7",
+        "corner2": "90f12ac3-c639-8313-b327-89a808d673e3",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 9.999979999999999,
+        "height": 335,
+        "wallType": "generic",
+        "exposure": "exterior",
+        "name": "basement #25 (E)"
       }
     ],
     "wallTextures": [],
     "floorTextures": {},
-    "newFloorTextures": {}
+    "newFloorTextures": {
+      "4ab89d0a-3789-271b-e950-25fd767a9545,7bb61996-b43b-d942-8c36-0e797b36c233,90f12ac3-c639-8313-b327-89a808d673e3,c26cefc4-4efe-a97b-905c-eb016f99fc2a,d14d8b99-9c91-0831-4dad-2f3bfa99bb28,e208e17c-d517-fc79-c798-14bbe612d5cd": {
+        "url": "/models/textures/black-rubber-floor.png",
+        "scale": 120
+      },
+      "020fb58f-5fca-f1e8-3303-fabf0bfd5aa7,46b8a915-8a14-6c07-6380-5f2a00e5e9fb,aa5941c8-ae39-eefa-3f51-442327f2bc8d,b7845946-bd70-13fa-0488-ba5659730179,c26cefc4-4efe-a97b-905c-eb016f99fc2a,d14d8b99-9c91-0831-4dad-2f3bfa99bb28,e6b99746-0263-eabc-58be-f29b1a172421": {
+        "url": "/models/textures/black-rubber-floor.png",
+        "scale": 120
+      }
+    }
   },
   "items": [
     {
-      "item_name": "Turf Area (fit to bay)",
-      "item_type": 8,
-      "model_url": "procedural:plane:655.32:2:1259.84:1b7a3d",
-      "xpos": 327.66,
-      "ypos": 1,
-      "zpos": 629.92,
+      "item_name": "Gym entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:76.20:203.20:20.32:64748b",
+      "xpos": 1651.9810549391639,
+      "ypos": 101.6,
+      "zpos": 920.0033693298477,
+      "rotation": -1.0500679353878255,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Gym entrance — mid-span W28 chamfer; 30×80"
+    },
+    {
+      "item_name": "Utilities/Storage entrance",
+      "item_type": 7,
+      "model_url": "procedural:box:121.92:203.20:20.32:0ea5e9",
+      "xpos": 1715.01,
+      "ypos": 101.6,
+      "zpos": 1290.49,
       "rotation": 0,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
       "fixed": false,
       "resizable": true,
-      "description": "Turf pad sized to 258\" bay"
+      "description": "Blueprint 4068-2 — 4′0″×6′8″ on W28, south of stair west exit; 48×80"
     },
     {
-      "item_name": "Gym Entrance",
+      "item_name": "Bedroom entrance",
       "item_type": 7,
-      "model_url": "procedural:box:91.44:203.2:20.32:64748b",
-      "xpos": 1654.556,
+      "model_url": "procedural:box:81.28:203.20:20.32:a78bfa",
+      "xpos": 1021.586136526943,
       "ypos": 101.6,
-      "zpos": 918.464,
-      "rotation": 2.091524718201968,
+      "zpos": 736.9941007962346,
+      "rotation": -3.141592653589793,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
       "fixed": false,
       "resizable": true,
-      "description": "Gym entrance on wall #28"
+      "description": "Bedroom entrance — mid-span W46; 32×80"
     },
     {
-      "item_name": "Turf Entrance",
+      "item_name": "Turf entrance",
       "item_type": 7,
-      "model_url": "procedural:box:91.44:203.2:20.32:16a34a",
-      "xpos": 655.32,
+      "model_url": "procedural:box:91.44:203.20:20.32:16a34a",
+      "xpos": 653.3244132350316,
       "ypos": 101.6,
-      "zpos": 1022.604,
+      "zpos": 1007.2575925304851,
       "rotation": -1.5707963267948966,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
       "fixed": false,
       "resizable": true,
-      "description": "Turf entrance on wall #37 — centered between W21 and W38 (y=1022.6cm)"
+      "description": "Turf entrance — W37; 36×80"
     },
     {
-      "item_name": "Bathroom Entrance",
+      "item_name": "Bathroom entrance",
       "item_type": 7,
-      "model_url": "procedural:box:81.28:203.2:20.32:cbd5e1",
-      "xpos": 971.5500000000001,
+      "model_url": "procedural:box:81.28:203.20:20.32:cbd5e1",
+      "xpos": 968.5500000000001,
       "ypos": 101.6,
       "zpos": 802.1320000000001,
-      "rotation": 1.5707963267948966,
+      "rotation": -1.5707963267948966,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
       "fixed": false,
       "resizable": true,
-      "description": "Bathroom entrance on wall #39 (interior of 38/39/43/44)"
+      "description": "Bathroom entrance — mid-span W39; 32×80"
     },
     {
-      "item_name": "Bedroom Entrance",
-      "item_type": 7,
-      "model_url": "procedural:box:81.28:203.2:20.32:a78bfa",
-      "xpos": null,
-      "ypos": 101.6,
-      "zpos": null,
+      "item_name": "Basement U-Stairs",
+      "item_type": 8,
+      "model_url": "procedural:ustairs:362.71:397.51:121.92:284.48:16:c4783a",
+      "xpos": 1982.724,
+      "ypos": 145.79600524902344,
+      "zpos": 1089.533,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "U-stairs per blueprint: 16 risers, 4′ flights, open west to hall (former W34 not a wall). Ascends from basement toward main."
+    },
+    {
+      "item_name": "Theatre TV (W6)",
+      "item_type": 2,
+      "model_url": "procedural:tv:320:180:10:111827",
+      "xpos": 1879.6,
+      "ypos": 175,
+      "zpos": 353.28,
       "rotation": 0,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
       "fixed": false,
       "resizable": true,
-      "description": "Bedroom entrance on wall #45 near south opening"
+      "description": "Wall-mounted theatre screen on wall #6 — bezel + mount"
+    },
+    {
+      "item_name": "Basement U-Stairs",
+      "item_type": 8,
+      "model_url": "procedural:ustairs:362.71:397.51:121.92:284.48:16:94a3b8",
+      "xpos": 1982.724,
+      "ypos": 145.79600524902344,
+      "zpos": 1089.533,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "U-stairs per blueprint: 16 risers, 4′ flights, open west to hall (former W34 not a wall). Ascends from basement toward main."
+    },
+    {
+      "item_name": "Furnace",
+      "item_type": 8,
+      "model_url": "procedural:furnace:76.2:182.88:76.2:6b7280",
+      "xpos": 1455,
+      "ypos": 0,
+      "zpos": 1375,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "description": "Furnace — cabinet, louvers, flue collar; NW unfinished storage"
+    },
+    {
+      "item_name": "Floor Drain",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:20:4:20:111827",
+      "xpos": 1520,
+      "ypos": 0,
+      "zpos": 1440,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Blueprint: floor drain SE of furnace"
+    },
+    {
+      "item_name": "Water Heater",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:55.88:152.4:55.88:94a3b8",
+      "xpos": 1435,
+      "ypos": 0,
+      "zpos": 1525,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "description": "Blueprint: water heater along west wall"
+    },
+    {
+      "item_name": "Sump Pit",
+      "item_type": 8,
+      "model_url": "procedural:sumppit:76.20:45.72:76.20:9ca3af",
+      "xpos": 2095,
+      "ypos": 0,
+      "zpos": 1575,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Uncovered basement sump pit — open concrete rim, basin, pedestal pump. Keep clear: do not cover with lids, shelves, or storage."
+    },
+    {
+      "item_name": "Bar Fridge — Zephyr",
+      "item_type": 8,
+      "model_url": "procedural:fridge:91.0:213.0:72.0:1f2937",
+      "xpos": 1176.16,
+      "ypos": 0,
+      "zpos": 119.25999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Zephyr glass-front commercial fridge — body, shelves, glazed door"
+    },
+    {
+      "item_name": "Bar Base — under granite",
+      "item_type": 8,
+      "model_url": "procedural:cabinet:205.28:87.0:61.0:6b4423",
+      "xpos": 1324.3,
+      "ypos": 0,
+      "zpos": 111.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Base cabinets under granite — doors + toe-kick"
+    },
+    {
+      "item_name": "Bar Granite counter",
+      "item_type": 8,
+      "model_url": "procedural:counter:205.28:4.0:63.0:5c6370",
+      "xpos": 1324.3,
+      "ypos": 87,
+      "zpos": 112.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Granite countertop with edge profile"
+    },
+    {
+      "item_name": "Bar Sink",
+      "item_type": 8,
+      "model_url": "procedural:box:56.0:20.0:40.0:374151",
+      "xpos": 1324.3,
+      "ypos": 69,
+      "zpos": 108.71,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Undermount sink in granite"
+    },
+    {
+      "item_name": "Bar Cabinet — base right",
+      "item_type": 8,
+      "model_url": "procedural:cabinet:150.0:91.0:61.0:6b4423",
+      "xpos": 1501.9399999999998,
+      "ypos": 0,
+      "zpos": 111.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Base cabinets right of sink — doors + toe-kick"
+    },
+    {
+      "item_name": "Bar Upper — cabinets",
+      "item_type": 8,
+      "model_url": "procedural:cabinet:355.28:76.0:35.0:6b4423",
+      "xpos": 1399.3,
+      "ypos": 210,
+      "zpos": 98.75999999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Wall cabinets above granite run"
+    },
+    {
+      "item_name": "Bar Island — base",
+      "item_type": 8,
+      "model_url": "procedural:island:340.0:87.0:112.0:3f3f46",
+      "xpos": 1353.8,
+      "ypos": 0,
+      "zpos": 302.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island base — panels, drawers, toe-kick"
+    },
+    {
+      "item_name": "Bar Island — light countertop",
+      "item_type": 8,
+      "model_url": "procedural:counter:348.0:4.0:120.0:f3ebe0",
+      "xpos": 1353.8,
+      "ypos": 87,
+      "zpos": 302.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island light countertop — seating for 8"
+    },
+    {
+      "item_name": "Blazzed HD1-S Smith Machine",
+      "item_type": 8,
+      "model_url": "procedural:smith:179.07:228.60:175.26:1f2937",
+      "xpos": 1247.775,
+      "ypos": 114.3,
+      "zpos": 981.7099999999999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Blazzed HD1-S dimensional — uprights, smith bar/guides, dual stacks, lat seat; 70.5×90×69\"; 36\" door aisle"
+    },
+    {
+      "item_name": "Jordan Strength DB/KB Rack",
+      "item_type": 8,
+      "model_url": "procedural:dbrack:136.42:110.08:80.75:0a0a0a",
+      "xpos": 1456.3200000000002,
+      "ypos": 55.04,
+      "zpos": 934.455,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Jordan Strength 4-tier — pulled west (20\" from smith) for east-door path; rack east clear 48.991338582677024\" to east wall"
+    },
+    {
+      "item_name": "Peloton Tread",
+      "item_type": 8,
+      "model_url": "procedural:tread:172.72:157.48:83.82:1a1a1a",
+      "xpos": 1578.667,
+      "ypos": 78.74,
+      "zpos": 1164.139,
+      "rotation": -0.7853981633974483,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Peloton Tread — rear corners on W24 (south) + W25 (east) interiors; faces NW"
+    },
+    {
+      "item_name": "Peloton Bike+",
+      "item_type": 8,
+      "model_url": "procedural:bike:55.88:152.40:137.16:0a0a0a",
+      "xpos": 1502.707,
+      "ypos": 76.2,
+      "zpos": 1197.408,
+      "rotation": 3.141592653589793,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Peloton Bike+ — faces Jordan; back flush on W24; top-right 7″ left of tread top-right"
+    },
+    {
+      "item_name": "Dynamic Bellagio 3-Person IR Sauna",
+      "item_type": 8,
+      "model_url": "procedural:sauna:152.40:190.50:111.76:c4a574",
+      "xpos": 1064.7600000000002,
+      "ypos": 95.25,
+      "zpos": 1195.9599999999998,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Dynamic Bellagio DYN-6306-02 — 60×44×75 hemlock, glass door, red light + chromotherapy (~$5k list)"
+    },
+    {
+      "item_name": "Bar Stool — west 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1197.8,
+      "ypos": 0,
+      "zpos": 284.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating west (left)"
+    },
+    {
+      "item_name": "Bar Stool — east 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1509.8,
+      "ypos": 0,
+      "zpos": 284.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating east (right)"
+    },
+    {
+      "item_name": "Bar Stool — west 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1197.8,
+      "ypos": 0,
+      "zpos": 320.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating west (left)"
+    },
+    {
+      "item_name": "Bar Stool — east 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1509.8,
+      "ypos": 0,
+      "zpos": 320.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating east (right)"
+    },
+    {
+      "item_name": "Bar Stool — north 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1301.6,
+      "ypos": 0,
+      "zpos": 214.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating north (top/middle)"
+    },
+    {
+      "item_name": "Bar Stool — south 1",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1301.6,
+      "ypos": 0,
+      "zpos": 390.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating south (below/middle)"
+    },
+    {
+      "item_name": "Bar Stool — north 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1406,
+      "ypos": 0,
+      "zpos": 214.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating north (top/middle)"
+    },
+    {
+      "item_name": "Bar Stool — south 2",
+      "item_type": 8,
+      "model_url": "procedural:box:40.0:75.0:40.0:1c1917",
+      "xpos": 1406,
+      "ypos": 0,
+      "zpos": 390.26,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Island seating south (below/middle)"
+    },
+    {
+      "item_type": 8,
+      "rotation": 3.141592653589793,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "L-Screen (RH pitcher)",
+      "model_url": "procedural:lscreen:213.36:213.36:106.68:3.81:1f2937",
+      "xpos": 300,
+      "zpos": 280,
+      "description": "Regulation 7′×7′ L-screen — rotated 180° for RH pitcher (cutout/opening for RH); face batter; pitcher north throws south."
+    },
+    {
+      "item_type": 8,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": true,
+      "ypos": 0,
+      "item_name": "Pitching Rubber",
+      "model_url": "procedural:plane:60.96:2:15.24:f5f5f4",
+      "xpos": 327.66,
+      "zpos": 200,
+      "description": "Pitching rubber — north end, facing south"
+    },
+    {
+      "item_name": "NuRecover Plunge + Chiller",
+      "item_type": 8,
+      "model_url": "procedural:plunge:151.00:54.00:69.00:0e7490",
+      "xpos": 791.7800000000001,
+      "ypos": 27,
+      "zpos": 1194.86,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "NuRecover Plunge Ice Bath — insulated PVC shell, inflated rim, water, SS frame poles; 151×69×54 cm; 345L"
+    },
+    {
+      "item_name": "NuRecover Chiller Pro",
+      "item_type": 8,
+      "model_url": "procedural:chiller:38.00:42.00:36.00:1f2937",
+      "xpos": 894.2800000000001,
+      "ypos": 21,
+      "zpos": 1194.86,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "NuRecover Chiller Pro — 0.3 HP powder-coat unit with grille, display, hose stubs; beside plunge"
+    },
+    {
+      "item_name": "VEVOR Baseball Hitting Mat",
+      "item_type": 8,
+      "model_url": "procedural:hitmat:365.76:3.00:182.88:b91c1c",
+      "xpos": 280.41600000000005,
+      "ypos": 0,
+      "zpos": 1085.1199999999997,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "VEVOR 12×6 batting mat (GRS12x6FT-RED style) — red turf, centered MLB 17″ home plate, L/R batter’s boxes; center 104.4″ from west wall interior"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 1918.78,
+      "ypos": 0,
+      "zpos": 1566.54,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 1918.78,
+      "ypos": 0,
+      "zpos": 1623.7,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2036.9,
+      "ypos": 0,
+      "zpos": 1566.54,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2036.9,
+      "ypos": 0,
+      "zpos": 1623.7,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 shelf 1",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 1977.84,
+      "ypos": 4,
+      "zpos": 1595.12,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 shelf 2",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 1977.84,
+      "ypos": 51.03,
+      "zpos": 1595.12,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 shelf 3",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 1977.84,
+      "ypos": 98.06,
+      "zpos": 1595.12,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 shelf 4",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 1977.84,
+      "ypos": 145.09,
+      "zpos": 1595.12,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — south 2 top",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 1977.84,
+      "ypos": 192.12,
+      "zpos": 1595.12,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2100.02,
+      "ypos": 0,
+      "zpos": 1383.66,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2100.02,
+      "ypos": 0,
+      "zpos": 1501.78,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2157.18,
+      "ypos": 0,
+      "zpos": 1383.66,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2157.18,
+      "ypos": 0,
+      "zpos": 1501.78,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 shelf 1",
+      "item_type": 8,
+      "model_url": "procedural:box:53.36:2.00:114.32:374151",
+      "xpos": 2128.6,
+      "ypos": 4,
+      "zpos": 1442.72,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 shelf 2",
+      "item_type": 8,
+      "model_url": "procedural:box:53.36:2.00:114.32:374151",
+      "xpos": 2128.6,
+      "ypos": 51.03,
+      "zpos": 1442.72,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 shelf 3",
+      "item_type": 8,
+      "model_url": "procedural:box:53.36:2.00:114.32:374151",
+      "xpos": 2128.6,
+      "ypos": 98.06,
+      "zpos": 1442.72,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 shelf 4",
+      "item_type": 8,
+      "model_url": "procedural:box:53.36:2.00:114.32:374151",
+      "xpos": 2128.6,
+      "ypos": 145.09,
+      "zpos": 1442.72,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — east 2 top",
+      "item_type": 8,
+      "model_url": "procedural:box:53.36:2.00:114.32:374151",
+      "xpos": 2128.6,
+      "ypos": 192.12,
+      "zpos": 1442.72,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "Bath Shower — slate pan",
+      "item_type": 8,
+      "model_url": "procedural:box:91.44:10.00:121.92:3a3b40",
+      "xpos": 706.04,
+      "ypos": 0,
+      "zpos": 784.27,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "36×48 dark slate shower pan — NYC gym"
+    },
+    {
+      "item_name": "Bath Shower — curb",
+      "item_type": 8,
+      "model_url": "procedural:box:91.44:8.00:6.00:0a0a0b",
+      "xpos": 706.04,
+      "ypos": 0,
+      "zpos": 842.23,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Matte black shower curb"
+    },
+    {
+      "item_name": "Bath Shower — smoked glass",
+      "item_type": 8,
+      "model_url": "procedural:box:2.00:210.00:107.92:94a3b8:0.4",
+      "xpos": 749.76,
+      "ypos": 18,
+      "zpos": 784.27,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "NYC high-end gym bathroom — dark porcelain, matte black, brushed brass"
+    },
+    {
+      "item_name": "Bath Shower — frame top",
+      "item_type": 8,
+      "model_url": "procedural:box:87.44:3.00:3.00:0a0a0b",
+      "xpos": 706.04,
+      "ypos": 220,
+      "zpos": 727.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Matte black shower frame"
+    },
+    {
+      "item_name": "Bath Shower — frame post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.00:210.00:3.00:0a0a0b",
+      "xpos": 749.76,
+      "ypos": 18,
+      "zpos": 837.23,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Matte black glass post"
+    },
+    {
+      "item_name": "Bath Shower — rain head",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:25.00:3.00:25.00:b08d57",
+      "xpos": 706.04,
+      "ypos": 230,
+      "zpos": 758.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Brushed brass rain shower"
+    },
+    {
+      "item_name": "Bath Shower — arm",
+      "item_type": 8,
+      "model_url": "procedural:box:3.00:3.00:28.00:b08d57",
+      "xpos": 706.04,
+      "ypos": 232,
+      "zpos": 743.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Shower arm"
+    },
+    {
+      "item_name": "Bath Bench — teak",
+      "item_type": 8,
+      "model_url": "procedural:box:40.00:42.00:30.00:6b4f2a",
+      "xpos": 682.32,
+      "ypos": 0,
+      "zpos": 817.23,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Teak shower bench"
+    },
+    {
+      "item_name": "Bath Toilet",
+      "item_type": 8,
+      "model_url": "procedural:toilet:45.72:80.0:54.00:e8e8ea",
+      "xpos": 797.78,
+      "ypos": 0,
+      "zpos": 862,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Toilet — bowl, tank, seat, matte black flush plate"
+    },
+    {
+      "item_name": "Bath Vanity",
+      "item_type": 8,
+      "model_url": "procedural:vanity:124.92:105.0:58.88:0a0a0b",
+      "xpos": 905.59,
+      "ypos": 0,
+      "zpos": 854.03,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Matte black floating vanity — stone top, undermount basin, brushed brass faucet"
+    },
+    {
+      "item_name": "Bath Mirror — slab",
+      "item_type": 8,
+      "model_url": "procedural:box:129.92:160.00:2.00:c7d2e0:0.85",
+      "xpos": 905.59,
+      "ypos": 95,
+      "zpos": 879.97,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Full-height gym mirror"
+    },
+    {
+      "item_name": "Bath Mirror — brass edge",
+      "item_type": 8,
+      "model_url": "procedural:box:131.92:2.00:3.00:b08d57",
+      "xpos": 905.59,
+      "ypos": 95,
+      "zpos": 880.97,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Brass mirror reveal"
+    },
+    {
+      "item_name": "Bath Mirror — brass edge top",
+      "item_type": 8,
+      "model_url": "procedural:box:131.92:2.00:3.00:b08d57",
+      "xpos": 905.59,
+      "ypos": 252,
+      "zpos": 880.97,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Brass mirror reveal"
+    },
+    {
+      "item_name": "Bath Sconce — L",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:8.00:18.00:8.00:b08d57",
+      "xpos": 854.63,
+      "ypos": 175,
+      "zpos": 875.97,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Brushed brass sconce"
+    },
+    {
+      "item_name": "Bath Sconce — R",
+      "item_type": 8,
+      "model_url": "procedural:cylinder:8.00:18.00:8.00:b08d57",
+      "xpos": 956.55,
+      "ypos": 175,
+      "zpos": 875.97,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Brushed brass sconce"
+    },
+    {
+      "item_name": "Bath Towel — bar",
+      "item_type": 8,
+      "model_url": "procedural:box:50.00:2.00:2.00:b08d57",
+      "xpos": 958.55,
+      "ypos": 120,
+      "zpos": 778.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Brass towel bar"
+    },
+    {
+      "item_name": "Bath Towel — hook 1",
+      "item_type": 8,
+      "model_url": "procedural:box:3.00:8.00:6.00:b08d57",
+      "xpos": 960.55,
+      "ypos": 150,
+      "zpos": 763.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Robe hook"
+    },
+    {
+      "item_name": "Bath Towel — hook 2",
+      "item_type": 8,
+      "model_url": "procedural:box:3.00:8.00:6.00:b08d57",
+      "xpos": 960.55,
+      "ypos": 150,
+      "zpos": 778.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Robe hook"
+    },
+    {
+      "item_name": "Bath Towel — hook 3",
+      "item_type": 8,
+      "model_url": "procedural:box:3.00:8.00:6.00:b08d57",
+      "xpos": 960.55,
+      "ypos": 150,
+      "zpos": 793.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Robe hook"
+    },
+    {
+      "item_name": "Bath Niche — recessed",
+      "item_type": 8,
+      "model_url": "procedural:box:35.00:40.00:10.00:2f3035",
+      "xpos": 663.32,
+      "ypos": 110,
+      "zpos": 773.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Shower niche"
+    },
+    {
+      "item_name": "Bath Void — chase floor",
+      "item_type": 8,
+      "model_url": "procedural:box:97.60:1.50:29.02:111827",
+      "xpos": 706.12,
+      "ypos": 0,
+      "zpos": 870.46,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Plumbing void chase"
+    },
+    {
+      "item_name": "Tanner Tee",
+      "xpos": 531.4,
+      "zpos": 1047,
+      "model_url": "procedural:tannertee:24.13:91.44:24.13:1a1a1a",
+      "description": "Tanner Tee Original — 9.5″ base, steel stem, rubber Flextop; set ~36″ (adult 26–43″).",
+      "item_type": 8,
+      "ypos": 0,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true
+    },
+    {
+      "item_name": "Tanner Tee 2",
+      "xpos": 529.4,
+      "zpos": 1117,
+      "model_url": "procedural:tannertee:24.13:91.44:24.13:1a1a1a",
+      "description": "Tanner Tee Original — second tee for east-wall BP station.",
+      "item_type": 8,
+      "ypos": 0,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true
+    },
+    {
+      "item_name": "Scheels Ball Bucket",
+      "xpos": 496.4,
+      "zpos": 1077,
+      "model_url": "procedural:ballbucket:30.48:43.18:30.48:c41e3a",
+      "description": "Scheels Rawlings 6-gal bucket w/ padded lid — 12″×17″, red.",
+      "item_type": 8,
+      "ypos": 0,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true
+    },
+    {
+      "item_name": "Scheels Ball Bucket 2",
+      "xpos": 526.4,
+      "zpos": 1172,
+      "model_url": "procedural:ballbucket:30.48:43.18:30.48:c41e3a",
+      "description": "Scheels Rawlings 6-gal bucket w/ padded lid — spare dozen.",
+      "item_type": 8,
+      "ypos": 0,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true
+    },
+    {
+      "item_name": "Bedroom Queen Bed",
+      "item_type": 8,
+      "model_url": "procedural:bed:156.40:100.0:211.20:3f3f46",
+      "xpos": 877.89,
+      "ypos": 0,
+      "zpos": 338.28,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Queen platform bed — frame, mattress, headboard (−Z), pillows; 60×80 against W2"
+    },
+    {
+      "item_name": "Cage Mesh — North",
+      "item_type": 8,
+      "model_url": "procedural:box:549.72:335.28:2.00:0a0a0a:0.85",
+      "xpos": 302.26,
+      "ypos": 0,
+      "zpos": 21.32,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Black batting-cage net — 4in off north interior"
+    },
+    {
+      "item_name": "Cage Mesh — West",
+      "item_type": 8,
+      "model_url": "procedural:box:2.00:335.28:1215.20:0a0a0a:0.85",
+      "xpos": 26.4,
+      "ypos": 0,
+      "zpos": 629.9199999999998,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Black batting-cage net — 4in off west interior"
+    },
+    {
+      "item_name": "Cage Mesh — South",
+      "item_type": 8,
+      "model_url": "procedural:box:549.72:335.28:2.00:0a0a0a:0.85",
+      "xpos": 302.26,
+      "ypos": 0,
+      "zpos": 1238.5199999999998,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Black batting-cage net — 4in off south interior"
+    },
+    {
+      "item_name": "Cage Netting — East",
+      "item_type": 8,
+      "model_url": "procedural:cagenet:2.00:335.28:1215.20:1a1a1a:0.9",
+      "xpos": 578.12,
+      "ypos": 0,
+      "zpos": 629.9199999999998,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Very see-through baseball cage netting on east (replaces vinyl mesh)"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2041,
+      "ypos": 0,
+      "zpos": 1293.3,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2041,
+      "ypos": 0,
+      "zpos": 1350.5,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2159.1,
+      "ypos": 0,
+      "zpos": 1293.3,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east post",
+      "item_type": 8,
+      "model_url": "procedural:box:3.80:198.12:3.80:1f2937",
+      "xpos": 2159.1,
+      "ypos": 0,
+      "zpos": 1350.5,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east shelf 1",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 2100.05,
+      "ypos": 4,
+      "zpos": 1321.9,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east shelf 2",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 2100.05,
+      "ypos": 51.03,
+      "zpos": 1321.9,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east shelf 3",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 2100.05,
+      "ypos": 98.06,
+      "zpos": 1321.9,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east shelf 4",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 2100.05,
+      "ypos": 145.09,
+      "zpos": 1321.9,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "HF Rack 72763 — north east top",
+      "item_type": 8,
+      "model_url": "procedural:box:114.32:2.00:53.36:374151",
+      "xpos": 2100.05,
+      "ypos": 192.12,
+      "zpos": 1321.9,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": true,
+      "resizable": false,
+      "description": "Harbor Freight U.S. GENERAL boltless (SKU 72763) 48×24×78 — 4 shelves + top"
+    },
+    {
+      "item_name": "Bedroom Nightstand",
+      "item_type": 8,
+      "model_url": "procedural:dresser:50.80:60.96:40.64:5c5346",
+      "xpos": 761.59,
+      "ypos": 0,
+      "zpos": 253,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Bedside nightstand — north edge flush with bed north; 5″ west of mattress"
+    },
+    {
+      "item_name": "Bedroom Closet — shelf",
+      "item_type": 8,
+      "model_url": "procedural:box:306.23:2.5:30.00:a8a29e",
+      "xpos": 813.44,
+      "ypos": 180,
+      "zpos": 697.31,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Blueprint ROD & SHELF — closet shelf north of Bath #5"
+    },
+    {
+      "item_name": "Bedroom Closet — rod",
+      "item_type": 8,
+      "model_url": "procedural:box:306.23:3.2:3.2:78716c",
+      "xpos": 813.44,
+      "ypos": 160,
+      "zpos": 687.07,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Closet hanging rod — bedroom closet bay north of bath (2′-1″ deep)"
+    },
+    {
+      "item_name": "Plunge TV (W35)",
+      "item_type": 8,
+      "model_url": "procedural:tv:139.70:78.74:5:111827",
+      "xpos": 864.2350000000001,
+      "ypos": 140,
+      "zpos": 896.4689900000001,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Wall-mounted ~55″ TV centered on W35 south face — viewing from cold plunge / recovery"
+    },
+    {
+      "item_name": "Wall Bat Rack (W17 cage)",
+      "item_type": 8,
+      "model_url": "procedural:batrack:106.68:81.28:20.32:5c4033",
+      "xpos": 639.1600000000001,
+      "ypos": 100,
+      "zpos": 1187.704,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Wall-mounted bat rack on W17 cage side (west face) — pegs + bats"
+    },
+    {
+      "item_name": "PLYO WALL Elite",
+      "item_type": 8,
+      "model_url": "procedural:plyowall:139.70:228.60:160.02:374151",
+      "xpos": 500.27,
+      "ypos": 0,
+      "zpos": 980,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Pro Rebounders PLYO WALL Elite — 73×55 pad between square-tube legs (frame 90×63×55); pad faces west into cage"
+    },
+    {
+      "item_name": "Rubbermaid FastTrack — wide rail (W31)",
+      "item_type": 8,
+      "model_url": "procedural:box:222.49:3.81:2.54:a8a29e",
+      "xpos": 1920.234,
+      "ypos": 198.12,
+      "zpos": 1294.558,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Rubbermaid FastTrack — one continuous wide rail on W31 west of NE HF rack; vertical hanging wall"
+    },
+    {
+      "item_name": "Rubbermaid FastTrack — upright 1",
+      "item_type": 8,
+      "model_url": "procedural:box:2.54:152.40:2.54:78716c",
+      "xpos": 1819.148,
+      "ypos": 120.015,
+      "zpos": 1294.858,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Rubbermaid FastTrack — one continuous wide rail on W31 west of NE HF rack; vertical hanging wall"
+    },
+    {
+      "item_name": "Rubbermaid FastTrack — upright 2",
+      "item_type": 8,
+      "model_url": "procedural:box:2.54:152.40:2.54:78716c",
+      "xpos": 1869.691,
+      "ypos": 120.015,
+      "zpos": 1294.858,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Rubbermaid FastTrack — one continuous wide rail on W31 west of NE HF rack; vertical hanging wall"
+    },
+    {
+      "item_name": "Rubbermaid FastTrack — upright 3",
+      "item_type": 8,
+      "model_url": "procedural:box:2.54:152.40:2.54:78716c",
+      "xpos": 1920.234,
+      "ypos": 120.015,
+      "zpos": 1294.858,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Rubbermaid FastTrack — one continuous wide rail on W31 west of NE HF rack; vertical hanging wall"
+    },
+    {
+      "item_name": "Rubbermaid FastTrack — upright 4",
+      "item_type": 8,
+      "model_url": "procedural:box:2.54:152.40:2.54:78716c",
+      "xpos": 1970.777,
+      "ypos": 120.015,
+      "zpos": 1294.858,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Rubbermaid FastTrack — one continuous wide rail on W31 west of NE HF rack; vertical hanging wall"
+    },
+    {
+      "item_name": "Rubbermaid FastTrack — upright 5",
+      "item_type": 8,
+      "model_url": "procedural:box:2.54:152.40:2.54:78716c",
+      "xpos": 2021.3200000000002,
+      "ypos": 120.015,
+      "zpos": 1294.858,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Rubbermaid FastTrack — one continuous wide rail on W31 west of NE HF rack; vertical hanging wall"
+    },
+    {
+      "item_name": "Sectional — side 1 (91\" W7)",
+      "item_type": 8,
+      "model_url": "procedural:box:101.60:91.44:231.14:5c5c62",
+      "xpos": 2042.16,
+      "ypos": 45.72,
+      "zpos": 678.77,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Sectional side 1 — 91\" along W7; 40\" deep × 36\" H; meets side 2 at SE"
+    },
+    {
+      "item_name": "Sectional — side 2 (103\" = 143\"−40\" W32)",
+      "item_type": 8,
+      "model_url": "procedural:box:261.62:91.44:101.60:5c5c62",
+      "xpos": 1860.5500000000002,
+      "ypos": 45.72,
+      "zpos": 743.5400000000001,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Sectional side 2 — 143\" outer minus side-1 width; meets side 1 at SE"
+    },
+    {
+      "item_name": "Sectional — guide 17\" (side2→W4)",
+      "item_type": 8,
+      "model_url": "procedural:box:43.18:4.00:3.00:ef4444",
+      "xpos": 1720.4346946954433,
+      "ypos": 42,
+      "zpos": 774.858229208078,
+      "rotation": 2.0163978114565113,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "17\" construction line from side-2 SW toward wall 4 midpoint"
+    },
+    {
+      "item_name": "Sectional — side 3 slant (55×40×36 →W4)",
+      "item_type": 8,
+      "model_url": "procedural:box:139.70:91.44:101.60:5c5c62",
+      "xpos": 1745.474061172133,
+      "ypos": 45.72,
+      "zpos": 709.4159055448245,
+      "rotation": 2.0163978114565113,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Sectional slant — 55\"W × 40\"D × 36\"H; bottom-left joined to side-2 bottom-left"
+    },
+    {
+      "item_name": "Sectional — ottoman (40×40×16)",
+      "item_type": 8,
+      "model_url": "procedural:box:101.60:40.64:101.60:5c5c62",
+      "xpos": 1917.7000000000003,
+      "ypos": 20.32,
+      "zpos": 619.0800000000002,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "Matching ottoman — bottom-right 9\" from side1/side2 inner corner"
+    },
+    {
+      "item_name": "Gym TV — over DB rack (W50)",
+      "item_type": 8,
+      "model_url": "procedural:tv:121.92:68.58:5:111827",
+      "xpos": 1456.3200000000002,
+      "ypos": 154.53,
+      "zpos": 891.41999,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "resizable": true,
+      "description": "55″-class TV on W50 above Jordan DB/KB rack — viewable from Peloton tread/bike on SE→Smith angle"
     }
   ],
   "underlay": {
@@ -1152,71 +2825,196 @@
     {
       "name": "Turf",
       "xCm": 327.66,
-      "yCm": 629.9200000000001
-    },
-    {
-      "name": "Open Basement",
-      "xCm": 1430.9725,
-      "yCm": 629.9200000000001
+      "yCm": 629.92
     },
     {
       "name": "Bathroom",
-      "xCm": 813.4350000000001,
-      "yCm": 802.1320000000001
+      "xCm": 813.435,
+      "yCm": 802.132
     },
     {
       "name": "Utilities/Storage",
-      "xCm": 1750.408,
-      "yCm": 1466.902
+      "xCm": 1900,
+      "yCm": 1450,
+      "notes": "STORAGE — UNFINISHED — DROP CEILING PER CODE. One open room (no util/storage partition)."
+    },
+    {
+      "name": "Theatre",
+      "xCm": 1927.357,
+      "yCm": 592.534
+    },
+    {
+      "name": "Bar",
+      "xCm": 1354.328,
+      "yCm": 477.52
+    },
+    {
+      "name": "Stairs",
+      "xCm": 1942.724,
+      "yCm": 1089.533
+    },
+    {
+      "name": "Recovery",
+      "xCm": 864.616,
+      "yCm": 1073.405
+    },
+    {
+      "name": "Bedroom",
+      "xCm": 864.87,
+      "yCm": 439.675
+    },
+    {
+      "name": "Gym",
+      "xCm": 1374.1399999999999,
+      "yCm": 1086.104
     }
   ],
   "entrances": [
     {
-      "id": "gym-door-w28",
+      "id": "stairs-u-hall",
       "n": 1,
+      "kind": "stairs",
+      "wallN": 0,
+      "name": "Basement stairs (U)",
+      "widthInches": 48,
+      "heightInches": 112,
+      "sillInches": 0,
+      "notes": "Blueprint: U-stair 16 risers × 7″, 4′ flights, open to hall on west (no wall). Well 13′-0½″ N–S. Ascends to main."
+    },
+    {
+      "id": "gym-door-w28",
+      "n": 2,
       "kind": "door",
       "wallN": 28,
       "name": "Gym entrance",
-      "offsetInches": 15.678,
-      "widthInches": 36,
+      "offsetInches": 15.7,
+      "widthInches": 30,
       "heightInches": 80,
       "sillInches": 0,
-      "notes": "Gym entrance — mid-span W28"
+      "notes": "Gym entrance — mid-span W28 chamfer; 30×80"
+    },
+    {
+      "id": "util-door-w28",
+      "n": 3,
+      "kind": "door",
+      "wallN": 28,
+      "name": "Utilities/Storage entrance",
+      "offsetInches": 137.2,
+      "widthInches": 48,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Blueprint 4068-2 — 4′0″×6′8″ on W28 south of stair exit (west opening); 48×80",
+      "fromTip": "W"
+    },
+    {
+      "id": "bed-door-w46",
+      "n": 4,
+      "kind": "door",
+      "wallN": 45,
+      "name": "Bedroom entrance",
+      "offsetInches": 20.3,
+      "widthInches": 32,
+      "heightInches": 80,
+      "sillInches": 0,
+      "notes": "Bedroom entrance — mid-span W46; 32×80"
     },
     {
       "id": "turf-door-w37",
-      "n": 2,
+      "n": 5,
       "kind": "door",
-      "wallN": 37,
+      "wallN": 36,
       "name": "Turf entrance",
-      "offsetInches": 56.2,
+      "offsetInches": 51,
       "widthInches": 36,
       "heightInches": 80,
       "sillInches": 0,
-      "notes": "Centered vertically between W21 (y=1158.2) and W38 (y=887.0)"
+      "notes": "Turf entrance — W37; 36×80"
     },
     {
       "id": "bath-door-w39",
-      "n": 3,
+      "n": 6,
       "kind": "door",
-      "wallN": 39,
+      "wallN": 38,
       "name": "Bathroom entrance",
       "offsetInches": 33.4,
       "widthInches": 32,
       "heightInches": 80,
       "sillInches": 0,
-      "notes": "Bathroom — interior of walls 38, 39, 43, 44"
+      "notes": "Bathroom entrance — mid-span W39; 32×80"
+    }
+  ],
+  "floorFinishes": [
+    {
+      "url": "/models/textures/charcoal-rubber-floor.png",
+      "scale": 100,
+      "area": "Gym",
+      "notes": "Charcoal SBR crumb rubber (lightened for visibility)",
+      "rectCm": {
+        "x": 1370,
+        "z": 1072,
+        "width": 600,
+        "depth": 365
+      }
     },
     {
-      "id": "bed-door-w45",
-      "n": 4,
-      "kind": "door",
-      "wallN": 45,
-      "name": "Bedroom entrance",
-      "widthInches": 32,
-      "heightInches": 80,
-      "sillInches": 0,
-      "notes": "Bedroom — W45 near W40 gap"
+      "url": "/models/textures/charcoal-rubber-floor.png",
+      "scale": 100,
+      "area": "Recovery",
+      "notes": "Charcoal SBR crumb rubber (lightened for visibility)",
+      "rectCm": {
+        "x": 870,
+        "z": 1072,
+        "width": 400,
+        "depth": 365
+      }
+    },
+    {
+      "area": "Theatre",
+      "url": "/models/textures/tile-theatre-light.png",
+      "scale": 70,
+      "notes": "Light grey porcelain tile"
+    },
+    {
+      "area": "Bar",
+      "url": "/models/textures/lvp-bar-light.png",
+      "scale": 100,
+      "notes": "Light warm LVP"
+    },
+    {
+      "area": "Turf",
+      "url": "/models/textures/turf-field.png",
+      "scale": 80,
+      "notes": "Turf inside cage — N/W/S nets 4in off walls; east net 2ft off east wall vinyl",
+      "rectCm": {
+        "x": 302.26,
+        "z": 629.9199999999998,
+        "width": 549.72,
+        "depth": 1215.1999999999998
+      }
+    },
+    {
+      "area": "Utilities/Storage",
+      "url": "/models/textures/concrete-storage.png",
+      "scale": 100,
+      "notes": "Unfinished concrete slab",
+      "rectCm": {
+        "x": 1982.724,
+        "z": 1462.024,
+        "width": 356.712,
+        "depth": 341.472
+      }
+    },
+    {
+      "area": "Bathroom",
+      "url": "/models/textures/tile-bath-nyc-charcoal.png",
+      "scale": 90,
+      "notes": "NYC gym — large-format charcoal porcelain",
+      "rectCm": {
+        "x": 813.435,
+        "z": 802.64,
+        "width": 308.2299999999999,
+        "depth": 160.66000000000008
+      }
     }
   ],
   "wallSchedule": [
@@ -1686,17 +3484,17 @@
     },
     {
       "n": 25,
-      "role": "basement #27",
-      "connectsToWall": 30,
-      "connectsAt": "E",
+      "role": "basement #25",
+      "connectsToWall": 24,
+      "connectsAt": "W",
       "extends": "north",
-      "outerLength": "128.8\"",
+      "outerLength": "10\"",
       "thickness": "3.937\"",
       "wallType": "generic",
       "exposure": "exterior",
-      "name": "basement #27",
-      "offsetInches": 50,
-      "offsetDir": "W"
+      "name": "basement #25",
+      "offsetInches": 6,
+      "offsetDir": "E"
     },
     {
       "n": 26,
@@ -1748,7 +3546,7 @@
         ],
         "totalInches": 124.5
       },
-      "connectsToWall": 37,
+      "connectsToWall": 36,
       "connectsAt": "S",
       "extends": "east",
       "outerLength": "124.5\"",
@@ -1770,7 +3568,7 @@
         ],
         "totalInches": 91
       },
-      "connectsToWall": 38,
+      "connectsToWall": 37,
       "connectsAt": "E",
       "extends": "north",
       "outerLength": "91\"",
@@ -1791,7 +3589,7 @@
         ],
         "totalInches": 25
       },
-      "connectsToWall": 42,
+      "connectsToWall": 41,
       "connectsAt": "N",
       "extends": "west",
       "outerLength": "124.5\"",
@@ -1831,22 +3629,12 @@
       "thickness": "4\"",
       "wallType": "generic",
       "exposure": "exterior",
-      "notes": "Bathroom south wall"
+      "notes": "Bathroom south wall — SW void 3'-4\" × 1'-1\" jog"
     },
     {
       "n": 34,
-      "role": "Bath E — door",
-      "name": "basement #39 bath east (door)",
-      "outerLength": "66.8\"",
-      "thickness": "4\"",
-      "wallType": "generic",
-      "exposure": "exterior",
-      "notes": "Bathroom east wall — entrance"
-    },
-    {
-      "n": 35,
       "role": "basement #42",
-      "connectsToWall": 43,
+      "connectsToWall": 42,
       "connectsAt": "E",
       "extends": "north",
       "outerLength": "47.179\"",
@@ -1858,7 +3646,7 @@
       "offsetDir": "S"
     },
     {
-      "n": 36,
+      "n": 35,
       "role": "Bath N",
       "name": "basement #43 bath north",
       "outerLength": "124.5\"",
@@ -1868,7 +3656,7 @@
       "notes": "Bathroom north wall"
     },
     {
-      "n": 37,
+      "n": 36,
       "role": "Bath W",
       "name": "basement #44 bath west",
       "outerLength": "64.0\"",
@@ -1878,7 +3666,7 @@
       "notes": "Bathroom west wall"
     },
     {
-      "n": 38,
+      "n": 37,
       "role": "basement #45",
       "connectsToWall": 2,
       "connectsAt": "E",
@@ -1892,7 +3680,7 @@
       "offsetDir": "W"
     },
     {
-      "n": 44,
+      "n": 43,
       "role": "basement #45",
       "connectsToWall": 2,
       "connectsAt": "E",
@@ -1902,13 +3690,13 @@
       "wallType": "generic",
       "exposure": "exterior",
       "name": "basement #45",
-      "offsetInches": 14,
+      "offsetInches": 6,
       "offsetDir": "W"
     },
     {
-      "n": 46,
+      "n": 45,
       "role": "basement #46",
-      "connectsToWall": 42,
+      "connectsToWall": 41,
       "connectsAt": "E",
       "extends": "east",
       "outerLength": "40.5\"",
@@ -1921,6 +3709,6 @@
     }
   ],
   "meta": {
-    "name": "2713 S 224th — Basement"
+    "name": "2713-S-224th-Basement"
   }
 }

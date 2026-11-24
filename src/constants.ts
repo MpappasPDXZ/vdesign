@@ -699,11 +699,23 @@ export const ITEMS: Item[] = [
     key: 'entranceStairs',
     name: 'Stair Opening',
     description:
-      'Wall-hosted stair entrance — cuts an opening in the host wall. Placeholder mesh; size in Entrance Editor later.',
+      'Wall-hosted stair opening — cuts a hole in the host wall (use with open stairwell). Prefer floor U-stairs for the run.',
     image: '/icons/entrance-stairs.svg',
-    // 48" wide × 84" tall × 8" deep — stair rough opening through wall
+    // 48" wide × 84" tall × 8" deep — rough opening through wall
     model: 'procedural:box:121.92:213.36:20.32:64748b',
     type: '7',
+    category: 'entrance'
+  },
+  {
+    key: 'stairsURun',
+    name: 'U-Stairs (basement up)',
+    description:
+      'U-shaped stair run in the stairwell — 16 risers, 4′ flights, open to hall. Ascends from basement toward main.',
+    image: '/icons/entrance-stairs.svg',
+    // wellW × wellD × flightW × totalRise × risers × color (cm)
+    // Default sized for 11′-11″ × 13′-0½″ well, 4′ flights, 9′-4″ rise (16×7″)
+    model: 'procedural:ustairs:362.71:397.51:121.92:284.48:16:c4783a',
+    type: '8',
     category: 'entrance'
   },
   {
@@ -747,9 +759,11 @@ export const ITEMS: Item[] = [
   {
     key: 'venueLScreen',
     name: 'L-Screen',
-    description: 'Protective L-screen for pitching / BP.',
+    description:
+      'Regulation 7′×7′ L-screen (JUGS/FORTRESS) with 42″ cutout — RH pitcher north, throws south.',
     image: '/icons/venue-lscreen.svg',
-    model: 'procedural:box:213:213:10:6b7280',
+    // WIDTH × HEIGHT × CUTOUT × TUBE × color (cm)
+    model: 'procedural:lscreen:213.36:213.36:106.68:3.81:1f2937',
     type: '8',
     category: 'venue'
   },
@@ -772,6 +786,36 @@ export const ITEMS: Item[] = [
     category: 'venue'
   },
   {
+    key: 'venueCageMeshBlack',
+    name: 'Batting Cage Mesh (black vinyl)',
+    description: 'Black vinyl mesh panel ~11′ tall, semi-transparent — hang 4″ off walls.',
+    image: '/icons/venue-net.svg',
+    // W×H×D×color×opacity — thin sheet
+    model: 'procedural:box:304.8:335.28:2:0a0a0a:0.55',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueClayMat',
+    name: 'Clay Hitting Mat (6×12)',
+    description:
+      'Pro batter’s-box clay mat — standard 6′×12′ (On Deck / DuraTurf / California Turf). 12′ across plate (E–W), 6′ deep (N–S).',
+    image: '/icons/venue-plate.svg',
+    // W×H×D cm — 12′ × ~1.2″ foam look × 6′
+    model: 'procedural:plane:365.76:3:182.88:c45c26',
+    type: '8',
+    category: 'venue'
+  },
+  {
+    key: 'venueLScreenTall',
+    name: 'L-Screen (7×7)',
+    description: '7′×7′ L-screen, 42″ cutout — RH pitcher throws south through east opening.',
+    image: '/icons/venue-lscreen.svg',
+    model: 'procedural:lscreen:213.36:213.36:106.68:3.81:1f2937',
+    type: '8',
+    category: 'venue'
+  },
+  {
     key: 'venueMedBallWall',
     name: 'Med Ball Wall',
     description: 'Medicine ball rebound wall placeholder.',
@@ -782,21 +826,61 @@ export const ITEMS: Item[] = [
   },
   {
     key: 'venueTee',
-    name: 'Batting Tee',
-    description: 'Batting tee stand placeholder.',
+    name: 'Tanner Tee',
+    description:
+      'Tanner Tee Original — 9.5″ composite base, steel stem, rubber Flextop. Adult 26–43″ (shown ~36″).',
     image: '/icons/venue-tee.svg',
-    model: 'procedural:cylinder:30:110:30:3b82f6',
+    // 9.5″ × 36″ × 9.5″
+    model: 'procedural:tannertee:24.13:91.44:24.13:1a1a1a',
     type: '8',
     category: 'venue'
   },
   {
     key: 'venueBucket',
-    name: 'Ball Bucket',
-    description: 'Ball bucket placeholder.',
+    name: 'Scheels Ball Bucket',
+    description:
+      'Scheels / Rawlings 6-gallon bucket with padded lid — 12″ dia × 17″ H (holds ~2 dozen baseballs).',
     image: '/icons/venue-bucket.svg',
-    model: 'procedural:cylinder:35:45:35:111827',
+    model: 'procedural:ballbucket:30.48:43.18:30.48:c41e3a',
     type: '8',
     category: 'venue'
+  },
+  // Mechanical / utilities (procedural placeholders)
+  {
+    key: 'mechFurnace',
+    name: 'Furnace',
+    description: 'Gas furnace footprint (~30″×30″×72″). NW corner of unfinished storage.',
+    image: '/icons/venue-machine.svg',
+    model: 'procedural:box:76.2:182.88:76.2:6b7280',
+    type: '8',
+    category: 'misc'
+  },
+  {
+    key: 'mechWaterHeater',
+    name: 'Water Heater',
+    description: 'Tank water heater (~22″ dia × 60″).',
+    image: '/icons/venue-bucket.svg',
+    model: 'procedural:cylinder:55.88:152.4:55.88:94a3b8',
+    type: '8',
+    category: 'misc'
+  },
+  {
+    key: 'mechSumpPump',
+    name: 'Sump Pit (uncovered)',
+    description: 'Open 30″ sump pit — concrete rim, basin, pedestal pump (no cover).',
+    image: '/icons/venue-bucket.svg',
+    model: 'procedural:sumppit:76.2:45.72:76.2:9ca3af',
+    type: '8',
+    category: 'misc'
+  },
+  {
+    key: 'mechFloorDrain',
+    name: 'Floor Drain',
+    description: 'Floor drain disk marker.',
+    image: '/icons/venue-plate.svg',
+    model: 'procedural:cylinder:20:4:20:111827',
+    type: '8',
+    category: 'misc'
   }
 ]
 
@@ -808,6 +892,13 @@ export const FLOOR_TEXTURES = [
     url: 'https://cdn-images.archybase.com/archybase/blueprint3d/covers/light_fine_wood.jpg',
     stretch: false,
     scale: 300
+  },
+  {
+    name: 'Charcoal Rubber Gym (12mm look)',
+    thumbnail: '/models/textures/charcoal-rubber-floor-thumb.png',
+    url: '/models/textures/charcoal-rubber-floor.png',
+    stretch: false,
+    scale: 100
   }
 ]
 

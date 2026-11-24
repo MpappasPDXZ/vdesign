@@ -1,6 +1,8 @@
 import { Model } from './model/model'
 import { Floorplanner } from './floorplanner/floorplanner'
 import { Main } from './three/main'
+import { WallItem } from './items/wall_item'
+import type { ItemFootprint } from './floorplanner/item_footprint'
 
 /** Startup options. */
 export interface Options {
@@ -43,8 +45,24 @@ export class Blueprint3d {
 
     if (!options.widget) {
       this.floorplanner = new Floorplanner(options.floorplannerElement || '', this.model.floorplan)
+      this.floorplanner.setItemFootprintProvider(() => this.collectItemFootprints())
     } else {
       this.three.getController().enabled = false
     }
+  }
+
+  /** Non-wall scene items as 2D footprints (skips doors/stairs/wall-hung). */
+  private collectItemFootprints(): ItemFootprint[] {
+    return this.model.scene
+      .getItems()
+      .filter((item) => !(item instanceof WallItem))
+      .map((item) => ({
+        xCm: item.position.x,
+        zCm: item.position.z,
+        widthCm: item.getWidth(),
+        depthCm: item.getDepth(),
+        rotationY: item.rotation.y,
+        label: item.metadata.itemName || ''
+      }))
   }
 }

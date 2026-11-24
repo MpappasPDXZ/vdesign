@@ -56,6 +56,8 @@ export class Main {
   private saved3DPosition: THREE.Vector3 | null = null
   // @ts-ignore - saved3DRotation is declared but not used, keeping for future use
   private saved3DRotation: { theta: number; phi: number } | null = null
+  /** True after we've fitted to a real (non-empty) floorplan once. */
+  private hasFittedToPlan = false
 
   constructor(
     model: Model,
@@ -72,7 +74,8 @@ export class Main {
     const defaultOptions: Required<MainOptions> = {
       resize: true,
       pushHref: false,
-      spin: true,
+      // Off by default — auto-orbit fights selecting/dragging furniture
+      spin: false,
       spinSpeed: 0.00002,
       clickPan: true,
       canMoveFixedItems: false,
@@ -92,7 +95,9 @@ export class Main {
     this.camera = new THREE.PerspectiveCamera(45, 1, 1, 200000)
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
-      preserveDrawingBuffer: true // required to support .toDataURL()
+      preserveDrawingBuffer: true, // required to support .toDataURL()
+      // Large plans (cm units, far=200k) crush depth precision → floor z-fighting
+      logarithmicDepthBuffer: true
     })
     this.renderer.autoClear = false
     this.renderer.shadowMap.enabled = true
@@ -126,9 +131,16 @@ export class Main {
       window.addEventListener('resize', this.updateWindowSize.bind(this))
     }
 
-    // setup camera nicely
+    // Fit empty scene first; when a real plan loads, refit to full drawing centroid + zoom-out
     this.centerCamera()
-    this.model.floorplan.fireOnUpdatedRooms(this.centerCamera.bind(this))
+    this.model.floorplan.fireOnUpdatedRooms(() => {
+      const size = this.model.floorplan.getSize()
+      const span = Math.max(size.x, size.z, 0)
+      if (!this.hasFittedToPlan && span > 200) {
+        this.centerCamera()
+      }
+      this._needsUpdate = true
+    })
 
     // @ts-ignore - Item is imported but not used, keeping for future use
     const lights = new Lights(this.scene.getScene(), this.model.floorplan)
@@ -335,26 +347,33 @@ export class Main {
     this._needsUpdate = true
   }
 
+  /**
+   * Default 3D orbit: from ESE (~75° azimuth), 45° elevation.
+   * Puts west/turf toward the far-top of the frame and util/SE toward bottom-left.
+   */
+  private static readonly DEFAULT_3D_POLAR = Math.PI / 4
+  private static readonly DEFAULT_3D_AZIMUTH = (75 * Math.PI) / 180
+  /** Orbit distance = plan span × this — higher = more zoomed out over full drawing. */
+  private static readonly DEFAULT_3D_DIST_FACTOR = 3.2
+
   public centerCamera(): void {
     const yOffset = 150.0
-
     const pan = this.model.floorplan.getCenter()
     pan.y = yOffset
-
-    this.controls.target = pan
+    this.controls.target.copy(pan)
 
     const size = this.model.floorplan.getSize()
     const span = Math.max(size.x, size.z, 100)
-    // Keep zoom-out headroom past the fit distance; sync camera.far so nothing clips.
     this.controls.maxDistance = Math.max(100000, span * 40)
     this.camera.far = Math.max(this.camera.far, this.controls.maxDistance * 2)
     this.camera.updateProjectionMatrix()
-    const distance = span * 1.5
 
-    const offset = pan.clone().add(new THREE.Vector3(0, distance, distance))
-    this.camera.position.copy(offset)
-
-    this.controls.update()
+    const distance = span * Main.DEFAULT_3D_DIST_FACTOR
+    const polar = Main.DEFAULT_3D_POLAR
+    const azimuth = Main.DEFAULT_3D_AZIMUTH
+    this.controls.setSpherical(azimuth, polar, distance)
+    if (span > 200) this.hasFittedToPlan = true
+    this._needsUpdate = true
   }
 
   /** Zoom camera toward the orbit target (see less of the plan). */
@@ -371,8 +390,9 @@ export class Main {
     this._needsUpdate = true
   }
 
-  /** Re-fit the camera to the current floorplan bounds. */
+  /** Re-fit the camera to the current floorplan bounds (full drawing centroid + zoom-out). */
   public fitCamera(): void {
+    this.hasFittedToPlan = false
     this.centerCamera()
     this._needsUpdate = true
   }
@@ -412,26 +432,22 @@ export class Main {
     this.viewMode = mode
 
     if (mode === '2d') {
-      // Save current 3D position
       this.saved3DPosition = this.camera.position.clone()
 
-      // Switch to 2D top-down view
       const center = this.model.floorplan.getCenter()
       const size = this.model.floorplan.getSize()
       const maxDim = Math.max(size.x, size.z)
-      // Increase distance to reduce perspective distortion and wall blocking
-      const distance = maxDim * 1.5 // Increased from 1.2 to 2.0
+      const distance = maxDim * 1.5
 
       const targetPosition = { x: center.x, y: distance, z: center.z }
       const targetLookAt = { x: center.x, y: 0, z: center.z }
 
-      // Animate camera position and controls target simultaneously
       animate(this.camera.position, {
         x: targetPosition.x,
         y: targetPosition.y,
         z: targetPosition.z,
         duration: 800,
-        ease: 'inOut(2)', // easeInOutQuad equivalent
+        ease: 'inOut(2)',
         onUpdate: () => {
           this.controls.update()
           this._needsUpdate = true
@@ -446,45 +462,16 @@ export class Main {
         ease: 'inOut(2)'
       })
 
-      // Disable rotation in 2D mode
       this.controls.noRotate = true
       this.controls.maxPolarAngle = 0
       this.controls.minPolarAngle = 0
     } else {
-      // Restore 3D view
-      let targetPosition: THREE.Vector3
-      if (this.saved3DPosition) {
-        targetPosition = this.saved3DPosition
-      } else {
-        // Calculate centered position
-        const center = this.model.floorplan.getCenter()
-        const size = this.model.floorplan.getSize()
-        const maxDim = Math.max(size.x, size.z)
-        const distance = maxDim * 1.5
-        targetPosition = new THREE.Vector3(
-          center.x + distance * 0.7,
-          distance * 0.8,
-          center.z + distance * 0.7
-        )
-      }
-
-      // Animate camera position back to 3D view
-      animate(this.camera.position, {
-        x: targetPosition.x,
-        y: targetPosition.y,
-        z: targetPosition.z,
-        duration: 800,
-        ease: 'inOut(2)',
-        onUpdate: () => {
-          this.controls.update()
-          this._needsUpdate = true
-        }
-      })
-
-      // Re-enable rotation in 3D mode
       this.controls.noRotate = false
       this.controls.maxPolarAngle = Math.PI / 2
       this.controls.minPolarAngle = 0
+      // Always frame the full drawing centroid + zoom-out (don't restore a
+      // stale near-origin camera from empty init before the plan loaded).
+      this.centerCamera()
     }
 
     this._needsUpdate = true

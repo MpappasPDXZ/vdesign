@@ -14,12 +14,41 @@ export interface VdesignProject {
   wallSchedule?: WallScheduleEntry[]
   /** Wall-hosted entrances (doors, stair openings, …) */
   entrances?: EntranceScheduleEntry[]
+  /**
+   * Floor finishes keyed by area label name (e.g. "Gym").
+   * Applied to the room whose polygon contains that area’s point.
+   */
+  floorFinishes?: FloorFinishSpec[]
   meta?: {
     name?: string
     address?: string
     level?: string
     notes?: string
   }
+}
+
+/** Axis-aligned floor patch in plan cm (center + size). Used when the area is not a closed room. */
+export interface FloorFinishRectCm {
+  /** Center X (plan cm) */
+  x: number
+  /** Center Z / plan Y (cm) */
+  z: number
+  width: number
+  depth: number
+}
+
+/** Named-area floor finish (rubber, hardwood, …). */
+export interface FloorFinishSpec {
+  area: string
+  url: string
+  /** Texture repeat scale in cm (smaller → denser pattern). */
+  scale: number
+  notes?: string
+  /**
+   * Optional explicit floor patch. Required for open bays (gym→hall with no door):
+   * room detection only finds closed wall cycles, so area labels alone never get a mesh.
+   */
+  rectCm?: FloorFinishRectCm
 }
 
 /** How an inch value was derived (ft+in sum) — audit trail, not a second length field. */
