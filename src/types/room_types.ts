@@ -8,7 +8,42 @@ export enum RoomType {
   LIVING_ROOM = 'living-room',
   KITCHEN = 'kitchen',
   BATHROOM = 'bathroom',
-  OFFICE = 'office'
+  OFFICE = 'office',
+  /** Home level — outdoor yard (card badge / save tag, not a Feng Shui room). */
+  BACKYARD = 'backyard',
+  /** Home level — basement / lower level (card badge; label “Downstairs”). */
+  DOWNSTAIRS = 'downstairs'
+}
+
+/** Room types offered in New/Save/Template pickers (excludes home-level tags). */
+export const SELECTABLE_ROOM_TYPES: RoomType[] = [
+  RoomType.BEDROOM,
+  RoomType.LIVING_ROOM,
+  RoomType.KITCHEN,
+  RoomType.BATHROOM,
+  RoomType.OFFICE
+]
+
+/**
+ * Map a home level id/name to the card badge room type.
+ * basement → downstairs; backyard → backyard; else bedroom default.
+ */
+export function roomTypeForLevel(
+  levelId?: string | null,
+  levelName?: string | null
+): RoomType {
+  const id = (levelId || '').toLowerCase()
+  const name = (levelName || '').toLowerCase()
+  if (id === 'backyard' || name.includes('backyard')) return RoomType.BACKYARD
+  if (
+    id === 'basement' ||
+    id === 'downstairs' ||
+    name.includes('basement') ||
+    name.includes('downstairs')
+  ) {
+    return RoomType.DOWNSTAIRS
+  }
+  return RoomType.BEDROOM
 }
 
 /**
@@ -44,5 +79,7 @@ export const ROOM_TYPE_LABELS: Record<RoomType, string> = {
   [RoomType.LIVING_ROOM]: 'Living Room',
   [RoomType.KITCHEN]: 'Kitchen',
   [RoomType.BATHROOM]: 'Bathroom',
-  [RoomType.OFFICE]: 'Office'
+  [RoomType.OFFICE]: 'Office',
+  [RoomType.BACKYARD]: 'Backyard',
+  [RoomType.DOWNSTAIRS]: 'Downstairs'
 }

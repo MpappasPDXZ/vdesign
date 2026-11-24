@@ -5,10 +5,11 @@ import { HelpCircle, X, Hand, Move, ZoomIn, RotateCw, MousePointer2, Pencil, Tra
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-media-query"
+import { isPlanView, type ViewMode } from '@/types/view-mode'
 
 interface ControlsHelpProps {
   className?: string
-  viewMode?: '2d' | '3d'
+  viewMode?: ViewMode
 }
 
 /**
@@ -18,6 +19,7 @@ interface ControlsHelpProps {
 export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) {
   const [isOpen, setIsOpen] = useState(false)
   const isMobile = useIsMobile()
+  const plan = isPlanView(viewMode)
 
   const toggleHelp = () => {
     setIsOpen(!isOpen)
@@ -61,7 +63,11 @@ export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) 
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className={cn('font-semibold', isMobile ? 'text-xl' : 'text-lg')}>
-                {viewMode === '2d' ? '2D Floorplanner Controls' : '3D Viewer Controls'}
+                {viewMode === 'blueprint'
+                  ? 'Blueprint View Controls'
+                  : plan
+                    ? '2D Floorplanner Controls'
+                    : '3D Viewer Controls'}
               </h2>
               <Button
                 onClick={toggleHelp}
@@ -75,9 +81,9 @@ export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) 
 
             {/* Content */}
             <div className={cn('p-6 space-y-6', isMobile ? 'text-base' : 'text-sm')}>
-              {viewMode === '2d' ? (
+              {plan ? (
                 <>
-                  {/* 2D Floorplanner Controls */}
+                  {/* 2D / Blueprint Floorplanner Controls */}
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -238,9 +244,9 @@ export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) 
               {/* Footer Tip */}
               <div className="pt-4 border-t border-border">
                 <p className="text-xs text-muted-foreground text-center">
-                  {viewMode === '2d'
-                    ? 'Tip: Click "Done" when finished to switch to 3D view'
-                    : 'Tip: Switch between 2D and 3D views using the toggle at the top right'
+                  {plan
+                    ? 'Tip: Use 2D / Blueprint / 3D in the top-right toggle'
+                    : 'Tip: Switch between 2D, Blueprint, and 3D using the toggle at the top right'
                   }
                 </p>
               </div>

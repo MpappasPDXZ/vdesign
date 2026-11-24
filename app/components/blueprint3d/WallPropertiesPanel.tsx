@@ -13,7 +13,7 @@ import type { InchMeasurementLineage, WallScheduleEntry } from '@/types/project'
 import { cmToInches, inchesToCm } from './InchesDimensionInput'
 import { InchFieldWithCalc } from './InchFieldWithCalc'
 
-const WALL_TYPES: WallType[] = ['concrete', 'wood', 'steel', 'partition', 'generic']
+const WALL_TYPES: WallType[] = ['concrete', 'wood', 'steel', 'fence', 'partition', 'generic']
 
 type Cardinal = 'N' | 'E' | 'S' | 'W'
 

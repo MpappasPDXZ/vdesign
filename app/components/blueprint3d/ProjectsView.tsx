@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { FolderOpen, Upload } from 'lucide-react'
-import { RoomType } from '@blueprint3d/types/room_types'
+import { RoomType, roomTypeForLevel } from '@blueprint3d/types/room_types'
 import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
 import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
 import { Button } from '@/components/ui/button'
@@ -12,10 +12,17 @@ import { MyFloorplans } from './MyFloorplans'
 import {
   normalizeAreas,
   normalizeUnderlay,
+  parseHomeJson,
   parseProjectJson,
   toSerializedRoom
 } from '@/lib/load-project'
-import type { SeedProjectInfo, VdesignProject, WallScheduleEntry } from '@/types/project'
+import { getActiveLevel, isVdesignHome, levelToProject } from '@/lib/home'
+import type {
+  SeedProjectInfo,
+  VdesignHome,
+  VdesignProject,
+  WallScheduleEntry
+} from '@/types/project'
 
 interface ProjectsViewProps {
   onBlueprintLoad: (
@@ -25,7 +32,8 @@ interface ProjectsViewProps {
     name?: string,
     underlay?: UnderlayConfig | null,
     areas?: AreaLabel[],
-    wallSchedule?: WallScheduleEntry[]
+    wallSchedule?: WallScheduleEntry[],
+    home?: VdesignHome | null
   ) => void
 }
 
@@ -42,18 +50,27 @@ export function ProjectsView({ onBlueprintLoad }: ProjectsViewProps) {
   }, [])
 
   const loadProject = useCallback(
-    async (project: VdesignProject, id?: string, name?: string) => {
+    async (
+      project: VdesignProject,
+      id?: string,
+      name?: string,
+      home?: VdesignHome | null
+    ) => {
       const serialized = toSerializedRoom(project)
       const underlay = normalizeUnderlay(project.underlay)
       const areas = normalizeAreas(project.areas)
+      const levelId = home?.activeLevelId || project.meta?.levelId
+      const levelName =
+        home?.levels.find((l) => l.id === levelId)?.name || project.meta?.level
       onBlueprintLoad(
         serialized,
-        RoomType.BEDROOM,
+        roomTypeForLevel(levelId, levelName),
         id,
         name || project.meta?.name || 'Imported project',
         underlay,
         areas,
-        project.wallSchedule || []
+        project.wallSchedule || [],
+        home ?? null
       )
       toast.success(t('importSuccess'))
     },
@@ -79,8 +96,37 @@ export function ProjectsView({ onBlueprintLoad }: ProjectsViewProps) {
       try {
         const res = await fetch(seed.path)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const project = parseProjectJson(await res.text())
-        await loadProject(project, seed.id, seed.name)
+        const text = await res.text()
+        let data: unknown
+        try {
+          data = JSON.parse(text)
+        } catch {
+          throw new Error('Invalid JSON')
+        }
+        // API wrapper { ok, home, project } or raw home/level JSON
+        const wrapped = data as { home?: unknown; project?: VdesignProject }
+        if (wrapped?.home && isVdesignHome(wrapped.home) && wrapped.project) {
+          await loadProject(
+            wrapped.project,
+            seed.id,
+            wrapped.home.meta.name || seed.name,
+            wrapped.home
+          )
+          return
+        }
+        if (isVdesignHome(data)) {
+          const home = parseHomeJson(text, seed.name)
+          const level = getActiveLevel(home)
+          await loadProject(
+            levelToProject(level, home.meta),
+            seed.id,
+            home.meta.name,
+            home
+          )
+          return
+        }
+        const project = parseProjectJson(text)
+        await loadProject(project, seed.id, seed.name, null)
       } catch (e) {
         console.error(e)
         toast.error(t('loadError'))
@@ -160,7 +206,8 @@ export function ProjectsView({ onBlueprintLoad }: ProjectsViewProps) {
               name,
               underlay ?? null,
               areas ?? [],
-              wallSchedule
+              wallSchedule,
+              null
             )
           }
         />

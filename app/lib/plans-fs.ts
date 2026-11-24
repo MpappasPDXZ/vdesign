@@ -1,7 +1,17 @@
 import fs from 'fs/promises'
 import path from 'path'
-import type { VdesignProject } from '@/types/project'
-import { mergePlanProjects } from '@/lib/plans-merge'
+import type { VdesignHome, VdesignProject } from '@/types/project'
+import { mergeHomeLevel, mergePlanProjects } from '@/lib/plans-merge'
+import {
+  getActiveLevel,
+  isVdesignHome,
+  levelToProject,
+  normalizeToHome,
+  projectToLevelPayload,
+  stripLevelSuffix,
+  upsertLevel,
+  wrapProjectAsHome
+} from '@/lib/home'
 
 /** Repo `plans/` directory (Docker: /app/plans via volume). */
 export function getPlansDir(): string {
@@ -67,27 +77,44 @@ export interface PlanWriteResult {
   /** True when incoming was combined with an existing on-disk plan. */
   merged: boolean
   mergeNotes: string[]
+  home?: VdesignHome
+  levelId?: string
 }
 
 export async function writePlanToRepo(opts: {
+  /** Active level payload (what the canvas is editing). */
   project: VdesignProject
+  /** Home display / slug name (e.g. 2713-S-224th). Level suffixes are stripped. */
   name: string
   id?: string
+  /** Which level to patch. Defaults to project.meta.levelId or "main". */
+  levelId?: string
+  levelName?: string
   /**
-   * mtimeMs from the Load latest that this save is based on.
+   * mtimeMs from Reload that this save is based on.
    * When it matches disk, skip merge and write incoming as-is.
    * When it mismatches (or omitted), merge additive fields with disk under the lock.
    */
   baseMtimeMs?: number
   /** Default true — parallel agents need merge. Set false only for intentional full replace. */
   merge?: boolean
+  /**
+   * When true and disk has no home yet, replace the whole file with a new home
+   * built from `project` (plus optional extraLevels). Exclusive writer only.
+   */
+  replaceHome?: boolean
 }): Promise<PlanWriteResult> {
   const wallsIn = opts.project?.floorplan?.walls?.length ?? 0
   if (!wallsIn) {
     throw new Error('Refusing to save empty floorplan (0 walls)')
   }
 
-  const slug = slugifyPlanName(opts.name || opts.id || 'vdesign-plan')
+  const homeName = stripLevelSuffix(opts.name || opts.id || 'vdesign-plan')
+  const slug = slugifyPlanName(homeName)
+  const levelId =
+    opts.levelId || opts.project.meta?.levelId || opts.project.meta?.level || 'main'
+  const levelName =
+    opts.levelName || opts.project.meta?.level || levelId
   const doMerge = opts.merge !== false
 
   return withSlugWriteLock(slug, async () => {
@@ -100,7 +127,6 @@ export async function writePlanToRepo(opts: {
     const versionPath = path.join(versionsDir, `${stamp()}.json`)
     const lockPath = path.join(versionsDir, '.write.lock')
 
-    // Cross-process advisory lock (parallel agents / multiple Node workers)
     const lockDeadline = Date.now() + 15_000
     for (;;) {
       try {
@@ -112,7 +138,6 @@ export async function writePlanToRepo(opts: {
         const code = (err as NodeJS.ErrnoException).code
         if (code !== 'EEXIST') throw err
         if (Date.now() > lockDeadline) {
-          // Stale lock — take over
           await fs.rm(lockPath, { force: true })
           continue
         }
@@ -121,12 +146,12 @@ export async function writePlanToRepo(opts: {
     }
 
     try {
-      let disk: VdesignProject | null = null
+      let diskRaw: unknown = null
       let diskMtimeMs = 0
       try {
         const st = await fs.stat(latestPath)
         diskMtimeMs = st.mtimeMs
-        disk = JSON.parse(await fs.readFile(latestPath, 'utf8')) as VdesignProject
+        diskRaw = JSON.parse(await fs.readFile(latestPath, 'utf8'))
       } catch {
         /* first save for this slug */
       }
@@ -136,48 +161,103 @@ export async function writePlanToRepo(opts: {
         diskMtimeMs > 0 &&
         Math.abs(diskMtimeMs - opts.baseMtimeMs) < 1
 
-      let project: VdesignProject = {
-        ...opts.project,
-        meta: {
-          ...opts.project.meta,
-          name: opts.name || opts.project.meta?.name,
-          notes: opts.project.meta?.notes
-        }
-      }
+      let home: VdesignHome
       let merged = false
       let mergeNotes: string[] = []
 
-      if (doMerge && disk && !baseMatches) {
-        const result = mergePlanProjects(disk, project)
-        project = {
-          ...result.project,
-          meta: {
-            ...result.project.meta,
-            name: opts.name || result.project.meta?.name,
-            notes: result.project.meta?.notes
+      const incomingPayload = projectToLevelPayload(opts.project)
+
+      if (!diskRaw) {
+        home = wrapProjectAsHome(opts.project, {
+          homeName,
+          levelId: String(levelId),
+          levelName: String(levelName)
+        })
+        mergeNotes = ['created new home']
+      } else if (isVdesignHome(diskRaw)) {
+        if (doMerge && !baseMatches) {
+          const result = mergeHomeLevel(
+            diskRaw,
+            String(levelId),
+            incomingPayload,
+            String(levelName)
+          )
+          home = {
+            ...result.home,
+            meta: {
+              ...result.home.meta,
+              name: homeName,
+              address: opts.project.meta?.address ?? result.home.meta.address,
+              notes: opts.project.meta?.notes ?? result.home.meta.notes
+            },
+            activeLevelId: String(levelId)
           }
+          merged = result.merged
+          mergeNotes = result.notes
+        } else {
+          home = upsertLevel(
+            {
+              ...diskRaw,
+              meta: {
+                ...diskRaw.meta,
+                name: homeName,
+                address: opts.project.meta?.address ?? diskRaw.meta.address,
+                notes: opts.project.meta?.notes ?? diskRaw.meta.notes
+              }
+            },
+            String(levelId),
+            incomingPayload,
+            String(levelName)
+          )
+          mergeNotes = baseMatches
+            ? ['baseMtimeMs matched — wrote level without merge']
+            : ['wrote level without merge']
         }
-        merged = result.merged
-        mergeNotes = result.notes
-      } else if (baseMatches) {
-        mergeNotes = ['baseMtimeMs matched — wrote incoming without merge']
+      } else {
+        // Legacy single-level file on disk
+        const diskProject = diskRaw as VdesignProject
+        let levelProject = opts.project
+        if (doMerge && !baseMatches) {
+          const result = mergePlanProjects(diskProject, opts.project)
+          levelProject = result.project
+          merged = result.merged
+          mergeNotes = result.notes
+        } else if (baseMatches) {
+          mergeNotes = ['baseMtimeMs matched — wrote incoming without merge']
+        }
+        home = wrapProjectAsHome(levelProject, {
+          homeName,
+          levelId: String(levelId),
+          levelName: String(levelName)
+        })
+        mergeNotes = [...mergeNotes, 'upgraded legacy plan to home format']
       }
 
-      const walls = project.floorplan?.walls?.length ?? 0
+      if (opts.replaceHome) {
+        home = wrapProjectAsHome(opts.project, {
+          homeName,
+          levelId: String(levelId),
+          levelName: String(levelName)
+        })
+        mergeNotes = ['replaceHome — full home rewrite']
+        merged = false
+      }
+
+      const walls = getActiveLevel(home).floorplan?.walls?.length ?? 0
       if (!walls) {
         throw new Error('Refusing to save empty floorplan after merge (0 walls)')
       }
 
-      const body = `${JSON.stringify(project, null, 2)}\n`
+      const body = `${JSON.stringify(home, null, 2)}\n`
 
-      // Write version first, then latest (readers prefer latest; versions are append-only)
       await fs.writeFile(versionPath, body, 'utf8')
       await fs.writeFile(latestPath, body, 'utf8')
       const stAfter = await fs.stat(latestPath)
 
       const manifestPath = path.join(versionsDir, 'manifest.json')
-      let manifest: { saves: Array<{ file: string; at: string; walls: number; merged?: boolean }> } =
-        { saves: [] }
+      let manifest: {
+        saves: Array<{ file: string; at: string; walls: number; merged?: boolean; levelId?: string }>
+      } = { saves: [] }
       try {
         manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'))
       } catch {
@@ -188,7 +268,8 @@ export async function writePlanToRepo(opts: {
           file: path.basename(versionPath),
           at: new Date().toISOString(),
           walls,
-          merged: merged || undefined
+          merged: merged || undefined,
+          levelId: String(levelId)
         },
         ...(manifest.saves || [])
       ].slice(0, 200)
@@ -208,7 +289,9 @@ export async function writePlanToRepo(opts: {
         walls,
         mtimeMs: stAfter.mtimeMs,
         merged,
-        mergeNotes
+        mergeNotes,
+        home,
+        levelId: String(levelId)
       }
     } finally {
       await fs.rm(lockPath, { force: true })
@@ -216,12 +299,17 @@ export async function writePlanToRepo(opts: {
   })
 }
 
-export async function readLatestPlan(slugHint?: string): Promise<{
+export interface PlanReadResult {
+  /** Active level as canvas project. */
   project: VdesignProject
+  home: VdesignHome
   slug: string
   relativePath: string
   mtimeMs: number
-} | null> {
+  levelId: string
+}
+
+export async function readLatestPlan(slugHint?: string): Promise<PlanReadResult | null> {
   const root = getPlansDir()
   let entries: string[] = []
   try {
@@ -233,8 +321,10 @@ export async function readLatestPlan(slugHint?: string): Promise<{
   const jsonFiles = entries.filter((f) => f.endsWith('.json') && f !== 'README.md')
   if (!jsonFiles.length) return null
 
-  const preferred = slugHint
-    ? jsonFiles.find((f) => f === `${slugifyPlanName(slugHint)}.json`)
+  const hintSlug = slugHint ? slugifyPlanName(stripLevelSuffix(slugHint)) : undefined
+  const preferred = hintSlug
+    ? jsonFiles.find((f) => f === `${hintSlug}.json`) ||
+      jsonFiles.find((f) => f === `${slugifyPlanName(slugHint!)}.json`)
     : undefined
 
   type Cand = { file: string; mtimeMs: number }
@@ -245,30 +335,40 @@ export async function readLatestPlan(slugHint?: string): Promise<{
   }
   if (!cands.length) return null
 
-  cands.sort((a, b) => b.mtimeMs - a.mtimeMs)
+  // Prefer home slug over legacy *-Basement / *-Backyard when no hint
+  cands.sort((a, b) => {
+    const aHome = !/-(Basement|Backyard|Main|Second)\.json$/i.test(a.file)
+    const bHome = !/-(Basement|Backyard|Main|Second)\.json$/i.test(b.file)
+    if (aHome !== bHome) return aHome ? -1 : 1
+    return b.mtimeMs - a.mtimeMs
+  })
+
   const pick = preferred
     ? cands.find((c) => c.file === preferred) || cands[0]
     : cands[0]
 
   const full = path.join(root, pick.file)
-  const raw = await fs.readFile(full, 'utf8')
-  const project = JSON.parse(raw) as VdesignProject
-  if (!project?.floorplan?.walls?.length) {
+  const raw = JSON.parse(await fs.readFile(full, 'utf8')) as unknown
+  const home = normalizeToHome(raw, pick.file.replace(/\.json$/i, ''))
+  const level = getActiveLevel(home)
+  if (!level.floorplan?.walls?.length) {
     throw new Error(`Latest plan has no walls: ${pick.file}`)
   }
 
   return {
-    project,
+    project: levelToProject(level, home.meta),
+    home,
     slug: pick.file.replace(/\.json$/i, ''),
     relativePath: path.posix.join('plans', pick.file),
-    mtimeMs: pick.mtimeMs
+    mtimeMs: pick.mtimeMs,
+    levelId: level.id
   }
 }
 
 export async function listPlanVersions(slug: string): Promise<
   Array<{ file: string; at?: string; walls?: number; relativePath: string }>
 > {
-  const versionsDir = path.join(getPlansDir(), 'versions', slugifyPlanName(slug))
+  const versionsDir = path.join(getPlansDir(), 'versions', slugifyPlanName(stripLevelSuffix(slug)))
   try {
     const manifestRaw = await fs.readFile(path.join(versionsDir, 'manifest.json'), 'utf8')
     const manifest = JSON.parse(manifestRaw) as {
@@ -276,7 +376,12 @@ export async function listPlanVersions(slug: string): Promise<
     }
     return (manifest.saves || []).map((s) => ({
       ...s,
-      relativePath: path.posix.join('plans', 'versions', slugifyPlanName(slug), s.file)
+      relativePath: path.posix.join(
+        'plans',
+        'versions',
+        slugifyPlanName(stripLevelSuffix(slug)),
+        s.file
+      )
     }))
   } catch {
     return []

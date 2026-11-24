@@ -9,4 +9,11 @@ export interface ItemFootprint {
   /** Three.js Y rotation (radians). */
   rotationY: number
   label: string
+  /**
+   * plant — green ink (landscaping OR movable), shown in 2D + blueprint
+   * structure — fixed fixtures / built-ins, blue ink
+   * framing — posts/columns/beams as plan symbols
+   * furniture — legacy; prefer plant for movable pieces
+   */
+  kind?: 'plant' | 'structure' | 'furniture' | 'framing'
 }

@@ -17,6 +17,8 @@ export interface SavedFloorplan {
     backTexture?: WallTexture
     thickness?: number
     height?: number
+    /** cm above grade — elevated fence/rails (deck) */
+    baseHeight?: number
     wallType?: string
     exposure?: string
     name?: string
@@ -336,6 +338,7 @@ export class Floorplan {
         backTexture: wall.backTexture,
         thickness: wall.thickness,
         height: wall.height,
+        ...(wall.baseHeight > 0 ? { baseHeight: wall.baseHeight } : {}),
         wallType: wall.wallType,
         exposure: wall.exposure,
         name: wall.name || undefined
@@ -388,6 +391,9 @@ export class Floorplan {
       }
       if (wall.height != null) {
         newWall.height = wall.height
+      }
+      if (wall.baseHeight != null && Number.isFinite(wall.baseHeight)) {
+        newWall.baseHeight = wall.baseHeight
       }
       if (wall.wallType) {
         newWall.wallType = wall.wallType as import('./wall').WallType

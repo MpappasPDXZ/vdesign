@@ -36,6 +36,7 @@ export class Controller {
 
   private mouseDown = false
   private mouseMoved = false // has mouse moved since down click
+  private measureDownPos: THREE.Vector2 | null = null
   private rotateMouseOver = false
   private state = ControllerState.UNSELECTED
 
@@ -166,6 +167,11 @@ export class Controller {
       this.mouse.x = event.clientX - rect.left
       this.mouse.y = event.clientY - rect.top
 
+      if (this.three.isMeasureMode()) {
+        this.three.measureTool.handleMove(this.mouse)
+        return
+      }
+
       if (!this.mouseDown) {
         try {
           this.updateIntersections()
@@ -205,6 +211,16 @@ export class Controller {
       this.mouseMoved = false
       this.mouseDown = true
 
+      // Measure mode: orbit still works via Controls; don't select/drag items
+      if (this.three.isMeasureMode()) {
+        const rect = this.element.getBoundingClientRect()
+        this.mouse.x = event.clientX - rect.left
+        this.mouse.y = event.clientY - rect.top
+        this.measureDownPos = this.mouse.clone()
+        return
+      }
+      this.measureDownPos = null
+
       switch (this.state) {
         case ControllerState.SELECTED:
           if (this.rotateMouseOver) {
@@ -234,9 +250,21 @@ export class Controller {
     }
   }
 
-  private mouseUpEvent(_event: MouseEvent): void {
+  private mouseUpEvent(event: MouseEvent): void {
     if (this.enabled) {
       this.mouseDown = false
+
+      if (this.three.isMeasureMode()) {
+        const rect = this.element.getBoundingClientRect()
+        this.mouse.x = event.clientX - rect.left
+        this.mouse.y = event.clientY - rect.top
+        // Treat as a measure click unless the pointer dragged (orbit)
+        const drag =
+          this.measureDownPos != null ? this.mouse.distanceTo(this.measureDownPos) : 999
+        if (drag < 8) this.three.measureTool.handleClick(this.mouse)
+        this.measureDownPos = null
+        return
+      }
 
       switch (this.state) {
         case ControllerState.DRAGGING:

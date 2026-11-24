@@ -1,0 +1,24 @@
+---
+description: Building a standing-seam gable roof with decorative Y-truss (phroof + ytruss) — sizing, placement, poke-through avoidance
+globs:
+  - src/loaders/ProceduralLoader.ts
+  - plans/**/*.json
+  - docs/agent-gable-y-truss-roof.md
+alwaysApply: false
+---
+
+# Gable roof + Y-truss
+
+When adding or editing an open-gable **standing-seam roof** with a **Y-truss** (chord + king post + two angled arms):
+
+**Follow:** `docs/agent-gable-y-truss-roof.md` (full recipe, formulas, anti-patterns, PH reference numbers).
+
+## Hard rules (summary)
+
+- Two items: `procedural:phroof:W:H:D:HEX` and `procedural:ytruss:CHORD:ARM_LEN:THICK:HEX`
+- Truss members all white (`f5f5f4`) unless Owner says otherwise
+- Chord at **plate/eave**, span ≈ post outer−inset — never full-span mid-attic (punches slopes)
+- `ARM_LEN = (ridgeY − tipMargin − chordTop) / cos(40°)`; tips under ridge
+- Gable face: rotate so chord lies in the open gable plane (`π/2` for east gable on PH)
+- `ypos` is chord **center** (loader keeps bbox mid on chord — do not fight this)
+- Save via `POST /api/plans` merge; Reload → 3D; verify no poke-through

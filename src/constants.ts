@@ -881,6 +881,84 @@ export const ITEMS: Item[] = [
     model: 'procedural:cylinder:20:4:20:111827',
     type: '8',
     category: 'misc'
+  },
+  // Landscape (procedural)
+  {
+    key: 'landCypress',
+    name: 'Italian Cypress',
+    description:
+      'Columnar Italian-cypress look — tall narrow evergreen for privacy screens. Default ~2′×16′×2′.',
+    image: '/icons/venue-medball.svg',
+    // ~24″ × 16′ × 24″ — vibrant deep green
+    model: 'procedural:cypress:60.96:487.68:60.96:1b7a3d',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'landShrub',
+    name: 'Landscape Shrub',
+    description: 'Rounded evergreen shrub for beds / fence underplanting. Default ~3′×2.5′×3′.',
+    image: '/icons/venue-medball.svg',
+    model: 'procedural:shrub:91.44:76.2:91.44:166534',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'landRock',
+    name: 'Landscape Rock',
+    description: 'Irregular landscape boulder. Default ~2′×1′×1.5′.',
+    image: '/icons/venue-plate.svg',
+    model: 'procedural:rock:60.96:30.48:45.72:78716c',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'landPine',
+    name: 'Landscape Pine',
+    description: 'Conical evergreen pine for yard accents. Default ~5′×18′×5′.',
+    image: '/icons/venue-medball.svg',
+    model: 'procedural:pine:152.4:548.64:152.4:1a5c2e',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'poolChaise',
+    name: 'Pool Lounge Chaise',
+    description: 'Outdoor lounge chaise — head north (−Z), feet toward pool. Default ~28″×16″×78″.',
+    image: '/icons/venue-plate.svg',
+    model: 'procedural:chaise:71.12:42:198.12:3f3f46',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'acCondenser',
+    name: 'AC Condenser',
+    description:
+      'Outdoor split AC condenser — top fan grille, coil louvers. Default ~31″×38″×31″ (3-ton).',
+    image: '/icons/venue-plate.svg',
+    // Carrier-style 3-ton footprint 31.2″ × 38.4″ × 31.2″
+    model: 'procedural:acunit:79.25:97.66:79.25:6b7280',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'concretePlanter',
+    name: 'Concrete Planter',
+    description: 'Large cast-concrete box planter with soil. Default ~42″×28″×42″.',
+    image: '/icons/venue-plate.svg',
+    model: 'procedural:planter:106.68:71.12:106.68:a8a29e',
+    type: '1',
+    category: 'misc'
+  },
+  {
+    key: 'patioPalm',
+    name: 'Patio Palm (container)',
+    description:
+      'Palm-like fan-frond tree for containers — Midwest seasonal (bring in for winter). Default ~8′ span × 12′ tall.',
+    image: '/icons/venue-medball.svg',
+    model: 'procedural:palm:243.84:365.76:243.84:1b7a3d',
+    type: '1',
+    category: 'misc'
   }
 ]
 
@@ -924,5 +1002,19 @@ export const WALL_TEXTURES = [
     url: 'https://cdn-images.archybase.com/archybase/blueprint3d/covers/light_brick.jpg',
     stretch: false,
     scale: 100
+  },
+  {
+    name: 'Hardi Lap (light)',
+    thumbnail: '/models/textures/hardi-lap-light-thumb.png',
+    url: '/models/textures/hardi-lap-light.png',
+    stretch: false,
+    scale: 100
+  },
+  {
+    name: 'Concrete Foundation',
+    thumbnail: '/models/textures/concrete-foundation-thumb.png',
+    url: '/models/textures/concrete-foundation.png',
+    stretch: false,
+    scale: 120
   }
 ]

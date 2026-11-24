@@ -14,8 +14,8 @@ import { SectionalEditor, isSectionalCouch } from './SectionalEditor'
 import { BedSizeInput } from './BedSizeInput'
 import { LengthInput } from './LengthInput'
 import { FloorplannerControls } from './FloorplannerControls'
+import { BlueprintScaleBar } from './BlueprintScaleBar'
 import { WallPropertiesPanel, type WallConnectSave } from './WallPropertiesPanel'
-import { ItemMovePanel, isMovableFloorItem } from './ItemMovePanel'
 import { ExteriorWallsModal, EXTERIOR_WALL_TARGET } from './ExteriorWallsModal'
 import { insertWallScheduleEntry } from '@/lib/wall-schedule'
 import { TextureSelector } from './TextureSelector'
@@ -32,10 +32,20 @@ import {
 } from '@/services/plans-repo'
 import {
   normalizeAreas,
+  normalizeSetbacks,
   normalizeUnderlay,
+  parseHomeJson,
   parseProjectJson,
   toSerializedRoom
 } from '@/lib/load-project'
+import type { SetbackSpec } from '@blueprint3d/floorplanner/setback'
+import {
+  getActiveLevel,
+  levelToProject,
+  projectToLevelPayload,
+  stripLevelSuffix,
+  upsertLevel
+} from '@/lib/home'
 import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
 import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
 import type { OverlayDescriptor } from '@blueprint3d/floorplanner/overlay'
@@ -43,14 +53,16 @@ import type {
   EntranceKind,
   EntranceScheduleEntry,
   FloorFinishSpec,
+  VdesignHome,
   WallScheduleEntry,
   VdesignProject
 } from '@/types/project'
-import { applyFloorFinishes } from '@/lib/floor-finishes'
+import { applyFloorFinishes, clearFloorFinishOverlays } from '@/lib/floor-finishes'
 import { SaveFloorplanDialog } from './SaveFloorplanDialog'
 
-const DEFAULT_PROJECT_ID = '2713-s-224th-basement'
-const DEFAULT_PROJECT_PATH = `/projects/${DEFAULT_PROJECT_ID}/floorplan.json`
+const DEFAULT_PROJECT_ID = '2713-s-224th'
+const DEFAULT_HOME_NAME = '2713-S-224th'
+const DEFAULT_PROJECT_PATH = `/projects/${DEFAULT_PROJECT_ID}/home.json`
 import { TouchHelp } from './TouchHelp'
 import DefaultFloorplan from '@blueprint3d/templates/default.json'
 import { blueprintStorage } from '@/services/storage'
@@ -64,7 +76,9 @@ import { WallItem } from '@blueprint3d/items/wall_item'
 import type { HalfEdge } from '@blueprint3d/model/half_edge'
 import type { Room } from '@blueprint3d/model/room'
 import { Blueprint3DModes, type Blueprint3DMode } from '@blueprint3d/config/modes'
-import { RoomType } from '@blueprint3d/types/room_types'
+import { RoomType, roomTypeForLevel } from '@blueprint3d/types/room_types'
+import { isPlanView, type ViewMode } from '@/types/view-mode'
+import { copyFramedScreenshotToClipboard } from '@/lib/copy-framed-screenshot'
 
 export interface Blueprint3DAppConfig {
   enableWheelZoom?: boolean | (() => boolean)
@@ -75,7 +89,7 @@ export interface Blueprint3DAppConfig {
   openMyFloorplans?: boolean
   isFullscreen?: boolean
   onFullscreenToggle?: () => void
-  onViewModeChange?: (mode: '2d' | '3d') => void
+  onViewModeChange?: (mode: ViewMode) => void
   renderOverlay?: () => React.ReactNode
   alwaysSpin?: boolean
 }
@@ -112,10 +126,22 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const loadingToastsRef = useRef<Array<{ toastId: string | number; itemName: string }>>([])
   const underlayConfigRef = useRef<UnderlayConfig | null>(null)
   const areasRef = useRef<AreaLabel[]>([])
+  const setbacksRef = useRef<SetbackSpec[]>([])
   const entrancesRef = useRef<EntranceScheduleEntry[]>([])
   const floorFinishesRef = useRef<FloorFinishSpec[]>([])
   /** Skip persist while GLB/procedural items are still loading — otherwise doors vanish from saves. */
   const itemsLoadingRef = useRef(0)
+  /**
+   * After Reload / level apply, skip persistPlanNow (thumbnail + IndexedDB export).
+   * That path was doubling reload to 60s+; recovery snapshot is enough until the user edits.
+   */
+  const suppressPersistAfterLoadRef = useRef(false)
+  const reloadProfileRef = useRef<{
+    t0: number
+    marks: Array<{ name: string; ms: number; detail?: string }>
+  } | null>(null)
+  /** Debounce idle settle — procedural loads are sync and hit 0 after every item. */
+  const itemsIdleTimerRef = useRef<number | null>(null)
 
   const [activeTab, setActiveTab] = useState<'projects' | 'edit' | 'items'>(
     openMyFloorplans ? 'projects' : 'edit'
@@ -127,7 +153,12 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const [textureType, setTextureType] = useState<'floor' | 'wall' | null>(null)
   const [currentTarget, setCurrentTarget] = useState<HalfEdge | Room | null>(null)
   const [itemsLoading, setItemsLoading] = useState(0)
-  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d')
+  const [viewMode, setViewMode] = useState<ViewMode>('2d')
+  /** Blueprint overlay: green landscaping / movable footprints */
+  const [landscapingVisible, setLandscapingVisible] = useState(true)
+  /** 3D: show/hide tree meshes */
+  const [treesVisible, setTreesVisible] = useState(true)
+  const [measureActive, setMeasureActive] = useState(false)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [wallSchedule, setWallSchedule] = useState<WallScheduleEntry[]>([])
   const [overlays, setOverlays] = useState<OverlayDescriptor[]>([])
@@ -156,9 +187,16 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   } | null>(null)
   const currentBlueprintRef = useRef(currentBlueprint)
   currentBlueprintRef.current = currentBlueprint
+  /** In-memory home shell (levels list + payloads). Canvas edits one level at a time. */
+  const homeRef = useRef<VdesignHome | null>(null)
+  const [homeLevels, setHomeLevels] = useState<Array<{ id: string; name: string }>>([])
+  const [homeName, setHomeName] = useState<string | null>(null)
+  const [activeLevelId, setActiveLevelId] = useState<string | null>(null)
+  const activeLevelIdRef = useRef<string | null>(null)
+  activeLevelIdRef.current = activeLevelId
   const persistRecoveryRef = useRef<(() => void) | null>(null)
   const persistPlanNowRef = useRef<(() => Promise<void>) | null>(null)
-  /** plans/ mtime from last Load latest / Save — sent as baseMtimeMs for merge-on-write. */
+  /** plans/ mtime from last Reload / Save — sent as baseMtimeMs for merge-on-write. */
   const repoMtimeMsRef = useRef<number | undefined>(undefined)
 
   const tSeed = useTranslations('BluePrint.seedProjects')
@@ -268,9 +306,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       })
     })
 
+    // Floor click selects the room for texturing — panel opens only from hamburger → Adjust Floor
     blueprint3d.three.floorClicked.add((room) => {
       setCurrentTarget(room)
-      setTextureType('floor')
       setSelectedItem(null)
       setSelectedWall(null)
       setSelectedWallNumber(null)
@@ -303,31 +341,70 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
     blueprint3d.model.scene.itemLoadingCallbacks.add(() => {
       itemsLoadingRef.current += 1
-      setItemsLoading((prev) => prev + 1)
+      // Avoid 2×N React re-renders during bulk Reload (was hundreds of setStates).
+      if (itemsLoadingRef.current === 1) setItemsLoading(1)
     })
 
     blueprint3d.model.scene.itemLoadedCallbacks.add((item) => {
       itemsLoadingRef.current = Math.max(0, itemsLoadingRef.current - 1)
-      setItemsLoading((prev) => Math.max(0, prev - 1))
+      const left = itemsLoadingRef.current
+      if (left === 0) setItemsLoading(0)
+      else if (left % 40 === 0) setItemsLoading(left)
       const loadingToasts = loadingToastsRef.current
       if (loadingToasts.length > 0) {
         const { toastId, itemName } = loadingToasts.shift()!
         toast.success(tItems('loadedSuccess', { name: itemName }), { id: toastId })
       }
-      // Once all pending loads finish, snapshot so doors/items aren't lost to an earlier empty save
-      if (itemsLoadingRef.current === 0) {
-        window.setTimeout(() => {
-          if (itemsLoadingRef.current === 0) {
-            persistRecoveryRef.current?.()
-            void persistPlanNowRef.current?.()
+      // Once all pending loads finish, snapshot so doors/items aren't lost to an earlier empty save.
+      // ProceduralLoader is sync → counter returns to 0 after EVERY item; debounce settle.
+      if (left === 0) {
+        if (itemsIdleTimerRef.current != null) {
+          window.clearTimeout(itemsIdleTimerRef.current)
+        }
+        itemsIdleTimerRef.current = window.setTimeout(() => {
+          itemsIdleTimerRef.current = null
+          if (itemsLoadingRef.current !== 0) return
+          const profile = reloadProfileRef.current
+          const mark = (name: string, detail?: string) => {
+            if (!profile) return
+            profile.marks.push({
+              name,
+              ms: Math.round(performance.now() - profile.t0),
+              detail
+            })
           }
+          mark('items_idle', 'loaded batch complete')
+          const tRec = performance.now()
+          persistRecoveryRef.current?.()
+          mark('persist_recovery_done', `${Math.round(performance.now() - tRec)}ms`)
+          if (suppressPersistAfterLoadRef.current) {
+            suppressPersistAfterLoadRef.current = false
+            mark('persist_plan_skipped', 'reload/level-apply — no thumbnail/IDB export')
+            if (profile) {
+              ;(window as unknown as { __vdesignReloadProfile?: unknown }).__vdesignReloadProfile =
+                profile
+              console.info('[vdesign reload profile]', profile)
+              reloadProfileRef.current = null
+            }
+            return
+          }
+          const tSave = performance.now()
+          void persistPlanNowRef.current?.().then(() => {
+            mark('persist_plan_done', `${Math.round(performance.now() - tSave)}ms`)
+            if (profile) {
+              ;(window as unknown as { __vdesignReloadProfile?: unknown }).__vdesignReloadProfile =
+                profile
+              console.info('[vdesign reload profile]', profile)
+              reloadProfileRef.current = null
+            }
+          })
         }, 100)
       }
     })
 
     blueprint3d.model.scene.itemLoadErrorCallbacks.add(() => {
       itemsLoadingRef.current = Math.max(0, itemsLoadingRef.current - 1)
-      setItemsLoading((prev) => Math.max(0, prev - 1))
+      if (itemsLoadingRef.current === 0) setItemsLoading(0)
       const loadingToasts = loadingToastsRef.current
       if (loadingToasts.length > 0) {
         const { toastId, itemName } = loadingToasts.shift()!
@@ -335,13 +412,33 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       }
     })
 
+    const adoptHome = (home: VdesignHome) => {
+      homeRef.current = home
+      setHomeLevels(home.levels.map((l) => ({ id: l.id, name: l.name })))
+      setHomeName(home.meta.name)
+      setActiveLevelId(home.activeLevelId)
+    }
+
     /** Prefer IndexedDB / recovery over seed so reload keeps edits. */
-    const applyProjectToCanvas = (project: VdesignProject, id: string, name?: string) => {
+    const applyProjectToCanvas = (
+      project: VdesignProject,
+      id: string,
+      name?: string,
+      home?: VdesignHome | null
+    ) => {
+      if (home) adoptHome(home)
+      else if (project.meta?.levelId) {
+        setActiveLevelId(project.meta.levelId)
+      }
       blueprint3d.model.loadSerialized(toSerializedRoom(project))
+      const levelId =
+        home?.activeLevelId || project.meta?.levelId || activeLevelIdRef.current
+      const levelName =
+        home?.levels.find((l) => l.id === levelId)?.name || project.meta?.level
       setCurrentBlueprint({
         id,
-        name: name || project.meta?.name || '2713 S 224th — Basement',
-        roomType: RoomType.BEDROOM
+        name: name || home?.meta.name || project.meta?.name || DEFAULT_HOME_NAME,
+        roomType: roomTypeForLevel(levelId, levelName)
       })
       setWallSchedule(project.wallSchedule || [])
       entrancesRef.current = Array.isArray(project.entrances)
@@ -355,6 +452,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       setUnderlayState(underlay)
       const areas = normalizeAreas(project.areas)
       areasRef.current = areas
+      setbacksRef.current = normalizeSetbacks(project.setbacks)
       setOverlays(
         buildOverlayList({
           hasBlueprint: !!underlay,
@@ -362,30 +460,74 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           hasAreas: areas.length > 0
         })
       )
+      clearFloorFinishOverlays(blueprint3d)
+      const finishesForLoad = structuredClone(floorFinishesRef.current)
       requestAnimationFrame(() => {
         blueprint3d.floorplanner?.reset()
         blueprint3d.floorplanner?.setShowWallNumbers(true)
         if (underlay) blueprint3d.floorplanner?.setUnderlay({ ...underlay })
         blueprint3d.floorplanner?.setAreaLabels(areas)
-        applyFloorFinishes(blueprint3d, floorFinishesRef.current, areas)
+        blueprint3d.floorplanner?.setSetbacks(
+          setbacksRef.current.length ? setbacksRef.current : null
+        )
+        applyFloorFinishes(blueprint3d, finishesForLoad, areas)
         // Plan loads after empty init — refit 3D to full drawing centroid + zoom-out
         blueprint3d.three.fitCamera?.() ?? blueprint3d.three.centerCamera?.()
       })
     }
 
+    const levelIdFromUrl = (home: VdesignHome): string | null => {
+      try {
+        const raw = new URLSearchParams(window.location.search).get('level')
+        if (!raw) return null
+        const key = raw.toLowerCase()
+        const match = home.levels.find(
+          (l) =>
+            l.id === raw ||
+            l.id.toLowerCase() === key ||
+            l.name.toLowerCase() === key ||
+            (key === 'downstairs' && l.id === 'basement')
+        )
+        return match?.id ?? null
+      } catch {
+        return null
+      }
+    }
+
     const loadInitialFloorplan = async () => {
       try {
-        // 1) Browser DB (Save Plan / Apply / Done)
+        // 1) Prefer repo home (source of truth across browsers)
+        try {
+          const repo = await loadLatestProjectFromRepo(DEFAULT_HOME_NAME)
+          repoMtimeMsRef.current = repo.mtimeMs
+          const urlLevel = levelIdFromUrl(repo.home)
+          const levelId = urlLevel || repo.home.activeLevelId || repo.home.levels[0]?.id
+          const level =
+            repo.home.levels.find((l) => l.id === levelId) || getActiveLevel(repo.home)
+          const home: VdesignHome = { ...repo.home, activeLevelId: level.id }
+          applyProjectToCanvas(
+            levelToProject(level, home.meta),
+            DEFAULT_PROJECT_ID,
+            home.meta.name,
+            home
+          )
+          return
+        } catch {
+          /* fall through to local caches / seed */
+        }
+        // 2) Browser DB (Save Plan / Apply / Done)
         const saved = await blueprintStorage.get(DEFAULT_PROJECT_ID)
         if (saved?.layoutData?.floorplan?.walls?.length) {
           applyProjectToCanvas(saved.layoutData as VdesignProject, saved.id, saved.name)
           return
         }
-        // 2) localStorage recovery (crash / last session)
+        // 3) localStorage recovery (crash / last session)
         const recovery = readRecoverySnapshot()
         if (
           recovery?.project?.floorplan?.walls?.length &&
-          (!recovery.meta?.id || recovery.meta.id === DEFAULT_PROJECT_ID)
+          (!recovery.meta?.id ||
+            recovery.meta.id === DEFAULT_PROJECT_ID ||
+            recovery.meta.id === '2713-s-224th-basement')
         ) {
           applyProjectToCanvas(
             recovery.project,
@@ -394,13 +536,19 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           )
           return
         }
-        // 3) Seed file under /public (not a cache of edits)
+        // 4) Seed home under /public
         const res = await fetch(`${DEFAULT_PROJECT_PATH}?t=${Date.now()}`, {
           cache: 'no-store'
         })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const project = parseProjectJson(await res.text()) as VdesignProject
-        applyProjectToCanvas(project, DEFAULT_PROJECT_ID, project.meta?.name)
+        const home = parseHomeJson(await res.text(), DEFAULT_HOME_NAME)
+        const level = getActiveLevel(home)
+        applyProjectToCanvas(
+          levelToProject(level, home.meta),
+          DEFAULT_PROJECT_ID,
+          home.meta.name,
+          home
+        )
       } catch (error) {
         console.error('[Blueprint3DAppBase] Error loading default project:', error)
         blueprint3d.model.loadSerialized(JSON.stringify(DefaultFloorplan))
@@ -429,7 +577,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       if (blueprint3dRef.current && activeTab === 'edit') {
         if (viewMode === '3d') {
           blueprint3dRef.current.three.updateWindowSize()
-        } else {
+        } else if (isPlanView(viewMode)) {
           blueprint3dRef.current.floorplanner?.resizeView()
         }
       }
@@ -447,7 +595,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       if (!blueprint3dRef.current || activeTab !== 'edit') return
       if (viewMode === '3d') {
         blueprint3dRef.current.three.updateWindowSize()
-      } else {
+      } else if (isPlanView(viewMode)) {
         blueprint3dRef.current.floorplanner?.resizeView()
       }
     })
@@ -457,13 +605,19 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   }, [activeTab, viewMode])
 
   const handleViewChange = useCallback(
-    (mode: '2d' | '3d') => {
+    (mode: ViewMode) => {
       if (!blueprint3dRef.current) return
-      blueprint3dRef.current.three.setViewMode(mode)
+      // Three.js only tracks 2d/3d camera; blueprint reuses the plan canvas.
+      blueprint3dRef.current.three.setViewMode(mode === '3d' ? '3d' : '2d')
+      blueprint3dRef.current.floorplanner?.setBlueprintMode(mode === 'blueprint')
+      if (mode !== '3d') {
+        blueprint3dRef.current.three.setMeasureMode(false)
+        setMeasureActive(false)
+      }
       setViewMode(mode)
       onViewModeChange?.(mode)
 
-      if (mode === '2d') {
+      if (isPlanView(mode)) {
         setTimeout(() => {
           if (blueprint3dRef.current) {
             blueprint3dRef.current.floorplanner?.reset()
@@ -474,15 +628,56 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         }, 50)
       } else {
         setTimeout(() => {
-          if (blueprint3dRef.current) {
-            blueprint3dRef.current.model.floorplan.update()
-            blueprint3dRef.current.three.updateWindowSize()
-          }
+          const b = blueprint3dRef.current
+          if (!b) return
+          b.model.floorplan.update()
+          b.three.updateWindowSize()
+          // update() rebuilds room floor meshes — re-apply finishes so rubber/tile
+          // overlays are not left under stale turf from a prior level.
+          applyFloorFinishes(
+            b,
+            structuredClone(floorFinishesRef.current),
+            areasRef.current
+          )
+          b.three.fitCamera?.() ?? b.three.centerCamera?.()
         }, 50)
       }
     },
     [onViewModeChange]
   )
+
+  // Keep canvas theme in sync even when callers use setViewMode directly.
+  useEffect(() => {
+    blueprint3dRef.current?.floorplanner?.setBlueprintMode(viewMode === 'blueprint')
+  }, [viewMode])
+
+  useEffect(() => {
+    blueprint3dRef.current?.floorplanner?.setShowLandscapingMovable(landscapingVisible)
+  }, [landscapingVisible, viewMode])
+
+  useEffect(() => {
+    blueprint3dRef.current?.three?.setTreesVisible(treesVisible)
+  }, [treesVisible, viewMode])
+
+  // Escape clears accidental item selection (closes ContextMenu / SectionalEditor)
+  useEffect(() => {
+    if (!selectedItem && !measureActive) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      const t = e.target as HTMLElement | null
+      if (t?.closest?.('[role="dialog"]')) return
+      e.preventDefault()
+      if (selectedItem) {
+        blueprint3dRef.current?.three.getController().setSelectedObject(null)
+      }
+      if (measureActive) {
+        setMeasureActive(false)
+        blueprint3dRef.current?.three.setMeasureMode(false)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectedItem, measureActive])
 
   const handleDeleteItem = useCallback(() => {
     if (selectedItem) {
@@ -587,16 +782,25 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     } catch (error) {
       console.warn('[Blueprint3DAppBase] Thumbnail generation failed:', error)
     }
+    const home = homeRef.current
+    const levelId = activeLevelIdRef.current || home?.activeLevelId || 'main'
+    const levelName =
+      home?.levels.find((l) => l.id === levelId)?.name ||
+      levelId
     const layoutData: VdesignProject = {
       ...room,
       underlay: underlayConfigRef.current ?? undefined,
       areas: areasRef.current,
+      setbacks: setbacksRef.current.length ? structuredClone(setbacksRef.current) : undefined,
       entrances: structuredClone(entrancesRef.current),
       floorFinishes: structuredClone(floorFinishesRef.current),
       // Ref = latest schedule (avoid stale closure after Apply patches)
       wallSchedule: structuredClone(wallScheduleRef.current),
       meta: {
-        name: currentBlueprintRef.current?.name
+        name: home?.meta.name || stripLevelSuffix(currentBlueprintRef.current?.name || DEFAULT_HOME_NAME),
+        address: home?.meta.address,
+        level: levelName,
+        levelId
       }
     }
     return { layoutData, thumbnailBase64 }
@@ -639,11 +843,18 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     const bp = currentBlueprintRef.current
     if (!bp) return
     try {
+      const levelId =
+        payload.layoutData.meta?.levelId || activeLevelIdRef.current || 'main'
+      const levelName = payload.layoutData.meta?.level
+      const roomType = roomTypeForLevel(levelId, levelName)
+      if (bp.roomType !== roomType) {
+        setCurrentBlueprint({ ...bp, roomType })
+      }
       await blueprintStorage.upsert(bp.id, {
         name: bp.name,
         layoutData: payload.layoutData,
         thumbnailBase64: payload.thumbnailBase64,
-        roomType: bp.roomType
+        roomType
       })
     } catch (error) {
       console.warn('[Blueprint3DAppBase] Auto-save after edit failed:', error)
@@ -667,6 +878,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       b.floorplanner?.setUnderlay({ ...underlayConfigRef.current })
     }
     b.floorplanner?.setAreaLabels(areasRef.current)
+    b.floorplanner?.setSetbacks(
+      setbacksRef.current.length ? setbacksRef.current : null
+    )
     b.floorplanner?.redraw()
     void persistPlanNow()
     toast.success('Undone — plan saved')
@@ -911,20 +1125,53 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           id: currentBlueprint.id
         })
         setRecoverySavedAt(Date.now())
+        const levelId =
+          payload.layoutData.meta?.levelId || activeLevelIdRef.current || 'main'
+        const levelName = payload.layoutData.meta?.level
+        const saveRoomType = roomTypeForLevel(levelId, levelName)
+        setCurrentBlueprint((prev) =>
+          prev ? { ...prev, roomType: saveRoomType } : prev
+        )
         await blueprintStorage.upsert(currentBlueprint.id, {
           name: currentBlueprint.name,
           layoutData: payload.layoutData,
           thumbnailBase64: payload.thumbnailBase64,
-          roomType: currentBlueprint.roomType
+          roomType: saveRoomType
         })
         try {
+          const homeName =
+            homeRef.current?.meta.name ||
+            stripLevelSuffix(currentBlueprint.name || DEFAULT_HOME_NAME)
           const repo = await saveProjectToRepo({
             project: payload.layoutData,
-            name: currentBlueprint.name,
+            name: homeName,
             id: currentBlueprint.id,
+            levelId,
+            levelName,
             baseMtimeMs: repoMtimeMsRef.current
           })
           if (typeof repo.mtimeMs === 'number') repoMtimeMsRef.current = repo.mtimeMs
+          if (repo.home && homeRef.current) {
+            // Keep in-memory level list in sync; patch active level payload locally
+            homeRef.current = upsertLevel(
+              {
+                ...homeRef.current,
+                meta: {
+                  ...homeRef.current.meta,
+                  name: repo.home.meta.name,
+                  address: repo.home.meta.address,
+                  notes: repo.home.meta.notes
+                },
+                activeLevelId: repo.home.activeLevelId
+              },
+              levelId,
+              projectToLevelPayload(payload.layoutData),
+              levelName
+            )
+            setHomeLevels(repo.home.levels.map((l) => ({ id: l.id, name: l.name })))
+            setHomeName(repo.home.meta.name)
+            setActiveLevelId(repo.home.activeLevelId)
+          }
           const mergeHint =
             repo.merged && repo.mergeNotes?.length
               ? ` · merged: ${repo.mergeNotes.join('; ')}`
@@ -1063,6 +1310,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       )
       setActiveTab('edit')
       setViewMode('2d')
+      // Drop prior level's sod/overlays immediately (shared Three scene).
+      clearFloorFinishOverlays(blueprint3dRef.current)
+      const finishesForLoad = structuredClone(floorFinishesRef.current)
       requestAnimationFrame(() => {
         const b = blueprint3dRef.current
         if (!b) return
@@ -1078,7 +1328,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           b.floorplanner?.setUnderlay(null)
         }
         applyAreas(nextAreas)
-        applyFloorFinishes(b, floorFinishesRef.current, nextAreas)
+        b.floorplanner?.setSetbacks(
+          setbacksRef.current.length ? setbacksRef.current : null
+        )
+        // Use snapshot from load start — not a ref that another switch may have mutated.
+        applyFloorFinishes(b, finishesForLoad, nextAreas)
       })
     },
     [applyAreas, buildOverlayList]
@@ -1091,41 +1345,138 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     floorFinishesRef.current = Array.isArray(project.floorFinishes)
       ? structuredClone(project.floorFinishes)
       : []
+    setbacksRef.current = normalizeSetbacks(project.setbacks)
   }, [])
 
-  const handleLoadLatestPlan = useCallback(async () => {
-    const toastId = toast.loading(tMain('loadLatestPlan'))
-    try {
-      const hint = currentBlueprintRef.current?.name || currentBlueprintRef.current?.id
-      const { project, relativePath, mtimeMs } = await loadLatestProjectFromRepo(hint)
-      repoMtimeMsRef.current = mtimeMs
+  const stashActiveLevelIntoHome = useCallback(() => {
+    const home = homeRef.current
+    const levelId = activeLevelIdRef.current
+    if (!home || !levelId) return
+    const payload = buildSavePayload()
+    if (!payload) return
+    homeRef.current = upsertLevel(
+      home,
+      levelId,
+      projectToLevelPayload(payload.layoutData),
+      payload.layoutData.meta?.level
+    )
+  }, [buildSavePayload])
+
+  const applyHomeLevelToCanvas = useCallback(
+    async (home: VdesignHome, levelId: string) => {
+      const profile = reloadProfileRef.current
+      const mark = (name: string, detail?: string) => {
+        if (!profile) return
+        profile.marks.push({
+          name,
+          ms: Math.round(performance.now() - profile.t0),
+          detail
+        })
+      }
+      const level = home.levels.find((l) => l.id === levelId) || getActiveLevel(home)
+      const project = levelToProject(level, home.meta)
+      const itemCount = project.items?.length ?? 0
+      mark('level_project_ready', `${itemCount} items`)
+      homeRef.current = { ...home, activeLevelId: level.id }
+      setHomeLevels(home.levels.map((l) => ({ id: l.id, name: l.name })))
+      setHomeName(home.meta.name)
+      setActiveLevelId(level.id)
       applyProjectExtras(project)
+      const levelRoomType = roomTypeForLevel(level.id, level.name)
+      // Prevent post-load persistPlanNow (thumbnail + export) — was the 60s+ stall.
+      suppressPersistAfterLoadRef.current = true
+      const tLoad = performance.now()
       handleLoadFloorplan(
         toSerializedRoom(project),
-        RoomType.BEDROOM,
-        currentBlueprintRef.current?.id || DEFAULT_PROJECT_ID,
-        project.meta?.name || relativePath.replace(/^plans\//, '').replace(/\.json$/i, ''),
+        levelRoomType,
+        DEFAULT_PROJECT_ID,
+        home.meta.name,
         normalizeUnderlay(project.underlay),
         normalizeAreas(project.areas),
         project.wallSchedule || []
       )
-      const bp = currentBlueprintRef.current
-      if (bp) {
-        await blueprintStorage.upsert(bp.id, {
-          name: bp.name,
-          layoutData: project,
-          roomType: bp.roomType
-        })
-      }
-      writeRecoverySnapshot(project, { name: bp?.name, id: bp?.id })
+      mark(
+        'loadSerialized_sync_return',
+        `${Math.round(performance.now() - tLoad)}ms · itemsLoading=${itemsLoadingRef.current}`
+      )
+      // Recovery is sync + cheap. Do NOT await IndexedDB upsert on the Reload path —
+      // large backyard payloads blocked the UI for tens of seconds after mesh load.
+      writeRecoverySnapshot(project, { name: home.meta.name, id: DEFAULT_PROJECT_ID })
       setRecoverySavedAt(Date.now())
+      void blueprintStorage
+        .upsert(DEFAULT_PROJECT_ID, {
+          name: home.meta.name,
+          layoutData: project,
+          roomType: levelRoomType
+        })
+        .then(() => mark('idb_upsert_bg_done'))
+        .catch((err) => console.warn('[reload] background IDB upsert failed', err))
+      mark('applyHomeLevel_return', 'idb upsert in background')
+      return { project, level }
+    },
+    [applyProjectExtras, handleLoadFloorplan]
+  )
+
+  const handleLoadLatestPlan = useCallback(async () => {
+    const toastId = toast.loading(tMain('loadLatestPlan'))
+    const profile = { t0: performance.now(), marks: [] as Array<{ name: string; ms: number; detail?: string }> }
+    reloadProfileRef.current = profile
+    const mark = (name: string, detail?: string) => {
+      profile.marks.push({ name, ms: Math.round(performance.now() - profile.t0), detail })
+    }
+    try {
+      const hint =
+        homeRef.current?.meta.name ||
+        currentBlueprintRef.current?.name ||
+        DEFAULT_HOME_NAME
+      const keepLevelId = activeLevelIdRef.current
+      mark('reload_click')
+      const { home, relativePath, mtimeMs } = await loadLatestProjectFromRepo(hint)
+      mark(
+        'api_fetch_done',
+        `levels=${home.levels.length} · active=${home.activeLevelId} · mtime=${mtimeMs}`
+      )
+      repoMtimeMsRef.current = mtimeMs
+      const urlLevel = (() => {
+        try {
+          const raw = new URLSearchParams(window.location.search).get('level')
+          if (!raw) return null
+          const key = raw.toLowerCase()
+          const match = home.levels.find(
+            (l) =>
+              l.id === raw ||
+              l.id.toLowerCase() === key ||
+              l.name.toLowerCase() === key ||
+              (key === 'downstairs' && l.id === 'basement')
+          )
+          return match?.id ?? null
+        } catch {
+          return null
+        }
+      })()
+      const levelId =
+        urlLevel ||
+        (keepLevelId && home.levels.some((l) => l.id === keepLevelId)
+          ? keepLevelId
+          : home.activeLevelId) ||
+        home.levels[0]?.id
+      mark('level_resolved', levelId)
+      const { project, level } = await applyHomeLevelToCanvas(home, levelId)
+      mark('apply_returned', `${project.items?.length ?? 0} items queued`)
       const walls = project.floorplan?.walls?.length ?? 0
-      toast.success(tMain('loadLatestPlanOk', { path: relativePath, walls }), {
-        id: toastId,
-        duration: 6000
-      })
+      toast.success(
+        tMain('loadLatestPlanOk', {
+          path: relativePath,
+          walls,
+          level: level.name
+        }),
+        { id: toastId, duration: 6000 }
+      )
+      mark('toast_success')
+      // Profile completes when items idle (see itemLoadedCallbacks).
     } catch (err) {
       console.error(err)
+      reloadProfileRef.current = null
       toast.error(
         tMain('loadLatestPlanFail', {
           error: err instanceof Error ? err.message : String(err)
@@ -1133,7 +1484,49 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         { id: toastId }
       )
     }
-  }, [applyProjectExtras, handleLoadFloorplan, tMain])
+  }, [applyHomeLevelToCanvas, tMain])
+
+  const handleSwitchLevel = useCallback(
+    async (levelId: string) => {
+      if (!levelId || levelId === activeLevelIdRef.current) return
+      try {
+        stashActiveLevelIntoHome()
+        let home = homeRef.current
+        if (!home?.levels.some((l) => l.id === levelId)) {
+          const hint = home?.meta.name || DEFAULT_HOME_NAME
+          const repo = await loadLatestProjectFromRepo(hint)
+          repoMtimeMsRef.current = repo.mtimeMs
+          home = repo.home
+        }
+        if (!home) throw new Error('No home loaded')
+        const { level } = await applyHomeLevelToCanvas(home, levelId)
+        try {
+          const url = new URL(window.location.href)
+          url.searchParams.set('level', level.id)
+          if (!url.searchParams.get('slug') && home.meta.name) {
+            url.searchParams.set('slug', home.meta.name)
+          }
+          window.history.replaceState({}, '', url)
+        } catch {
+          /* ignore */
+        }
+        toast.success(tMain('switchLevelOk', { level: level.name }))
+        // Fit view after level geometry changes
+        requestAnimationFrame(() => {
+          blueprint3dRef.current?.three.fitCamera?.() ??
+            blueprint3dRef.current?.three.centerCamera?.()
+        })
+      } catch (err) {
+        console.error(err)
+        toast.error(
+          tMain('switchLevelFail', {
+            error: err instanceof Error ? err.message : String(err)
+          })
+        )
+      }
+    },
+    [applyHomeLevelToCanvas, stashActiveLevelIntoHome, tMain]
+  )
 
   const handleImportClick = useCallback(() => {
     importFileRef.current?.click()
@@ -1291,7 +1684,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const handleUnitChange = useCallback(
     (unit: string) => {
       Configuration.setValue(configDimUnit, unit)
-      if (blueprint3dRef.current && activeTab === 'edit' && viewMode === '2d') {
+      if (blueprint3dRef.current && activeTab === 'edit' && isPlanView(viewMode)) {
         blueprint3dRef.current.floorplanner?.reset()
       }
     },
@@ -1307,7 +1700,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         blueprint3dRef.current.three.stopSpin()
         blueprint3dRef.current.three.getController().setSelectedObject(null)
 
-        if (viewMode === '2d') {
+        if (isPlanView(viewMode)) {
           const canvas = floorplannerCanvasRef.current
           if (canvas) {
             const resizeObserver = new ResizeObserver(() => {
@@ -1334,7 +1727,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
   const handleFloorplannerModeChange = useCallback((mode: 'move' | 'draw' | 'delete') => {
     setFloorplannerMode(mode)
-    setViewMode('2d')
+    setViewMode((prev) => (isPlanView(prev) ? prev : '2d'))
     setActiveTab('edit')
     if (!blueprint3dRef.current) return
     const modeMap = {
@@ -1355,9 +1748,33 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     }
   }, [tFloorplanner])
 
-  /** 3D zoom — prefer Main helpers; fall back to controls (HMR may keep an old instance). */
-  const withThreeZoom = useCallback((dir: 'in' | 'out' | 'fit') => {
-    const three = blueprint3dRef.current?.three as
+  /** Zoom — plan/blueprint uses floorplanner; 3D uses Main helpers. */
+  const withViewZoom = useCallback((dir: 'in' | 'out' | 'fit') => {
+    const bp = blueprint3dRef.current
+    if (!bp) return
+
+    if (isPlanView(viewMode)) {
+      const fp = bp.floorplanner as
+        | {
+            zoomIn?: () => void
+            zoomOut?: () => void
+            reset?: () => void
+            resetOrigin?: () => void
+            redraw?: () => void
+          }
+        | null
+        | undefined
+      if (!fp) return
+      if (dir === 'fit') {
+        fp.reset?.()
+        return
+      }
+      if (dir === 'in') fp.zoomIn?.()
+      else fp.zoomOut?.()
+      return
+    }
+
+    const three = bp.three as
       | {
           zoomIn?: (n?: number) => void
           zoomOut?: (n?: number) => void
@@ -1398,7 +1815,62 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       else controls.dollyOut()
     }
     controls.update()
+  }, [viewMode])
+
+  const getFloorplannerPixelsPerCm = useCallback(() => {
+    return blueprint3dRef.current?.floorplanner?.pixelsPerCm
   }, [])
+
+  /** Chrome-free viewport → framed PNG on clipboard (no sidebar / top bar / logos). */
+  const handleCopyScreenshot = useCallback(async () => {
+    const bp = blueprint3dRef.current
+    if (!bp) {
+      toast.error('Nothing to capture yet')
+      return
+    }
+    try {
+      let dataUrl: string | null = null
+      if (viewMode === '3d') {
+        const three = bp.three as { captureViewportPng?: () => string; dataUrl?: () => string }
+        dataUrl = three.captureViewportPng?.() ?? three.dataUrl?.() ?? null
+      } else {
+        const fp = bp.floorplanner
+        const bakeScale = viewMode === 'blueprint'
+        if (bakeScale) {
+          fp?.setPaintScaleBarOnCanvas(true)
+          fp?.redraw()
+        }
+        try {
+          const canvas =
+            floorplannerCanvasRef.current ||
+            (document.getElementById('floorplanner-canvas') as HTMLCanvasElement | null)
+          if (canvas) dataUrl = canvas.toDataURL('image/png')
+        } finally {
+          if (bakeScale) {
+            fp?.setPaintScaleBarOnCanvas(false)
+            fp?.redraw()
+          }
+        }
+      }
+      if (!dataUrl) {
+        toast.error('Could not capture viewport')
+        return
+      }
+      const title =
+        homeName || currentBlueprint?.name || 'vdesign'
+      const level = activeLevelId ? ` · ${activeLevelId}` : ''
+      const viewLabel =
+        viewMode === 'blueprint' ? 'Blueprint' : viewMode === '3d' ? '3D' : '2D'
+      await copyFramedScreenshotToClipboard(dataUrl, {
+        header: `${title}${level}`,
+        footer: `${viewLabel} · ${new Date().toLocaleString()}`
+      })
+      toast.success('Screenshot copied')
+    } catch (err) {
+      console.warn('[screenshot]', err)
+      toast.error('Could not copy screenshot')
+    }
+  }, [viewMode, homeName, currentBlueprint?.name, activeLevelId])
 
   const handleAddEntrance = useCallback(
     (kind: EntranceKind) => {
@@ -1666,8 +2138,17 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               onImport={handleImportClick}
               onDownload={handleDownload}
               onLoadLatest={handleLoadLatestPlan}
+              levels={homeLevels}
+              activeLevelId={activeLevelId}
+              onSwitchLevel={handleSwitchLevel}
               onSettingsClick={() => setSettingsOpen(true)}
-              projectName={currentBlueprint?.name}
+              onAdjustFloor={() => {
+                setTextureType('floor')
+                setSelectedItem(null)
+                setSidebarOpen(false)
+                handleViewChange('3d')
+              }}
+              projectName={homeName || currentBlueprint?.name || null}
               onHelpClick={() => setHelpOpen(true)}
               autosaveLabel={
                 recoverySavedAt
@@ -1695,9 +2176,21 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 viewMode={viewMode}
                 onViewModeChange={handleViewChange}
                 showViewToggle
-                onZoomIn={() => withThreeZoom('in')}
-                onZoomOut={() => withThreeZoom('out')}
-                onFitView={() => withThreeZoom('fit')}
+                onZoomIn={() => withViewZoom('in')}
+                onZoomOut={() => withViewZoom('out')}
+                onFitView={() => withViewZoom('fit')}
+                measureActive={measureActive}
+                onMeasureToggle={() => {
+                  const next = !measureActive
+                  setMeasureActive(next)
+                  blueprint3dRef.current?.three.setMeasureMode(next)
+                  if (next && viewMode !== '3d') handleViewChange('3d')
+                }}
+                onCopyScreenshot={handleCopyScreenshot}
+                landscapingVisible={landscapingVisible}
+                onLandscapingVisibleChange={setLandscapingVisible}
+                treesVisible={treesVisible}
+                onTreesVisibleChange={setTreesVisible}
               />
             </div>
           </>
@@ -1710,7 +2203,22 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         >
           {activeTab === 'projects' && (
             <ProjectsView
-              onBlueprintLoad={(layoutData, roomType, id, name, underlay, areas, schedule) => {
+              onBlueprintLoad={(
+                layoutData,
+                roomType,
+                id,
+                name,
+                underlay,
+                areas,
+                schedule,
+                home
+              ) => {
+                if (home) {
+                  homeRef.current = home
+                  setHomeLevels(home.levels.map((l) => ({ id: l.id, name: l.name })))
+                  setHomeName(home.meta.name)
+                  setActiveLevelId(home.activeLevelId)
+                }
                 handleLoadFloorplan(layoutData, roomType, id, name, underlay, areas, schedule)
                 setSidebarOpen(false)
               }}
@@ -1753,10 +2261,10 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           <div
             id="floorplanner"
             className="absolute inset-0"
-            style={{ display: viewMode === '2d' ? 'block' : 'none' }}
+            style={{ display: isPlanView(viewMode) ? 'block' : 'none' }}
           >
             <canvas id="floorplanner-canvas" ref={floorplannerCanvasRef}></canvas>
-            {viewMode === '2d' && !isFullscreen && (
+            {isPlanView(viewMode) && !isFullscreen && (
               <div className="absolute left-14 bottom-5 z-[60] flex flex-col items-start gap-2">
                 <FloorplannerControls
                   mode={floorplannerMode}
@@ -1773,7 +2281,13 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 )}
               </div>
             )}
-            {!selectedWall && canUndo && !isFullscreen && viewMode === '2d' && (
+            {viewMode === 'blueprint' && !isFullscreen && (
+              <BlueprintScaleBar
+                getPixelsPerCm={getFloorplannerPixelsPerCm}
+                className="absolute right-3 bottom-5 z-[60]"
+              />
+            )}
+            {!selectedWall && canUndo && !isFullscreen && isPlanView(viewMode) && (
               <Button
                 type="button"
                 size="sm"
@@ -1817,18 +2331,6 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             />
           )}
 
-          {viewMode === '3d' &&
-            !isFullscreen &&
-            selectedItem &&
-            isMovableFloorItem(selectedItem) && (
-              <ItemMovePanel
-                item={selectedItem}
-                onMoved={() => {
-                  blueprint3dRef.current?.three && ((blueprint3dRef.current.three as { _needsUpdate?: boolean })._needsUpdate = true)
-                }}
-              />
-            )}
-
           {selectedItem &&
             isSectionalCouch(selectedItem) &&
             !textureType &&
@@ -1848,19 +2350,29 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             !isSectionalCouch(selectedItem) &&
             !textureType &&
             !isFullscreen && (
-              <div className="absolute right-2 md:right-4 top-16 md:top-20 z-[70]">
-                <ContextMenu
-                  selectedItem={selectedItem}
-                  onDelete={handleDeleteItem}
-                  onResize={handleResizeItem}
-                  onFixedChange={handleFixedChange}
-                />
-              </div>
+              <ContextMenu
+                selectedItem={selectedItem}
+                onDelete={handleDeleteItem}
+                onResize={handleResizeItem}
+                onFixedChange={handleFixedChange}
+                onMoved={() => {
+                  const three = blueprint3dRef.current?.three as
+                    | { _needsUpdate?: boolean }
+                    | undefined
+                  if (three) three._needsUpdate = true
+                }}
+              />
             )}
 
           {textureType && !isFullscreen && (
             <div className="absolute right-2 md:right-4 top-16 md:top-20 z-[70] max-h-[calc(100vh-100px)] md:max-h-[calc(100vh-120px)] overflow-y-auto">
-              <TextureSelector type={textureType} onTextureSelect={handleTextureSelect} />
+              <TextureSelector
+                type={textureType}
+                onTextureSelect={handleTextureSelect}
+                onClose={() => {
+                  setTextureType(null)
+                }}
+              />
             </div>
           )}
 
@@ -1927,9 +2439,10 @@ function ControlsHelpForced({
   viewMode,
   onClose
 }: {
-  viewMode: '2d' | '3d'
+  viewMode: ViewMode
   onClose: () => void
 }) {
+  const plan = isPlanView(viewMode)
   return (
     <div
       className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 backdrop-blur-sm"
@@ -1940,11 +2453,17 @@ function ControlsHelpForced({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-semibold">
-          {viewMode === '2d' ? '2D Floorplanner Controls' : '3D Viewer Controls'}
+          {viewMode === 'blueprint'
+            ? 'Blueprint View Controls'
+            : plan
+              ? '2D Floorplanner Controls'
+              : '3D Viewer Controls'}
         </h2>
         <p className="mb-2 text-sm text-muted-foreground">
-          {viewMode === '2d'
-            ? 'Use the left menu for move / draw / delete. Click a wall # badge (or the Edit list) to open Wall Editor. Type a length while drawing, then Enter.'
+          {plan
+            ? viewMode === 'blueprint'
+              ? 'Same plan tools as 2D, rendered as a classic cyan-on-navy blueprint. Click a wall # badge to open Wall Editor.'
+              : 'Use the left menu for move / draw / delete. Click a wall # badge (or the Edit list) to open Wall Editor. Type a length while drawing, then Enter.'
             : 'Click furniture to select. Drag it, or use N/E/S/W + angle (0–360). Orbit: left-drag · pan: right-drag · zoom: scroll.'}
         </p>
         <button

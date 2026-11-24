@@ -12,7 +12,14 @@ const defaultWallTexture = {
   scale: 0
 }
 
-export type WallType = 'generic' | 'concrete' | 'wood' | 'steel' | 'partition'
+export type WallType =
+  | 'generic'
+  | 'concrete'
+  | 'wood'
+  | 'steel'
+  | 'partition'
+  /** Black metal (or painted) fence — thin open rails/pickets in 3D */
+  | 'fence'
 export type WallExposure = 'interior' | 'exterior'
 
 /** Plan-view stroke color from material + exposure. */
@@ -28,7 +35,10 @@ export function wallDisplayColor(wallType: WallType, exposure: WallExposure): st
     'partition:exterior': '#a89070',
     'partition:interior': '#d4c4a8',
     'generic:exterior': '#8b929a',
-    'generic:interior': '#c5cad0'
+    'generic:interior': '#c5cad0',
+    // Black metal fence (same both exposures)
+    'fence:exterior': '#1a1a1a',
+    'fence:interior': '#2a2a2a'
   }
   return colors[key] || colors['generic:interior']
 }
@@ -68,6 +78,12 @@ export class Wall {
 
   /** Wall height. */
   public height = Configuration.getNumericValue(configWallHeight)
+
+  /**
+   * Bottom of the wall mesh above grade (cm). Deck/landing rails use this so
+   * fence pickets sit on the deck walking surface instead of at y=0.
+   */
+  public baseHeight = 0
 
   /** Construction / material type */
   public wallType: WallType = 'generic'

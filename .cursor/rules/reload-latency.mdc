@@ -1,0 +1,36 @@
+---
+description: Keep Reload under ~15s — do not add hundreds of procedural item meshes
+alwaysApply: true
+---
+
+# Reload latency — what not to do
+
+**Target:** Reload (`GET /api/plans` → canvas) should feel under **~15s**, ideally **&lt;2s** for backyard.
+
+Measured root causes (2026-11-24) that pushed Reload to **60s+**:
+
+1. **Hundreds of one-off `procedural:box` items** for Omarail pickets + stair rail segments (~250+ items). Each mesh is constructed, added to the scene, and counted in item-load bookkeeping.
+2. **Auto `persistPlanNow` after every bulk load** — rebuilt the full export **and** generated a top-down **thumbnail** (WebGL capture) into IndexedDB after Reload. That alone could dominate wall time.
+3. **Per-item React `setState`** on load start/end (2×N re-renders) and **non-debounced** “items idle” handlers (procedural loads are sync → counter hits 0 after *every* item).
+
+## Do not
+
+- Add deck/stair railings as **one item per picket** or **one box per rail segment**. Use consolidated procedurals:
+  - `procedural:guardrun:SPAN:GUARD_H:AXIS:HEX` — straight Omarail run (one mesh)
+  - `procedural:rakeguard:SPAN:DROP:GUARD_H:HEX` — raked stair guard (one mesh per side)
+  - `procedural:rakehoriz:SPAN:DROP:GUARD_H:HEX` — raked horizontal-member stair guard (one mesh)
+- “Improve” realism by spraying dozens of landscape/rail boxes without consolidating.
+- Re-enable **thumbnail / full `persistPlanNow` on Reload** without a measured budget.
+- Await a large **IndexedDB upsert** on the Reload critical path (keep it background).
+
+## Do
+
+- Prefer **one mesh per rail run**, not per baluster.
+- After bulk item adds, check `project.items.length` — backyard should stay on the order of **~150–200**, not 400+.
+- If Reload feels slow: open console for `[vdesign reload profile]` / `window.__vdesignReloadProfile` (marks from click → idle).
+- For `guardrun` / `rakeguard` / `rakehoriz`, set `ypos` to the **mesh center** (Item recenters bbox). Using bottom-rail Y sinks the whole guard under the elevated deck.
+
+## Related
+
+- Stair direction lock: `.cursor/rules/backyard-deck-stairs.mdc`
+- Lesson: `docs/lessons-learned-reload-latency.md`

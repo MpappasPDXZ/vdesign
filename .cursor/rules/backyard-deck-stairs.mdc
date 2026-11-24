@@ -1,0 +1,38 @@
+---
+description: AUTHORITATIVE deck stair direction — east→west only; never flip from screenshots
+alwaysApply: true
+---
+
+# AUTHORITATIVE — backyard deck stairs (do not flip)
+
+**Owner lock. Not negotiable. Elevation left/right is irrelevant.**
+
+Full lesson: `docs/lessons-learned-deck-stairs.md`  
+Also in: `contract/BACKYARD-DESIGN-BRIEF.md` → Covered deck
+
+## Direction (only correct answer)
+
+On `2713-S-224th` / `backyard`, covered-deck stairs:
+
+| | |
+|---|---|
+| **Descent** | **east → west** |
+| **Lot fences** | **W2 (east) → W6 (west)** |
+| **Site** | **pool → pool house** |
+| **Top tread** | **east** (larger plan `x`, toward W2 / pool) |
+| **Bottom tread** | **west** (smaller plan `x`, toward W6 / pool house) |
+
+Verify after any stair edit: `eastTread.ypos > westTread.ypos`.
+
+## Forbidden
+
+- Flipping to match rear-elevation “high on left / low on right”
+- Flipping to match a 3D camera screenshot’s left/right
+- Writing descriptions like “descends L→R” or “west→east”
+- “Fixing” direction without Owner re-locking in writing
+
+If a drawing disagrees with this table, **keep this table**.
+
+## Performance
+
+Do **not** rebuild stairs/Omarail as one `procedural:box` per picket (that caused 60s+ Reload). Use `procedural:rakeguard` / `procedural:guardrun`. See `.cursor/rules/reload-latency.mdc`.

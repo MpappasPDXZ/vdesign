@@ -5,6 +5,7 @@ import { FloorplannerView, floorplannerModes } from './floorplanner_view'
 import type { UnderlayConfig } from './underlay'
 import type { AreaLabel } from './area_label'
 import type { ItemFootprint } from './item_footprint'
+import type { SetbackSpec } from './setback'
 import { EventEmitter } from '../core/events'
 
 type FloorplannerMode = (typeof floorplannerModes)[keyof typeof floorplannerModes]
@@ -141,6 +142,13 @@ export class Floorplanner {
     this.canvasElement.addEventListener('mouseleave', () => {
       this.mouseleave()
     })
+    this.canvasElement.addEventListener(
+      'wheel',
+      (event: WheelEvent) => {
+        this.onWheel(event)
+      },
+      { passive: false }
+    )
 
     document.addEventListener('keyup', (e: KeyboardEvent) => {
       if (e.keyCode == 27) {
@@ -151,6 +159,44 @@ export class Floorplanner {
     floorplan.roomLoadedCallbacks.add(() => {
       this.reset()
     })
+  }
+
+  /** Pinch/scroll zoom toward the cursor (dims LOD updates on redraw). */
+  private onWheel(event: WheelEvent): void {
+    event.preventDefault()
+    const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12
+    this.zoomBy(factor, event.clientX, event.clientY)
+  }
+
+  /**
+   * Zoom plan view. Optional client coords keep that screen point fixed
+   * (wheel); otherwise zooms about the canvas center (toolbar buttons).
+   */
+  public zoomBy(factor: number, clientX?: number, clientY?: number): void {
+    const rect = this.canvasElement.getBoundingClientRect()
+    if (rect.width < 10 || rect.height < 10) return
+    const sx = clientX != null ? clientX - rect.left : rect.width / 2
+    const sy = clientY != null ? clientY - rect.top : rect.height / 2
+    const worldX = (sx + this.originX) * this.cmPerPixel
+    const worldY = (sy + this.originY) * this.cmPerPixel
+
+    const next = Math.max(0.04, Math.min(this.pixelsPerCm * factor, 12))
+    if (Math.abs(next - this.pixelsPerCm) < 1e-6) return
+    this.pixelsPerCm = next
+    this.cmPerPixel = 1.0 / this.pixelsPerCm
+    this.wallWidth = 10.0 * this.pixelsPerCm
+
+    this.originX = worldX / this.cmPerPixel - sx
+    this.originY = worldY / this.cmPerPixel - sy
+    this.view.draw()
+  }
+
+  public zoomIn(step = 1.2): void {
+    this.zoomBy(step)
+  }
+
+  public zoomOut(step = 1.2): void {
+    this.zoomBy(1 / step)
   }
 
   /** */
@@ -364,13 +410,28 @@ export class Floorplanner {
     this.updateTarget()
   }
 
-  /** Sets the origin so that floorplan is centered */
+  /**
+   * Fit the full drawing in the canvas: scale so bounds fit with margin,
+   * then pan so the plan centroid is centered.
+   */
   public resetOrigin(): void {
-    const centerX = this.canvasElement.clientWidth / 2.0
-    const centerY = this.canvasElement.clientHeight / 2.0
-    const centerFloorplan = this.floorplan.getCenter()
-    this.originX = centerFloorplan.x * this.pixelsPerCm - centerX
-    this.originY = centerFloorplan.z * this.pixelsPerCm - centerY
+    const canvasW = this.canvasElement.clientWidth
+    const canvasH = this.canvasElement.clientHeight
+    if (canvasW < 10 || canvasH < 10) return
+
+    const size = this.floorplan.getSize()
+    const center = this.floorplan.getCenter()
+    const spanX = Math.max(size.x, 100)
+    const spanZ = Math.max(size.z, 100)
+    // ~15% margin so the whole drawing is visible (zoomed out, not clipped)
+    const pad = 0.85
+    const fitPpc = Math.min((canvasW * pad) / spanX, (canvasH * pad) / spanZ)
+    this.pixelsPerCm = Math.max(0.05, Math.min(fitPpc, 2))
+    this.cmPerPixel = 1.0 / this.pixelsPerCm
+    this.wallWidth = 10.0 * this.pixelsPerCm
+
+    this.originX = center.x * this.pixelsPerCm - canvasW / 2
+    this.originY = center.z * this.pixelsPerCm - canvasH / 2
   }
 
   /** Convert from THREEjs coords to canvas coords. */
@@ -445,8 +506,68 @@ export class Floorplanner {
     this.view.setAreaLabels(labels)
   }
 
+  /** Municipal setbacks for blueprint dashed lines (null → defaults when fences exist). */
+  public setSetbacks(specs: SetbackSpec[] | null): void {
+    this.view.setSetbacks(specs)
+  }
+
   public setShowWallNumbers(show: boolean): void {
     this.view.setShowWallNumbers(show)
+  }
+
+  /** Show/hide green landscaping + movable footprints. */
+  public setShowLandscapingMovable(show: boolean): void {
+    this.view.setShowLandscapingMovable(show)
+  }
+
+  public getShowLandscapingMovable(): boolean {
+    return this.view.getShowLandscapingMovable()
+  }
+
+  /** Printable blueprint presentation on the 2D canvas. */
+  public setBlueprintMode(enabled: boolean): void {
+    this.view.setBlueprintMode(enabled)
+  }
+
+  public getBlueprintMode(): boolean {
+    return this.view.getBlueprintMode()
+  }
+
+  /** Bake 5′/10′ scale into canvas (screenshots / PDF). Live Blueprint uses React overlay. */
+  public setPaintScaleBarOnCanvas(enabled: boolean): void {
+    this.view.setPaintScaleBarOnCanvas(enabled)
+  }
+
+  /**
+   * Snapshot the 2D plan as a PNG data URL for PDF/print.
+   * Temporarily uses printable blueprint theme + fit-to-plan, then restores view.
+   */
+  public capturePlanPng(options?: { blueprint?: boolean }): string {
+    const useBlueprint = options?.blueprint !== false
+    const wasBlueprint = this.view.getBlueprintMode()
+    const saved = {
+      originX: this.originX,
+      originY: this.originY,
+      pixelsPerCm: this.pixelsPerCm,
+      cmPerPixel: this.cmPerPixel,
+      wallWidth: this.wallWidth
+    }
+    try {
+      if (useBlueprint) this.view.setBlueprintMode(true)
+      this.view.setPaintScaleBarOnCanvas(true)
+      this.resetOrigin()
+      this.view.draw()
+      return this.canvasElement.toDataURL('image/png')
+    } finally {
+      this.originX = saved.originX
+      this.originY = saved.originY
+      this.pixelsPerCm = saved.pixelsPerCm
+      this.cmPerPixel = saved.cmPerPixel
+      this.wallWidth = saved.wallWidth
+      this.view.setPaintScaleBarOnCanvas(false)
+      if (useBlueprint) this.view.setBlueprintMode(wasBlueprint)
+      this.view.draw()
+    }
   }
 
   /** Live non-wall item footprints for the 2D overlay. */

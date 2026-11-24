@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { RoomType } from '@blueprint3d/types/room_types'
+import { RoomType, SELECTABLE_ROOM_TYPES } from '@blueprint3d/types/room_types'
 import { TemplateOption, getTemplatesByRoomType } from "@/lib/blueprint-templates"
 import {
   Blueprint3DTemplate,
@@ -45,11 +45,13 @@ export function TemplateSelector({
   const [selectedRoomType, setSelectedRoomType] = useState<RoomType>(initialRoomType)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // All room types
-  const roomTypes = Object.values(RoomType).filter((type) => type !== RoomType.KITCHEN)
+  // Room types for the template picker (home-level tags excluded)
+  const roomTypes = SELECTABLE_ROOM_TYPES.filter((type) => type !== RoomType.KITCHEN)
 
   // Room type icon mapping
-  const ROOM_TYPE_ICONS: Record<RoomType, React.ComponentType<{ className?: string }>> = {
+  const ROOM_TYPE_ICONS: Partial<
+    Record<RoomType, React.ComponentType<{ className?: string }>>
+  > = {
     [RoomType.BEDROOM]: Bed,
     [RoomType.LIVING_ROOM]: Sofa,
     [RoomType.KITCHEN]: UtensilsCrossed,

@@ -19,7 +19,7 @@ import { cmToInches, inchesToCm } from './InchesDimensionInput'
 import type { WallConnectSave } from './WallPropertiesPanel'
 
 const TARGET_EXTERIOR = 16
-const WALL_TYPES: WallType[] = ['concrete', 'wood', 'steel', 'partition', 'generic']
+const WALL_TYPES: WallType[] = ['concrete', 'wood', 'steel', 'fence', 'partition', 'generic']
 type Cardinal = 'N' | 'E' | 'S' | 'W'
 
 export interface ExteriorWallsModalProps {

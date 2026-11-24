@@ -1,15 +1,22 @@
 'use client'
 
-import { cn } from "@/lib/utils"
-import { useIsMobile } from "@/hooks/use-media-query"
+import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-media-query'
 import { Maximize, Minimize } from 'lucide-react'
+import type { ViewMode } from '@/types/view-mode'
 
 interface ViewToggleProps {
-  viewMode: '2d' | '3d'
-  onViewChange: (mode: '2d' | '3d') => void
+  viewMode: ViewMode
+  onViewChange: (mode: ViewMode) => void
   isFullscreen?: boolean
   onFullscreenToggle?: () => void
 }
+
+const VIEW_OPTIONS: { mode: ViewMode; label: string; aria: string }[] = [
+  { mode: '2d', label: '2D', aria: '2D View' },
+  { mode: 'blueprint', label: 'Blueprint', aria: 'Blueprint View' },
+  { mode: '3d', label: '3D', aria: '3D View' }
+]
 
 export function ViewToggle({
   viewMode,
@@ -23,47 +30,35 @@ export function ViewToggle({
     <div
       className={cn(
         'absolute flex bg-card border border-border shadow-lg',
-        // Mobile: larger buttons, better spacing, rounded corners
         isMobile
           ? 'top-3 right-3 gap-0.5 rounded-lg'
           : 'top-5 right-5 gap-1 rounded overflow-hidden shadow-md'
       )}
     >
-      <button
-        onClick={() => onViewChange('3d')}
-        className={cn(
-          'transition-all font-medium',
-          // Mobile: 44x44px minimum touch target (WCAG 2.1)
-          isMobile
-            ? 'min-w-[44px] min-h-[44px] px-3 py-2 text-sm rounded-l-lg'
-            : 'px-3 py-1.5 text-sm',
-          viewMode === '3d'
-            ? 'bg-primary text-primary-foreground shadow-sm'
-            : 'bg-card text-foreground hover:bg-accent active:scale-95'
-        )}
-        aria-label="3D View"
-        aria-pressed={viewMode === '3d'}
-      >
-        3D
-      </button>
-      <button
-        onClick={() => onViewChange('2d')}
-        className={cn(
-          'transition-all font-medium',
-          isMobile
-            ? 'min-w-[44px] min-h-[44px] px-3 py-2 text-sm'
-            : 'px-3 py-1.5 text-sm',
-          viewMode === '2d'
-            ? 'bg-primary text-primary-foreground shadow-sm'
-            : 'bg-card text-foreground hover:bg-accent active:scale-95',
-          // Add right radius only if no fullscreen button
-          !onFullscreenToggle && isMobile && 'rounded-r-lg'
-        )}
-        aria-label="2D View"
-        aria-pressed={viewMode === '2d'}
-      >
-        2D
-      </button>
+      {VIEW_OPTIONS.map(({ mode, label, aria }, index) => (
+        <button
+          key={mode}
+          onClick={() => onViewChange(mode)}
+          className={cn(
+            'transition-all font-medium',
+            isMobile
+              ? 'min-w-[44px] min-h-[44px] px-2.5 py-2 text-sm'
+              : 'px-3 py-1.5 text-sm',
+            index === 0 && isMobile && 'rounded-l-lg',
+            index === VIEW_OPTIONS.length - 1 &&
+              !onFullscreenToggle &&
+              isMobile &&
+              'rounded-r-lg',
+            viewMode === mode
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'bg-card text-foreground hover:bg-accent active:scale-95'
+          )}
+          aria-label={aria}
+          aria-pressed={viewMode === mode}
+        >
+          {label}
+        </button>
+      ))}
       {onFullscreenToggle && (
         <>
           <div className={cn('bg-border', isMobile ? 'w-0.5' : 'w-px')} />

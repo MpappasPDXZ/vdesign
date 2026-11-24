@@ -7,6 +7,7 @@ import {
   FilePlus,
   Upload,
   Download,
+  FileDown,
   Settings,
   Layers,
   ListOrdered,
@@ -55,9 +56,17 @@ interface AppSidebarProps {
   onNew: () => void
   onImport?: () => void
   onDownload?: () => void
-  /** Load newest JSON from repo plans/ */
+  /** Export multi-page printable PDF */
+  onExportPdf?: () => void
+  /** Reload this home from repo plans/ */
   onLoadLatest?: () => void
+  /** Levels in the current home */
+  levels?: Array<{ id: string; name: string }>
+  activeLevelId?: string | null
+  onSwitchLevel?: (levelId: string) => void
   onSettingsClick: () => void
+  /** Open Adjust Floor texture panel (not auto-shown on canvas click). */
+  onAdjustFloor?: () => void
   projectName?: string | null
   onHelpClick?: () => void
   autosaveLabel?: string | null
@@ -90,8 +99,13 @@ export function AppSidebar({
   onNew,
   onImport,
   onDownload,
+  onExportPdf,
   onLoadLatest,
+  levels,
+  activeLevelId,
+  onSwitchLevel,
   onSettingsClick,
+  onAdjustFloor,
   projectName,
   onHelpClick,
   autosaveLabel,
@@ -197,6 +211,41 @@ export function AppSidebar({
             >
               {tMain('savePlan')}
             </Button>
+            {levels && levels.length > 0 && onSwitchLevel && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-full justify-between gap-1.5 text-xs"
+                    title={tMain('switchLevel')}
+                  >
+                    <span className="flex min-w-0 items-center gap-1.5 truncate">
+                      <Layers className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">
+                        {levels.find((l) => l.id === activeLevelId)?.name ||
+                          tMain('level')}
+                      </span>
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  {levels.map((level) => (
+                    <DropdownMenuItem
+                      key={level.id}
+                      onClick={() => onSwitchLevel(level.id)}
+                      className={cn(
+                        activeLevelId === level.id && 'bg-accent font-medium'
+                      )}
+                    >
+                      {level.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             {onLoadLatest && (
               <Button
                 type="button"
@@ -210,7 +259,7 @@ export function AppSidebar({
                 {tMain('loadLatestPlan')}
               </Button>
             )}
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-4 gap-1">
               <Button
                 type="button"
                 variant="outline"
@@ -245,7 +294,38 @@ export function AppSidebar({
                   <Download className="h-3.5 w-3.5" />
                 </Button>
               )}
+              {onExportPdf && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-1.5 text-[11px]"
+                  onClick={() => {
+                    onExportPdf()
+                    onOpenChange(false)
+                  }}
+                  title={tMain('exportPdfHint')}
+                >
+                  <FileDown className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
+            {onExportPdf && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-8 w-full justify-start gap-1.5 text-xs"
+                onClick={() => {
+                  onExportPdf()
+                  onOpenChange(false)
+                }}
+                title={tMain('exportPdfHint')}
+              >
+                <FileDown className="h-3.5 w-3.5" />
+                {tMain('exportPdf')}
+              </Button>
+            )}
             {autosaveLabel && (
               <p className="px-0.5 text-[10px] text-muted-foreground">{autosaveLabel}</p>
             )}
@@ -273,6 +353,22 @@ export function AppSidebar({
                 </Button>
               )}
             </div>
+            {onAdjustFloor && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 w-full justify-start gap-1.5 text-xs"
+                title={t('adjustFloorHint')}
+                onClick={() => {
+                  onAdjustFloor()
+                  onOpenChange(false)
+                }}
+              >
+                <Layers className="h-3.5 w-3.5" />
+                {t('adjustFloor')}
+              </Button>
+            )}
           </section>
 
           {activeTab === 'edit' && onOpenExteriorWalls && (

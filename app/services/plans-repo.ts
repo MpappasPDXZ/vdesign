@@ -1,4 +1,4 @@
-import type { VdesignProject } from '@/types/project'
+import type { VdesignHome, VdesignProject } from '@/types/project'
 
 export interface RepoSaveResult {
   ok: boolean
@@ -9,15 +9,33 @@ export interface RepoSaveResult {
   mtimeMs?: number
   merged?: boolean
   mergeNotes?: string[]
+  levelId?: string
+  home?: {
+    format: string
+    meta: VdesignHome['meta']
+    activeLevelId: string
+    levels: Array<{ id: string; name: string; order?: number; walls: number }>
+  }
   error?: string
 }
 
-/** Persist current project into the git repo `plans/` via Next API. */
+export interface RepoLoadResult {
+  project: VdesignProject
+  home: VdesignHome
+  slug: string
+  relativePath: string
+  mtimeMs: number
+  levelId: string
+}
+
+/** Persist active level into the home plans/{slug}.json via Next API. */
 export async function saveProjectToRepo(opts: {
   project: VdesignProject
   name: string
   id?: string
-  /** From last Load latest — lets server skip merge when still current. */
+  levelId?: string
+  levelName?: string
+  /** From last Reload — lets server skip merge when still current. */
   baseMtimeMs?: number
   /** Default true on server. Pass false only for intentional full replace. */
   merge?: boolean
@@ -29,6 +47,8 @@ export async function saveProjectToRepo(opts: {
       project: opts.project,
       name: opts.name,
       id: opts.id,
+      levelId: opts.levelId,
+      levelName: opts.levelName,
       baseMtimeMs: opts.baseMtimeMs,
       merge: opts.merge
     })
@@ -40,30 +60,29 @@ export async function saveProjectToRepo(opts: {
   return data
 }
 
-/** Load the newest (or named) plan JSON from `plans/`. */
-export async function loadLatestProjectFromRepo(slug?: string): Promise<{
-  project: VdesignProject
-  slug: string
-  relativePath: string
-  mtimeMs: number
-}> {
+/** Load the home (or named) plan JSON from `plans/`. */
+export async function loadLatestProjectFromRepo(slug?: string): Promise<RepoLoadResult> {
   const q = new URLSearchParams({ latest: '1' })
   if (slug) q.set('slug', slug)
   const res = await fetch(`/api/plans?${q}`, { cache: 'no-store' })
   const data = (await res.json().catch(() => ({}))) as {
     error?: string
     project?: VdesignProject
+    home?: VdesignHome
     slug?: string
     relativePath?: string
     mtimeMs?: number
+    levelId?: string
   }
-  if (!res.ok || !data.project || !data.slug || !data.relativePath) {
+  if (!res.ok || !data.project || !data.slug || !data.relativePath || !data.home) {
     throw new Error(data.error || `HTTP ${res.status}`)
   }
   return {
     project: data.project,
+    home: data.home,
     slug: data.slug,
     relativePath: data.relativePath,
-    mtimeMs: data.mtimeMs ?? 0
+    mtimeMs: data.mtimeMs ?? 0,
+    levelId: data.levelId || data.home.activeLevelId
   }
 }

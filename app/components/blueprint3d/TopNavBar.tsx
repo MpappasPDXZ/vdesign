@@ -1,44 +1,73 @@
 'use client'
 
-import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
-import { Switch } from '@/components/ui/switch'
+import { ZoomIn, ZoomOut, Maximize2, Ruler, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-media-query'
+import type { ViewMode } from '@/types/view-mode'
 
 interface TopNavBarProps {
-  viewMode: '2d' | '3d'
-  onViewModeChange: (mode: '2d' | '3d') => void
+  viewMode: ViewMode
+  onViewModeChange: (mode: ViewMode) => void
   /** When false, hide the view toggle (e.g. projects tab) */
   showViewToggle?: boolean
   onZoomIn?: () => void
   onZoomOut?: () => void
   onFitView?: () => void
+  /** 3D measure mode — click two points for a length */
+  measureActive?: boolean
+  onMeasureToggle?: () => void
+  /** Copy chrome-free viewport screenshot (header/footer) to clipboard */
+  onCopyScreenshot?: () => void
+  /** Blueprint: green landscaping / movable footprints */
+  landscapingVisible?: boolean
+  onLandscapingVisibleChange?: (visible: boolean) => void
+  /** 3D: show/hide tree meshes */
+  treesVisible?: boolean
+  onTreesVisibleChange?: (visible: boolean) => void
 }
 
-/** Minimal chrome: 2D/3D toggle (+ 3D zoom) pinned top-right. */
+const VIEW_OPTIONS: { mode: ViewMode; label: string }[] = [
+  { mode: '2d', label: '2D' },
+  { mode: 'blueprint', label: 'Blueprint' },
+  { mode: '3d', label: '3D' }
+]
+
+/** Minimal chrome: 2D / Blueprint / 3D (+ 3D zoom) pinned top-right. */
 export function TopNavBar({
   viewMode,
   onViewModeChange,
   showViewToggle = true,
   onZoomIn,
   onZoomOut,
-  onFitView
+  onFitView,
+  measureActive = false,
+  onMeasureToggle,
+  onCopyScreenshot,
+  landscapingVisible = true,
+  onLandscapingVisibleChange,
+  treesVisible = true,
+  onTreesVisibleChange
 }: TopNavBarProps) {
   const isMobile = useIsMobile()
 
   if (!showViewToggle) return null
 
-  const showZoom = viewMode === '3d' && (onZoomIn || onZoomOut || onFitView)
+  const showZoom = !!(onZoomIn || onZoomOut || onFitView)
+  const showMeasure = viewMode === '3d' && !!onMeasureToggle
+  const showScreenshot = !!onCopyScreenshot
+  const showBlueprintPanel =
+    viewMode === 'blueprint' && typeof onLandscapingVisibleChange === 'function'
+  const show3dPanel = viewMode === '3d' && typeof onTreesVisibleChange === 'function'
 
   return (
     <div className={cn('pointer-events-none relative', isMobile ? 'h-12' : 'h-14')}>
-      <div className="pointer-events-auto absolute right-3 top-1/2 z-[100] -translate-y-1/2 md:right-4">
+      <div className="pointer-events-auto absolute right-3 top-1/2 z-[100] flex -translate-y-1/2 flex-col items-end gap-1.5 md:right-4">
         <div
           className={cn(
             'flex items-center rounded-full border border-border/50 bg-background/80 shadow-sm backdrop-blur-sm',
-            isMobile ? 'gap-1.5 px-2.5 py-1.5' : 'gap-2 px-3 py-1.5'
+            isMobile ? 'gap-1 px-2 py-1.5' : 'gap-1.5 px-2.5 py-1.5'
           )}
         >
           {showZoom && (
@@ -91,30 +120,129 @@ export function TopNavBar({
               <div className="mx-0.5 h-5 w-px bg-border/60" aria-hidden />
             </>
           )}
-          <span
+          <div
+            role="group"
+            aria-label="View mode"
             className={cn(
-              'font-medium transition-colors',
-              isMobile ? 'text-xs' : 'text-sm',
-              viewMode === '2d' ? 'text-foreground' : 'text-muted-foreground'
+              'flex items-center rounded-full bg-muted/60 p-0.5',
+              isMobile ? 'gap-0' : 'gap-0.5'
             )}
           >
-            2D
-          </span>
-          <Switch
-            checked={viewMode === '3d'}
-            onCheckedChange={(checked) => onViewModeChange(checked ? '3d' : '2d')}
-            className={cn(isMobile && 'h-4 w-7')}
-          />
-          <span
-            className={cn(
-              'font-medium transition-colors',
-              isMobile ? 'text-xs' : 'text-sm',
-              viewMode === '3d' ? 'text-foreground' : 'text-muted-foreground'
+            {VIEW_OPTIONS.map(({ mode, label }) => {
+              const active = viewMode === mode
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => onViewModeChange(mode)}
+                  aria-pressed={active}
+                  className={cn(
+                    'rounded-full font-medium transition-colors',
+                    isMobile ? 'px-2 py-1 text-[11px]' : 'px-2.5 py-1 text-sm',
+                    active
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {label}
+                </button>
+              )
+            })}
+            {showMeasure && (
+              <>
+                <div className="mx-0.5 h-4 w-px bg-border/60" aria-hidden />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={onMeasureToggle}
+                      aria-pressed={measureActive}
+                      aria-label="Measure"
+                      title="Measure — click two points"
+                      className={cn(
+                        'rounded-full flex items-center justify-center transition-colors',
+                        isMobile ? 'h-7 w-7' : 'h-8 w-8',
+                        measureActive
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      <Ruler className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {measureActive ? 'Exit measure' : 'Measure — click two points'}
+                  </TooltipContent>
+                </Tooltip>
+              </>
             )}
-          >
-            3D
-          </span>
+            {showScreenshot && (
+              <>
+                <div className="mx-0.5 h-4 w-px bg-border/60" aria-hidden />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={onCopyScreenshot}
+                      aria-label="Copy screenshot"
+                      title="Copy screenshot — no toolbar chrome"
+                      className={cn(
+                        'rounded-full flex items-center justify-center transition-colors',
+                        isMobile ? 'h-7 w-7' : 'h-8 w-8',
+                        'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      <Camera className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    Copy screenshot (clean view + header/footer)
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+          </div>
         </div>
+        {showBlueprintPanel && (
+          <div
+            className="w-max rounded-lg border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur-sm"
+            role="dialog"
+            aria-label="Blueprint layers"
+          >
+            <label
+              className="flex cursor-pointer items-center gap-2 text-xs font-medium text-foreground"
+              title="Green footprints: plants, rocks, planters, chairs, loungers"
+            >
+              <input
+                type="checkbox"
+                className="h-3.5 w-3.5 accent-emerald-700"
+                checked={landscapingVisible}
+                onChange={(e) => onLandscapingVisibleChange?.(e.target.checked)}
+              />
+              Landscaping / movable
+            </label>
+          </div>
+        )}
+        {show3dPanel && (
+          <div
+            className="w-max rounded-lg border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur-sm"
+            role="dialog"
+            aria-label="3D layers"
+          >
+            <label
+              className="flex cursor-pointer items-center gap-2 text-xs font-medium text-foreground"
+              title="Pine, palm, cypress, and other trees"
+            >
+              <input
+                type="checkbox"
+                className="h-3.5 w-3.5 accent-emerald-700"
+                checked={treesVisible}
+                onChange={(e) => onTreesVisibleChange?.(e.target.checked)}
+              />
+              Trees
+            </label>
+          </div>
+        )}
       </div>
     </div>
   )

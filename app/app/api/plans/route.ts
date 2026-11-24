@@ -10,16 +10,18 @@ import type { VdesignProject } from '@/types/project'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-/** POST — Save Plan → plans/{slug}.json + plans/versions/{slug}/{stamp}.json */
+/** POST — Save active level into plans/{home}.json (home format) + version stamp */
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as {
       project?: VdesignProject
       name?: string
       id?: string
-      /** mtimeMs from Load latest — enables skip-merge when still current */
+      levelId?: string
+      levelName?: string
+      /** mtimeMs from Reload — enables skip-merge when still current */
       baseMtimeMs?: number
-      /** Default true. false = full replace (exclusive writer only). */
+      /** Default true. false = full level replace without additive merge */
       merge?: boolean
     }
     if (!body.project?.floorplan?.walls?.length) {
@@ -33,10 +35,30 @@ export async function POST(req: Request) {
       project: body.project,
       name,
       id: body.id,
+      levelId: body.levelId || body.project.meta?.levelId,
+      levelName: body.levelName || body.project.meta?.level,
       baseMtimeMs: body.baseMtimeMs,
       merge: body.merge
     })
-    return NextResponse.json({ ok: true, ...result })
+    return NextResponse.json({
+      ok: true,
+      ...result,
+      // Don't echo full home+levels walls twice in huge payloads unless needed
+      project: undefined,
+      home: result.home
+        ? {
+            format: result.home.format,
+            meta: result.home.meta,
+            activeLevelId: result.home.activeLevelId,
+            levels: result.home.levels.map((l) => ({
+              id: l.id,
+              name: l.name,
+              order: l.order,
+              walls: l.floorplan?.walls?.length ?? 0
+            }))
+          }
+        : undefined
+    })
   } catch (err) {
     console.error('[api/plans POST]', err)
     return NextResponse.json(
@@ -47,7 +69,7 @@ export async function POST(req: Request) {
 }
 
 /**
- * GET ?latest=1[&slug=…] — load newest (or named) plan from plans/
+ * GET ?latest=1[&slug=…] — load home (or legacy) from plans/
  * GET ?versions=1&slug=… — list version history
  */
 export async function GET(req: Request) {
@@ -72,6 +94,9 @@ export async function GET(req: Request) {
       slug: latest.slug,
       relativePath: latest.relativePath,
       mtimeMs: latest.mtimeMs,
+      levelId: latest.levelId,
+      home: latest.home,
+      /** Active level payload for the canvas */
       project: latest.project
     })
   } catch (err) {

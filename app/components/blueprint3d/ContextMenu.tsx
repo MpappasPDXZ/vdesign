@@ -1,15 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Trash2 } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useTranslations } from 'next-intl'
-import { useIsMobile } from "@/hooks/use-media-query"
-import { cn } from "@/lib/utils"
+import { useIsMobile } from '@/hooks/use-media-query'
+import { cn } from '@/lib/utils'
 import type { Item } from '@blueprint3d/items/item'
-
+import { isFloorItemType } from './ItemMovePanel'
 import { Configuration, configDimUnit } from '@blueprint3d/core/configuration'
 
 interface ContextMenuProps {
@@ -17,9 +18,19 @@ interface ContextMenuProps {
   onDelete: () => void
   onResize: (height: number, width: number, depth: number) => void
   onFixedChange: (fixed: boolean) => void
+  /** After N/E/S/W nudge or angle apply — e.g. force 3D redraw. */
+  onMoved?: () => void
 }
 
-export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }: ContextMenuProps) {
+const NUDGE_IN = 6
+
+export function ContextMenu({
+  selectedItem,
+  onDelete,
+  onResize,
+  onFixedChange,
+  onMoved
+}: ContextMenuProps) {
   const t = useTranslations('BluePrint.contextMenu')
   const tItems = useTranslations('BluePrint.items')
   const isMobile = useIsMobile()
@@ -28,8 +39,8 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
   const [depth, setDepth] = useState(0)
   const [fixed, setFixed] = useState(false)
   const [currentUnit, setCurrentUnit] = useState('inch')
+  const [angle, setAngle] = useState('0')
 
-  // Convert cm to display unit
   const cmToDisplay = (cm: number, unit: string): number => {
     switch (unit) {
       case 'inch':
@@ -45,7 +56,6 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
     }
   }
 
-  // Convert display unit to cm
   const displayToCm = (value: number, unit: string): number => {
     switch (unit) {
       case 'inch':
@@ -61,7 +71,6 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
     }
   }
 
-  // Get unit label
   const getUnitLabel = (unit: string): string => {
     switch (unit) {
       case 'inch':
@@ -77,7 +86,6 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
     }
   }
 
-  // Get decimal places for unit
   const getDecimalPlaces = (unit: string): number => {
     switch (unit) {
       case 'inch':
@@ -94,7 +102,6 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
   }
 
   useEffect(() => {
-    // Get current unit from Configuration
     const unit = Configuration.getStringValue(configDimUnit)
     setCurrentUnit(unit)
 
@@ -104,17 +111,18 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
       setHeight(Number(cmToDisplay(selectedItem.getHeight(), unit).toFixed(decimals)))
       setDepth(Number(cmToDisplay(selectedItem.getDepth(), unit).toFixed(decimals)))
       setFixed(selectedItem.fixed || false)
+      setAngle(radToDeg(selectedItem.rotation.y))
     }
   }, [selectedItem])
 
   const handleResize = (field: 'width' | 'height' | 'depth', value: number) => {
-    const newWidth = field === 'width' ? value : width
-    const newHeight = field === 'height' ? value : height
-    const newDepth = field === 'depth' ? value : depth
-
     if (field === 'width') setWidth(value)
     if (field === 'height') setHeight(value)
     if (field === 'depth') setDepth(value)
+
+    const newWidth = field === 'width' ? value : width
+    const newHeight = field === 'height' ? value : height
+    const newDepth = field === 'depth' ? value : depth
 
     onResize(
       displayToCm(newHeight, currentUnit),
@@ -128,25 +136,54 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
     onFixedChange(checked)
   }
 
-  if (!selectedItem) {
+  const nudge = (dir: 'N' | 'E' | 'S' | 'W') => {
+    if (!selectedItem || fixed) return
+    const cm = NUDGE_IN * 2.54
+    const next = selectedItem.position.clone()
+    if (dir === 'N') next.z -= cm
+    else if (dir === 'S') next.z += cm
+    else if (dir === 'E') next.x += cm
+    else next.x -= cm
+    selectedItem.moveToPosition(next, null)
+    onMoved?.()
+  }
+
+  const applyAngle = () => {
+    if (!selectedItem || fixed) return
+    const n = Number(angle)
+    if (!Number.isFinite(n)) return
+    const wrapped = ((n % 360) + 360) % 360
+    selectedItem.rotation.y = (wrapped * Math.PI) / 180
+    setAngle(String(Math.round(wrapped)))
+    onMoved?.()
+  }
+
+  if (!selectedItem || typeof document === 'undefined') {
     return null
   }
 
-  return (
-    <div className={cn(
-      'bg-background/95 backdrop-blur-sm border border-border rounded-lg shadow-lg animate-in fade-in-0 slide-in-from-right-5 duration-300',
-      isMobile ? 'p-4 max-w-[320px]' : 'p-3 max-w-[280px]'
-    )}>
-      {/* Header with item name */}
+  const showMove = isFloorItemType(selectedItem) && !fixed
+
+  return createPortal(
+    <div
+      className={cn(
+        'fixed right-3 top-14 z-[70] bg-background/95 backdrop-blur-sm border border-border rounded-lg shadow-lg',
+        'animate-in fade-in-0 slide-in-from-right-5 duration-300',
+        isMobile ? 'p-4 w-[min(320px,calc(100vw-1.5rem))]' : 'p-3 w-[280px]'
+      )}
+      title={selectedItem.metadata?.itemName || ''}
+    >
       <div className="flex items-center justify-between mb-3">
         <span className={cn('font-semibold truncate', isMobile ? 'text-base' : 'text-sm')}>
-          {selectedItem.metadata?.itemKey ? tItems(selectedItem.metadata.itemKey) : selectedItem.metadata?.itemName}
+          {selectedItem.metadata?.itemKey
+            ? tItems(selectedItem.metadata.itemKey)
+            : selectedItem.metadata?.itemName}
         </span>
         <Button
           variant="ghost"
           size="icon"
           className={cn(
-            'text-destructive hover:text-destructive hover:bg-destructive/10',
+            'text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0',
             isMobile ? 'h-9 w-9' : 'h-7 w-7'
           )}
           onClick={onDelete}
@@ -155,11 +192,15 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
         </Button>
       </div>
 
-      {/* Size inputs - Compact grid layout */}
       <div className={cn('mb-3', isMobile ? 'space-y-3' : 'space-y-2')}>
         <div className={cn('grid grid-cols-3 text-xs', isMobile ? 'gap-3' : 'gap-2')}>
           <div>
-            <label className={cn('text-muted-foreground mb-1 block', isMobile && 'text-sm')}>{t('width')}</label>
+            <label
+              className={cn('text-muted-foreground mb-1 block', isMobile && 'text-sm')}
+              title={getUnitLabel(currentUnit)}
+            >
+              {t('width')}
+            </label>
             <Input
               type="number"
               value={width}
@@ -169,7 +210,12 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
             />
           </div>
           <div>
-            <label className={cn('text-muted-foreground mb-1 block', isMobile && 'text-sm')}>{t('depth')}</label>
+            <label
+              className={cn('text-muted-foreground mb-1 block', isMobile && 'text-sm')}
+              title={getUnitLabel(currentUnit)}
+            >
+              {t('depth')}
+            </label>
             <Input
               type="number"
               value={depth}
@@ -179,7 +225,12 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
             />
           </div>
           <div>
-            <label className={cn('text-muted-foreground mb-1 block', isMobile && 'text-sm')}>{t('height')}</label>
+            <label
+              className={cn('text-muted-foreground mb-1 block', isMobile && 'text-sm')}
+              title={getUnitLabel(currentUnit)}
+            >
+              {t('height')}
+            </label>
             <Input
               type="number"
               value={height}
@@ -189,16 +240,67 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
             />
           </div>
         </div>
-        <p className={cn('text-muted-foreground text-center', isMobile ? 'text-xs' : 'text-[10px]')}>
-          {getUnitLabel(currentUnit)}
-        </p>
       </div>
 
-      {/* Lock checkbox */}
-      <label className={cn(
-        'flex items-center gap-2 cursor-pointer rounded-md transition-colors',
-        isMobile ? 'py-2 px-3 min-h-[44px]' : 'py-1.5 px-2 hover:bg-accent'
-      )}>
+      {showMove && (
+        <div
+          className="mb-3 border-t border-border/60 pt-3"
+          title="Nudge on the plan, or type yaw 0–360. Drag the item in 3D to move freely."
+        >
+          <div className="mb-1.5 text-xs font-medium text-foreground">
+            <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-blue-500 align-middle" />
+            Move
+          </div>
+          <div className="grid grid-cols-3 gap-1 place-items-center">
+            <span />
+            <Button type="button" variant="outline" size="sm" className="h-7 w-9 px-0" onClick={() => nudge('N')}>
+              N
+            </Button>
+            <span />
+            <Button type="button" variant="outline" size="sm" className="h-7 w-9 px-0" onClick={() => nudge('W')}>
+              W
+            </Button>
+            <span className="h-3 w-3 rounded-full bg-blue-500 shadow" aria-hidden />
+            <Button type="button" variant="outline" size="sm" className="h-7 w-9 px-0" onClick={() => nudge('E')}>
+              E
+            </Button>
+            <span />
+            <Button type="button" variant="outline" size="sm" className="h-7 w-9 px-0" onClick={() => nudge('S')}>
+              S
+            </Button>
+            <span />
+          </div>
+          <label
+            className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground"
+            title="Yaw degrees: 0 faces +Z (south), 90 faces +X (east)"
+          >
+            <span className="shrink-0">Angle</span>
+            <Input
+              type="number"
+              min={0}
+              max={360}
+              step={1}
+              value={angle}
+              onChange={(e) => setAngle(e.target.value)}
+              onBlur={applyAngle}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur()
+                  applyAngle()
+                }
+              }}
+              className="h-7 text-xs"
+            />
+          </label>
+        </div>
+      )}
+
+      <label
+        className={cn(
+          'flex items-center gap-2 cursor-pointer rounded-md transition-colors',
+          isMobile ? 'py-2 px-3 min-h-[44px]' : 'py-1.5 px-2 hover:bg-accent'
+        )}
+      >
         <Checkbox
           checked={fixed}
           onCheckedChange={handleFixedChange}
@@ -208,6 +310,11 @@ export function ContextMenu({ selectedItem, onDelete, onResize, onFixedChange }:
           {t('lockInPlace')}
         </span>
       </label>
-    </div>
+    </div>,
+    document.body
   )
+}
+
+function radToDeg(rad: number): string {
+  return String(Math.round(((((rad * 180) / Math.PI) % 360) + 360) % 360))
 }

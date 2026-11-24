@@ -1,15 +1,24 @@
 import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
 import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
+import type { SetbackSpec } from '@blueprint3d/floorplanner/setback'
 import type { SavedFloorplan } from '@blueprint3d/model/floorplan'
 import type { SerializedItem } from '@blueprint3d/model/model'
 
-/** On-disk / imported project format (extends Blueprint3D serialized room). */
-export interface VdesignProject {
+/**
+ * One level’s drawable payload (walls, items, finishes…).
+ * Same shape whether stored alone (legacy) or inside a home.
+ */
+export interface VdesignLevelPayload {
   floorplan: SavedFloorplan
   items: SerializedItem[]
   underlay?: UnderlayConfig
   /** Named zones drawn on the 2D plan */
   areas?: AreaLabel[]
+  /**
+   * Municipal setbacks drawn as dashed lines in blueprint mode
+   * (e.g. 5′ E/W, 25′ from north neighbor).
+   */
+  setbacks?: SetbackSpec[]
   /** Wall schedule — numbers match 2D badges (1-based, JSON wall order) */
   wallSchedule?: WallScheduleEntry[]
   /** Wall-hosted entrances (doors, stair openings, …) */
@@ -19,10 +28,40 @@ export interface VdesignProject {
    * Applied to the room whose polygon contains that area’s point.
    */
   floorFinishes?: FloorFinishSpec[]
+}
+
+/** Level row inside a home — id is stable for save/merge (e.g. "basement"). */
+export interface VdesignLevel extends VdesignLevelPayload {
+  id: string
+  name: string
+  order?: number
+}
+
+/**
+ * One home = one address / git slug, many levels (basement, backyard, …).
+ * Prefer this over separate plans/*-Basement.json + plans/*-Backyard.json.
+ */
+export interface VdesignHome {
+  format: 'vdesign-home-v1'
+  meta: {
+    name: string
+    address?: string
+    notes?: string
+  }
+  activeLevelId: string
+  levels: VdesignLevel[]
+}
+
+/**
+ * Legacy single-level on-disk / editor working copy.
+ * Editor still edits one level at a time as this shape; homes wrap levels.
+ */
+export interface VdesignProject extends VdesignLevelPayload {
   meta?: {
     name?: string
     address?: string
     level?: string
+    levelId?: string
     notes?: string
   }
 }
@@ -131,7 +170,8 @@ export interface SeedProjectInfo {
   id: string
   name: string
   address?: string
+  /** Display summary, e.g. "Basement · Backyard" */
   level?: string
-  /** Path under /public, e.g. /projects/2713-s-224th-basement/floorplan.json */
+  /** Path under /public (home or legacy level JSON) */
   path: string
 }

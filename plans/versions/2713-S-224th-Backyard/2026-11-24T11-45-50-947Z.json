@@ -1,0 +1,638 @@
+{
+  "meta": {
+    "name": "2713-S-224th-Backyard"
+  },
+  "floorplan": {
+    "corners": {
+      "b4cc5d48-e7cd-4b44-8cfc-17937c225bc9": {
+        "x": 0,
+        "y": 0
+      },
+      "e09e93f2-baeb-4e27-929e-5de69ad6fbe6": {
+        "x": 2590.8,
+        "y": 0
+      },
+      "988b43b5-0841-4df2-bdf3-6b78b6b54b99": {
+        "x": 2590.8,
+        "y": 2133.6
+      },
+      "17590350-d3fe-4d6a-86c3-3ac93327b948": {
+        "x": 0,
+        "y": 2133.6
+      },
+      "61e51be5-8195-4618-b0eb-16d99b882b92": {
+        "x": 161.788,
+        "y": 1826.788
+      },
+      "b172b3a3-0951-4ebe-855f-734a5ec09878": {
+        "x": 2325.411,
+        "y": 1826.788
+      },
+      "bc52fb96-49cf-43b6-9d7b-fe32dd073023": {
+        "x": 2325.411,
+        "y": 2133.6
+      },
+      "981431c4-e629-47c0-9925-35ea7ae4e2f7": {
+        "x": 161.788,
+        "y": 2133.6
+      },
+      "d515310a-61e7-4d0f-b05a-6b86790af3fb": {
+        "x": 1746.291,
+        "y": 1826.788
+      },
+      "da9ab006-a078-4e29-8d71-fe84c3012d41": {
+        "x": 1746.291,
+        "y": 1491.508
+      },
+      "76f1e002-a6a6-4c16-83fd-755035c1c329": {
+        "x": 2325.411,
+        "y": 1491.508
+      },
+      "4b2ced95-ab78-4c10-932e-6f765402c5b1": {
+        "x": 2203.491,
+        "y": 1491.508
+      },
+      "c4564114-d8a7-4056-ae35-dfbec02419ae": {
+        "x": 2203.491,
+        "y": 1369.588
+      },
+      "71342488-5af8-4a0a-b2f5-babea18595b7": {
+        "x": 2325.411,
+        "y": 1369.588
+      }
+    },
+    "walls": [
+      {
+        "corner1": "b4cc5d48-e7cd-4b44-8cfc-17937c225bc9",
+        "corner2": "e09e93f2-baeb-4e27-929e-5de69ad6fbe6",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 182.88,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #1 north property line"
+      },
+      {
+        "corner1": "e09e93f2-baeb-4e27-929e-5de69ad6fbe6",
+        "corner2": "988b43b5-0841-4df2-bdf3-6b78b6b54b99",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 182.88,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #2 east property line"
+      },
+      {
+        "corner1": "988b43b5-0841-4df2-bdf3-6b78b6b54b99",
+        "corner2": "17590350-d3fe-4d6a-86c3-3ac93327b948",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 182.88,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #3 south cut (through house)"
+      },
+      {
+        "corner1": "17590350-d3fe-4d6a-86c3-3ac93327b948",
+        "corner2": "b4cc5d48-e7cd-4b44-8cfc-17937c225bc9",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 182.88,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #4 west property line"
+      },
+      {
+        "corner1": "61e51be5-8195-4618-b0eb-16d99b882b92",
+        "corner2": "d515310a-61e7-4d0f-b05a-6b86790af3fb",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 670.56,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "backyard #5 house north (west of deck)"
+      },
+      {
+        "corner1": "d515310a-61e7-4d0f-b05a-6b86790af3fb",
+        "corner2": "b172b3a3-0951-4ebe-855f-734a5ec09878",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 670.56,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "backyard #6 house/deck shared (dining to deck)"
+      },
+      {
+        "corner1": "b172b3a3-0951-4ebe-855f-734a5ec09878",
+        "corner2": "bc52fb96-49cf-43b6-9d7b-fe32dd073023",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 670.56,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "backyard #7 house east"
+      },
+      {
+        "corner1": "bc52fb96-49cf-43b6-9d7b-fe32dd073023",
+        "corner2": "981431c4-e629-47c0-9925-35ea7ae4e2f7",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 670.56,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "backyard #8 house south (plan cut)"
+      },
+      {
+        "corner1": "981431c4-e629-47c0-9925-35ea7ae4e2f7",
+        "corner2": "61e51be5-8195-4618-b0eb-16d99b882b92",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 20.32,
+        "height": 670.56,
+        "wallType": "concrete",
+        "exposure": "exterior",
+        "name": "backyard #9 house west"
+      },
+      {
+        "corner1": "d515310a-61e7-4d0f-b05a-6b86790af3fb",
+        "corner2": "da9ab006-a078-4e29-8d71-fe84c3012d41",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 15.24,
+        "height": 304.8,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #10 covered deck west"
+      },
+      {
+        "corner1": "da9ab006-a078-4e29-8d71-fe84c3012d41",
+        "corner2": "4b2ced95-ab78-4c10-932e-6f765402c5b1",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 15.24,
+        "height": 304.8,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #11 covered deck north (west of stairs)"
+      },
+      {
+        "corner1": "4b2ced95-ab78-4c10-932e-6f765402c5b1",
+        "corner2": "76f1e002-a6a6-4c16-83fd-755035c1c329",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 15.24,
+        "height": 304.8,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #12 covered deck / stair shared"
+      },
+      {
+        "corner1": "76f1e002-a6a6-4c16-83fd-755035c1c329",
+        "corner2": "b172b3a3-0951-4ebe-855f-734a5ec09878",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 15.24,
+        "height": 304.8,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #13 covered deck east"
+      },
+      {
+        "corner1": "4b2ced95-ab78-4c10-932e-6f765402c5b1",
+        "corner2": "c4564114-d8a7-4056-ae35-dfbec02419ae",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 152.4,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #14 stair west"
+      },
+      {
+        "corner1": "c4564114-d8a7-4056-ae35-dfbec02419ae",
+        "corner2": "71342488-5af8-4a0a-b2f5-babea18595b7",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 152.4,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #15 stair north"
+      },
+      {
+        "corner1": "71342488-5af8-4a0a-b2f5-babea18595b7",
+        "corner2": "76f1e002-a6a6-4c16-83fd-755035c1c329",
+        "frontTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "backTexture": {
+          "url": "https://cdn-images.lumenfeng.com/models-cover/wallmap.png",
+          "stretch": true,
+          "scale": 0
+        },
+        "thickness": 10.16,
+        "height": 152.4,
+        "wallType": "wood",
+        "exposure": "exterior",
+        "name": "backyard #16 stair east"
+      }
+    ]
+  },
+  "items": [],
+  "underlay": {
+    "url": "/projects/2713-s-224th-backyard/site-plan.png",
+    "opacity": 0.42,
+    "xCm": 0,
+    "yCm": 0,
+    "widthCm": 2590.8,
+    "heightCm": 2120.04
+  },
+  "areas": [
+    {
+      "name": "Backyard",
+      "xCm": 1295.4,
+      "yCm": 633.891036,
+      "notes": "Fully sodded Fescue · 5-zone Millard sprinkler · 25' rear / 5' side setbacks"
+    },
+    {
+      "name": "Covered Deck",
+      "xCm": 2035.85064,
+      "yCm": 1659.1483199999998,
+      "notes": "19×11 covered deck · TimberTech Evolutions Silver Maple · Omarail C-30 black · 6×6 cedar posts"
+    },
+    {
+      "name": "Stairs",
+      "xCm": 2264.45064,
+      "yCm": 1430.5483199999999,
+      "notes": "4'×4' projection with stairs · steps per grade · 4×4 deck step pad"
+    },
+    {
+      "name": "Patio",
+      "xCm": 2035.85064,
+      "yCm": 1369.5883199999998,
+      "notes": "Conc. patio at grade under/around deck stairs · 3½\" SG6 3000psi"
+    },
+    {
+      "name": "House",
+      "xCm": 1243.59924,
+      "yCm": 1980.19416,
+      "notes": "Rear house mass (walk-out) · not full floor plan"
+    }
+  ],
+  "entrances": [
+    {
+      "id": "dining-deck-slider",
+      "n": 1,
+      "kind": "door",
+      "wallN": 6,
+      "name": "Dining to Deck slider",
+      "offsetInches": 78,
+      "widthInches": 72,
+      "heightInches": 96,
+      "sillInches": 0,
+      "notes": "6'-0\" × 8'-0\" Pella Contemporary sliding patio door · Black clad",
+      "fromTip": "W"
+    },
+    {
+      "id": "deck-stairs",
+      "n": 2,
+      "kind": "stairs",
+      "wallN": 12,
+      "name": "Deck stairs to patio",
+      "widthInches": 48,
+      "heightInches": 96,
+      "sillInches": 0,
+      "notes": "4'×4' stair projection · steps per grade to conc. patio"
+    }
+  ],
+  "floorFinishes": [
+    {
+      "area": "Backyard",
+      "url": "/models/textures/turf-field.png",
+      "scale": 90,
+      "notes": "Full sod — Fescue grass (spec)",
+      "rectCm": {
+        "x": 152.4,
+        "z": 0,
+        "width": 2286,
+        "depth": 1471.50832
+      }
+    },
+    {
+      "area": "Patio",
+      "url": "/models/textures/concrete-storage.png",
+      "scale": 100,
+      "notes": "Rear concrete patio / deck step pad zone",
+      "rectCm": {
+        "x": 1685.3306400000001,
+        "z": 1247.6683199999998,
+        "width": 701.04,
+        "depth": 579.1200000000001
+      }
+    },
+    {
+      "area": "Covered Deck",
+      "url": "/models/textures/lvp-bar-light.png",
+      "scale": 80,
+      "notes": "Composite decking stand-in — TimberTech Silver Maple (parallel to rear great-room wall)",
+      "rectCm": {
+        "x": 1746.2906400000002,
+        "z": 1491.50832,
+        "width": 579.12,
+        "depth": 335.28000000000003
+      }
+    }
+  ],
+  "wallSchedule": [
+    {
+      "n": 1,
+      "role": "N property",
+      "outerLength": "1020.0\"",
+      "thickness": "4\"",
+      "notes": "85' lot width · fence",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #1 north property line"
+    },
+    {
+      "n": 2,
+      "role": "E property",
+      "outerLength": "840.0\"",
+      "thickness": "4\"",
+      "notes": "East PL · ~side setback 5'",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #2 east property line"
+    },
+    {
+      "n": 3,
+      "role": "S cut",
+      "outerLength": "1020.0\"",
+      "thickness": "4\"",
+      "notes": "Plan south edge through house mass",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #3 south cut (through house)"
+    },
+    {
+      "n": 4,
+      "role": "W property",
+      "outerLength": "840.0\"",
+      "thickness": "4\"",
+      "notes": "West PL · house 5.308' from PL",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #4 west property line"
+    },
+    {
+      "n": 5,
+      "role": "House N W",
+      "outerLength": "623.8\"",
+      "thickness": "8\"",
+      "notes": "Rear wall west of covered deck",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "backyard #5 house north (west of deck)"
+    },
+    {
+      "n": 6,
+      "role": "House/Deck",
+      "outerLength": "228.0\"",
+      "thickness": "8\"",
+      "notes": "Dining→deck wall · 6'×8' Pella slider",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "backyard #6 house/deck shared (dining to deck)"
+    },
+    {
+      "n": 7,
+      "role": "House E",
+      "outerLength": "120.8\"",
+      "thickness": "8\"",
+      "notes": "East house wall · 8.707' to E PL",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "backyard #7 house east"
+    },
+    {
+      "n": 8,
+      "role": "House S",
+      "outerLength": "851.8\"",
+      "thickness": "8\"",
+      "notes": "South edge of modeled house mass",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "backyard #8 house south (plan cut)"
+    },
+    {
+      "n": 9,
+      "role": "House W",
+      "outerLength": "120.8\"",
+      "thickness": "8\"",
+      "notes": "West house wall · 5.308' to W PL",
+      "wallType": "concrete",
+      "exposure": "exterior",
+      "name": "backyard #9 house west"
+    },
+    {
+      "n": 10,
+      "role": "Deck W",
+      "outerLength": "132.0\"",
+      "thickness": "6\"",
+      "notes": "Covered deck 19×11 · west rail",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #10 covered deck west"
+    },
+    {
+      "n": 11,
+      "role": "Deck N W",
+      "outerLength": "180.0\"",
+      "thickness": "6\"",
+      "notes": "Deck north rail west of stair projection",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #11 covered deck north (west of stairs)"
+    },
+    {
+      "n": 12,
+      "role": "Deck/Stair",
+      "outerLength": "48.0\"",
+      "thickness": "6\"",
+      "notes": "4'×4' stair projection attach",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #12 covered deck / stair shared"
+    },
+    {
+      "n": 13,
+      "role": "Deck E",
+      "outerLength": "132.0\"",
+      "thickness": "6\"",
+      "notes": "Covered deck east · flush house east",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #13 covered deck east"
+    },
+    {
+      "n": 14,
+      "role": "Stair W",
+      "outerLength": "48.0\"",
+      "thickness": "4\"",
+      "notes": "4'×4' stair projection",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #14 stair west"
+    },
+    {
+      "n": 15,
+      "role": "Stair N",
+      "outerLength": "48.0\"",
+      "thickness": "4\"",
+      "notes": "Steps per grade → conc. patio",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #15 stair north"
+    },
+    {
+      "n": 16,
+      "role": "Stair E",
+      "outerLength": "48.0\"",
+      "thickness": "4\"",
+      "notes": "4'×4' stair projection",
+      "wallType": "wood",
+      "exposure": "exterior",
+      "name": "backyard #16 stair east"
+    }
+  ]
+}

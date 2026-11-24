@@ -20,11 +20,17 @@ export class Dimensioning {
    */
   public static cmToMeasure(cm: number): string {
     switch (Configuration.getStringValue(configDimUnit)) {
-      case dimInch:
-        const realFeet = (cm * 0.3937) / 12
-        const feet = Math.floor(realFeet)
-        const inches = Math.round((realFeet - feet) * 12)
+      case dimInch: {
+        // 2.54 cm/in is exact; avoid 0.3937 drift that can round to 12"
+        const totalInches = Math.round(cm / 2.54)
+        let feet = Math.floor(totalInches / 12)
+        let inches = totalInches - feet * 12
+        if (inches === 12) {
+          feet += 1
+          inches = 0
+        }
         return feet + "'" + inches + '"'
+      }
       case dimMilliMeter:
         return '' + Math.round(10 * cm) + ' mm'
       case dimCentiMeter:

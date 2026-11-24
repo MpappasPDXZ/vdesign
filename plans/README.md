@@ -1,21 +1,38 @@
-# plans/ — git-backed floorplan saves
+# plans/ — git-backed home saves
 
 **Save Plan** writes here automatically (via `/api/plans`):
 
 | File | Role |
 |------|------|
-| `{Plan-Name}.json` | **Latest** — always overwritten on Save |
-| `versions/{Plan-Name}/{timestamp}.json` | **History** — one file per Save |
-| `versions/{Plan-Name}/manifest.json` | Index of recent saves |
+| `{Home-Name}.json` | **Latest home** — one address, many **levels** (basement, backyard, …) |
+| `versions/{Home-Name}/{timestamp}.json` | **History** — one file per Save |
+| `versions/{Home-Name}/manifest.json` | Index of recent saves |
+
+## Home format (`vdesign-home-v1`)
+
+```json
+{
+  "format": "vdesign-home-v1",
+  "meta": { "name": "2713-S-224th", "address": "…" },
+  "activeLevelId": "basement",
+  "levels": [
+    { "id": "basement", "name": "Basement", "floorplan": {…}, "items": […], … },
+    { "id": "backyard", "name": "Backyard", "floorplan": {…}, "items": […], … }
+  ]
+}
+```
+
+Legacy single-level `*-Basement.json` / `*-Backyard.json` files still load (wrapped as a one-level home). Prefer the combined home slug.
 
 ## UI
 
-- **Save Plan** → IndexedDB + `plans/{name}.json` + new version file  
-- **Load latest** → reads newest `plans/*.json` back into the editor  
+- **Save Plan** → patches the **active level** into `plans/{home}.json` (+ version)
+- **Level** dropdown → switch Basement / Backyard / … inside the same home
+- **Reload** → re-read the home from `plans/` (keeps the level you’re on when possible)
 
 ## Parallel agents (theatre / stairs / gym)
 
-Do **not** overwrite `{slug}.json` with a stale full document. Use `POST /api/plans` with `baseMtimeMs` + `merge: true` (default). See `docs/parallel-item-adds.md` and `.cursor/rules/parallel-item-adds.mdc`.
+Do **not** overwrite `{slug}.json` with a stale full document. Use `POST /api/plans` with `baseMtimeMs` + `merge: true` (default) and the correct `levelId`. Merge is **per level** — other levels on disk are preserved. See `docs/parallel-item-adds.md` and `.cursor/rules/parallel-item-adds.mdc`.
 
 ## Docker
 

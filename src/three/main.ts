@@ -7,6 +7,7 @@ import { Lights } from './lights'
 import { Skybox } from './skybox'
 import { Controls } from './controls'
 import { HUD } from './hud'
+import { MeasureTool } from './measure_tool'
 import type { Model } from '../model/model'
 import type { Scene } from '../model/scene'
 import type { Item } from '../items/item'
@@ -52,12 +53,16 @@ export class Main {
   private mouseOver = false
   private hasClicked = false
   private hud!: HUD
+  public measureTool!: MeasureTool
   private viewMode: '2d' | '3d' = '3d'
   private saved3DPosition: THREE.Vector3 | null = null
   // @ts-ignore - saved3DRotation is declared but not used, keeping for future use
   private saved3DRotation: { theta: number; phi: number } | null = null
   /** True after we've fitted to a real (non-empty) floorplan once. */
   private hasFittedToPlan = false
+
+  /** 3D layer: show/hide tree meshes (pine, palm, cypress, …). */
+  private treesVisible = true
 
   constructor(
     model: Model,
@@ -113,6 +118,7 @@ export class Main {
     this.controls = new Controls(this.camera, this.domElement, this.options.enableWheelZoom)
 
     this.hud = new HUD(this)
+    this.measureTool = new MeasureTool(this)
 
     this.controller = new Controller(
       this,
@@ -146,6 +152,13 @@ export class Main {
     const lights = new Lights(this.scene.getScene(), this.model.floorplan)
 
     this.floorplan = new FloorplanThree(this.scene.getScene(), this.model.floorplan, this.controls, this.renderer)
+
+    // Keep tree visibility when items load / reload
+    this.scene.itemLoadedCallbacks.add((item) => {
+      if (!this.treesVisible && Main.isTreeItemName(item.metadata?.itemName || '')) {
+        item.visible = false
+      }
+    })
 
     this.animate()
 
@@ -260,6 +273,15 @@ export class Main {
   public dataUrl(): string {
     const dataUrl = this.renderer.domElement.toDataURL('image/png')
     return dataUrl
+  }
+
+  /**
+   * Force a scene-only frame (no HTML chrome, no HUD gizmos) for clipboard screenshots.
+   */
+  public captureViewportPng(): string {
+    this.renderer.clear()
+    this.renderer.render(this.scene.getScene(), this.camera)
+    return this.renderer.domElement.toDataURL('image/png')
   }
 
   public stopSpin(): void {
@@ -426,10 +448,38 @@ export class Main {
     return this.viewMode
   }
 
+  public setMeasureMode(on: boolean): void {
+    this.measureTool.setEnabled(on)
+  }
+
+  public isMeasureMode(): boolean {
+    return this.measureTool.isEnabled()
+  }
+
+  /** Toggle pine / palm / cypress / oak / maple / named trees in the 3D scene. */
+  public setTreesVisible(show: boolean): void {
+    this.treesVisible = show
+    for (const item of this.model.scene.getItems()) {
+      if (Main.isTreeItemName(item.metadata?.itemName || '')) {
+        item.visible = show
+      }
+    }
+    this._needsUpdate = true
+  }
+
+  public getTreesVisible(): boolean {
+    return this.treesVisible
+  }
+
+  private static isTreeItemName(name: string): boolean {
+    return /\b(pine|palm|cypress|oak|maple|tree)\b/i.test(name)
+  }
+
   public setViewMode(mode: '2d' | '3d'): void {
     if (this.viewMode === mode) return
 
     this.viewMode = mode
+    if (mode !== '3d') this.measureTool.setEnabled(false)
 
     if (mode === '2d') {
       this.saved3DPosition = this.camera.position.clone()

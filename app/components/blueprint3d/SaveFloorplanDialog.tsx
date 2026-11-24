@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { RoomType } from '@blueprint3d/types/room_types'
+import { RoomType, SELECTABLE_ROOM_TYPES } from '@blueprint3d/types/room_types'
 import {
   Dialog,
   DialogContent,
@@ -93,7 +93,7 @@ export function SaveFloorplanDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(RoomType).map((type) => (
+                {SELECTABLE_ROOM_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>
                     {tRoom(type)}
                   </SelectItem>

@@ -29,7 +29,9 @@
       "addItem": "物品",
       "remove": "删除",
       "moveEdit": "移动",
-      "exteriorWalls": "外墙"
+      "exteriorWalls": "外墙",
+      "adjustFloor": "调整地板",
+      "adjustFloorHint": "打开地板材质面板 — 在 3D 中点击地板，再选择材质"
     },
     "exteriorWalls": {
       "title": "外墙",
@@ -55,10 +57,14 @@
       "savePlanHint": "写入 plans/slug.json 与 plans/versions/ 历史，并保存到本浏览器。",
       "savePlanRepoOk": "已保存到 {path}（{walls} 面墙）并写入版本历史",
       "savePlanRepoFail": "浏览器已保存，但写入仓库失败：{error}",
-      "loadLatestPlan": "加载最新",
-      "loadLatestPlanHint": "从仓库 plans/ 重新加载最新文件",
-      "loadLatestPlanOk": "已加载 {path}（{walls} 面墙）",
+      "loadLatestPlan": "重新加载",
+      "loadLatestPlanHint": "从仓库 plans/ 重新加载此住宅（保留楼层列表）",
+      "loadLatestPlanOk": "已加载 {path} · {level}（{walls} 面墙）",
       "loadLatestPlanFail": "无法加载 plans/：{error}",
+      "level": "楼层",
+      "switchLevel": "切换楼层",
+      "switchLevelOk": "已切换到 {level}",
+      "switchLevelFail": "无法切换楼层：{error}",
       "downloadPlan": "下载方案",
       "downloadPlanHint": "同时下载一份 JSON 到下载文件夹",
       "loadPlan": "加载方案",
@@ -187,6 +193,7 @@
         "concrete": "混凝土",
         "wood": "木",
         "steel": "钢",
+        "fence": "围栏",
         "partition": "隔墙",
         "generic": "通用"
       }
@@ -210,7 +217,9 @@
     },
     "textureSelector": {
       "adjustFloor": "调整地板",
-      "adjustWall": "调整墙面"
+      "adjustWall": "调整墙面",
+      "adjustFloorHint": "在 3D 中点击地板，再选择材质",
+      "close": "关闭"
     },
     "myFloorplans": {
       "title": "我保存的平面图",
@@ -238,7 +247,9 @@
         "living-room": "客厅",
         "kitchen": "厨房",
         "bathroom": "卫生间",
-        "office": "办公室"
+        "office": "办公室",
+        "backyard": "后院",
+        "downstairs": "下层"
       }
     },
     "settings": {

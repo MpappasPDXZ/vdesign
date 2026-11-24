@@ -1,17 +1,33 @@
 import type { UnderlayConfig } from '@blueprint3d/floorplanner/underlay'
 import { defaultUnderlayOpacity } from '@blueprint3d/floorplanner/underlay'
 import type { AreaLabel } from '@blueprint3d/floorplanner/area_label'
-import type { VdesignProject } from '@/types/project'
+import type { VdesignHome, VdesignProject } from '@/types/project'
+import {
+  getActiveLevel,
+  isVdesignHome,
+  levelToProject,
+  normalizeToHome
+} from '@/lib/home'
 
+/** Parse a level payload or a home (returns the active level as a project). */
 export function parseProjectJson(raw: string): VdesignProject {
-  const data = JSON.parse(raw) as VdesignProject
-  if (!data?.floorplan?.corners || !data?.floorplan?.walls) {
+  const data = JSON.parse(raw) as unknown
+  if (isVdesignHome(data)) {
+    return levelToProject(getActiveLevel(data), data.meta)
+  }
+  const project = data as VdesignProject
+  if (!project?.floorplan?.corners || !project?.floorplan?.walls) {
     throw new Error('Invalid project: missing floorplan.corners/walls')
   }
-  if (!Array.isArray(data.items)) {
-    data.items = []
+  if (!Array.isArray(project.items)) {
+    project.items = []
   }
-  return data
+  return project
+}
+
+/** Parse home or legacy; always returns a VdesignHome. */
+export function parseHomeJson(raw: string, fallbackName?: string): VdesignHome {
+  return normalizeToHome(JSON.parse(raw), fallbackName)
 }
 
 /** Serialized string accepted by model.loadSerialized */
@@ -39,4 +55,21 @@ export function normalizeUnderlay(
 export function normalizeAreas(areas: AreaLabel[] | undefined): AreaLabel[] {
   if (!Array.isArray(areas)) return []
   return areas.filter((a) => a?.name && Number.isFinite(a.xCm) && Number.isFinite(a.yCm))
+}
+
+const SETBACK_EDGES = new Set(['north', 'south', 'east', 'west'])
+
+/** Municipal setback specs for blueprint dashed lines. */
+export function normalizeSetbacks(
+  setbacks: import('@/types/project').VdesignLevelPayload['setbacks']
+): import('@blueprint3d/floorplanner/setback').SetbackSpec[] {
+  if (!Array.isArray(setbacks)) return []
+  return setbacks.filter(
+    (s) =>
+      s &&
+      SETBACK_EDGES.has(s.from) &&
+      typeof s.feet === 'number' &&
+      Number.isFinite(s.feet) &&
+      s.feet > 0
+  )
 }

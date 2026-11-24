@@ -1,21 +1,23 @@
 ---
-description: Parallel plan agents (theatre / stairs / gym) — sequenced writes, merge-on-save, Load latest
-globs: app/components/blueprint3d/**/*.tsx,app/lib/plans-fs.ts,app/lib/plans-merge.ts,app/services/plans-repo.ts,app/app/api/plans/**/*.ts,src/model/scene.ts,src/constants.ts,plans/**/*.json
+description: Parallel plan agents (theatre / stairs / gym) — sequenced writes, merge-on-save, home levels
+globs: app/components/blueprint3d/**/*.tsx,app/lib/plans-fs.ts,app/lib/plans-merge.ts,app/lib/home.ts,app/services/plans-repo.ts,app/app/api/plans/**/*.ts,src/model/scene.ts,src/constants.ts,plans/**/*.json
 alwaysApply: true
 ---
 
 # Parallel plan agents — write sequencing
 
-Several agents (theatre room, stairs, gym, …) edit the **same** `plans/{slug}.json`. A lock alone is not enough: each agent must **own one domain**, **load latest before edit**, and **save through the merge API** — never overwrite the whole file from a stale copy.
+Several agents (theatre room, stairs, gym, …) edit the **same** `plans/{home}.json` **level**. A lock alone is not enough: each agent must **own one domain**, **reload before edit**, and **save through the merge API** — never overwrite the whole file from a stale copy.
+
+Homes use `format: "vdesign-home-v1"` with `levels[]` (e.g. `basement`, `backyard`). Saves patch **one `levelId`**; other levels are preserved. Prefer slug `2713-S-224th` + `levelId` — not separate `*-Basement.json` / `*-Backyard.json`.
 
 ## Hard rules
 
 1. **Never** `writeFile` / overwrite `plans/{slug}.json` directly while other agents may be working. Use `POST /api/plans` (or UI **Save Plan**). Direct writes bypass merge and clobber peers.
-2. **Never** save a full project you loaded minutes ago without merging. Server merge-on-write keeps peers' additive work, but only if you go through the API.
+2. **Never** save a full home you loaded minutes ago without merging. Server merge-on-write keeps peers' additive work **within the level**, but only if you go through the API.
 3. **One domain per agent.** Do not edit another agent's fields (see table below).
-4. **Always** `GET /api/plans?latest=1` (or **Load latest**) immediately before your edit batch; note `mtimeMs`.
-5. **Always** `POST /api/plans` with `baseMtimeMs` from that load. Wait for `{ ok: true }`.
-6. **Always** Load latest again after save and **verify your change and peers' changes** both still present.
+4. **Always** `GET /api/plans?latest=1&slug=2713-S-224th` (or UI **Reload**) immediately before your edit batch; note `mtimeMs` and use the correct `levelId`.
+5. **Always** `POST /api/plans` with `baseMtimeMs`, `levelId`, and the **level** `project` payload. Wait for `{ ok: true }`.
+6. **Always** Reload again after save and **verify your change and peers' changes** both still present on that level (and other levels untouched).
 7. **Do not Save** while models are still loading (`itemsLoadingRef > 0`).
 8. On item/door/entrance add: call **`handleViewChange('3d')`** (not only `setViewMode('3d')`).
 
@@ -32,32 +34,31 @@ Structural **wall geometry** (`floorplan.walls` / corners): **one agent at a tim
 ## Safe sequence (every agent, every batch)
 
 ```
-1. GET  /api/plans?latest=1&slug=2713-S-224th-Basement   → project + mtimeMs
-2. Apply ONLY your domain delta on that JSON (append items / entrances / finishes)
-3. POST /api/plans  { project, name, baseMtimeMs: mtimeMs, merge: true }
+1. GET  /api/plans?latest=1&slug=2713-S-224th  → home + project (active level) + mtimeMs
+2. Use project for the target levelId (or pick from home.levels); apply ONLY your domain delta
+3. POST /api/plans  { project, name: '2713-S-224th', levelId: 'basement', baseMtimeMs: mtimeMs, merge: true }
 4. Confirm response ok (check merged / mergeNotes if present)
-5. GET  latest again — prove your rows exist AND peers' rows still exist
+5. GET  latest again — prove your rows exist AND peers' rows still exist on that level
 6. If POST fails or verification fails: re-GET → re-apply ONLY your delta → POST once more
 ```
 
 ### Shell sketch
 
 ```bash
-# Load
-curl -s 'http://localhost:3000/api/plans?latest=1&slug=2713-S-224th-Basement' -o /tmp/plan.json
-# edit /tmp/plan.json — additive only for YOUR domain
-MTIME=$(node -e "console.log(require('fs').statSync('plans/2713-S-224th-Basement.json').mtimeMs)")
-# Prefer mtimeMs from the GET JSON body when present; else file stat after GET
+# Load home (active level payload in .project)
+curl -s 'http://localhost:3000/api/plans?latest=1&slug=2713-S-224th' -o /tmp/plan.json
+# edit — use .project for the level you own; additive only for YOUR domain
+# Prefer mtimeMs from the GET JSON body
 curl -s -X POST http://localhost:3000/api/plans \
-  -H 'Content-Type: application/json' \
-  -d "$(node -e "
-    const p=require('/tmp/plan.json');
-    const project=p.project||p;
-    console.log(JSON.stringify({
-      project, name: project.meta?.name||'2713-S-224th-Basement',
-      baseMtimeMs: p.mtimeMs, merge: true
-    }))
-  ")"
+ -H 'Content-Type: application/json' \
+ -d "$(node -e "
+ const p=require('/tmp/plan.json');
+ const project=p.project;
+ console.log(JSON.stringify({
+ project, name: '2713-S-224th', levelId: p.levelId||'basement',
+ baseMtimeMs: p.mtimeMs, merge: true
+ }))
+ ")"
 ```
 
 ## What the server does

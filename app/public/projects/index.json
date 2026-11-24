@@ -1,9 +1,9 @@
 [
   {
-    "id": "2713-s-224th-basement",
-    "name": "2713 S 224th — Basement",
+    "id": "2713-s-224th",
+    "name": "2713 S 224th",
     "address": "2713 S 224th, Elkhorn, NE 68022",
-    "level": "Basement",
-    "path": "/projects/2713-s-224th-basement/floorplan.json"
+    "level": "Basement · Backyard",
+    "path": "/projects/2713-s-224th/home.json"
   }
 ]

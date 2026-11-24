@@ -14,13 +14,18 @@ import { InWallFloorItem } from '@blueprint3d/items/in_wall_floor_item'
 
 const NUDGE_IN = 6
 
-/** Floor furniture / props — not wall-mounted openings. */
-export function isMovableFloorItem(item: Item): boolean {
-  if (item.fixed) return false
+/** Floor / on-floor props — not wall-mounted openings (ignores fixed). */
+export function isFloorItemType(item: Item): boolean {
   if (item instanceof WallItem) return false
   if (item instanceof InWallItem) return false
   if (item instanceof InWallFloorItem) return false
   return item instanceof OnFloorItem || item instanceof FloorItem
+}
+
+/** Unlocked floor furniture / props that may use N/E/S/W nudge. */
+export function isMovableFloorItem(item: Item): boolean {
+  if (item.fixed) return false
+  return isFloorItemType(item)
 }
 
 interface ItemMovePanelProps {

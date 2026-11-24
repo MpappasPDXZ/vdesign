@@ -29,7 +29,9 @@
       "addItem": "Item",
       "remove": "Remove",
       "moveEdit": "Move",
-      "exteriorWalls": "Exterior walls"
+      "exteriorWalls": "Exterior walls",
+      "adjustFloor": "Adjust Floor",
+      "adjustFloorHint": "Opens the floor texture panel — click a floor in 3D, then pick a texture"
     },
     "exteriorWalls": {
       "title": "Exterior walls",
@@ -52,14 +54,18 @@
     "mainControls": {
       "newPlan": "New Plan",
       "savePlan": "Save Plan",
-      "savePlanHint": "Writes plans/slug.json + a timestamped copy under plans/versions/ (git-friendly). Also saves in this browser.",
+      "savePlanHint": "Writes the active level into plans/'{'home'}'.json (+ version history). Also saves in this browser.",
       "savePlanRepoOk": "Saved to {path} ({walls} walls) + version history",
       "savePlanRepoFail": "Browser saved, but repo write failed: {error}",
       "savePlanWaitItems": "Items still loading — wait, then Save again (prevents wiping doors)",
-      "loadLatestPlan": "Load latest",
-      "loadLatestPlanHint": "Reload the newest file from plans/ in the repo",
-      "loadLatestPlanOk": "Loaded {path} ({walls} walls)",
+      "loadLatestPlan": "Reload",
+      "loadLatestPlanHint": "Reload this home from plans/ (keeps level list; restores active level)",
+      "loadLatestPlanOk": "Loaded {path} · {level} ({walls} walls)",
       "loadLatestPlanFail": "Could not load plans/: {error}",
+      "level": "Level",
+      "switchLevel": "Switch level",
+      "switchLevelOk": "Switched to {level}",
+      "switchLevelFail": "Could not switch level: {error}",
       "downloadPlan": "Download Plan",
       "downloadPlanHint": "Also download a JSON copy to your Downloads folder",
       "importPlan": "Import",
@@ -191,6 +197,7 @@
         "concrete": "Concrete",
         "wood": "Wood",
         "steel": "Steel",
+        "fence": "Fence",
         "partition": "Partition",
         "generic": "Generic"
       }
@@ -214,7 +221,9 @@
     },
     "textureSelector": {
       "adjustFloor": "Adjust Floor",
-      "adjustWall": "Adjust Wall"
+      "adjustWall": "Adjust Wall",
+      "adjustFloorHint": "Click a floor in 3D, then pick a texture",
+      "close": "Close"
     },
     "myFloorplans": {
       "title": "My Saved Floorplans",
@@ -242,7 +251,9 @@
         "living-room": "Living Room",
         "kitchen": "Kitchen",
         "bathroom": "Bathroom",
-        "office": "Office"
+        "office": "Office",
+        "backyard": "Backyard",
+        "downstairs": "Downstairs"
       }
     },
     "settings": {

@@ -13,7 +13,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { RoomType, ROOM_TYPE_LABELS } from '@blueprint3d/types/room_types'
+import {
+  RoomType,
+  ROOM_TYPE_LABELS,
+  SELECTABLE_ROOM_TYPES
+} from '@blueprint3d/types/room_types'
 
 interface NewFloorplanDialogProps {
   open: boolean
@@ -56,11 +60,11 @@ export function NewFloorplanDialog({
           <div className="grid gap-3">
             <Label className="text-sm font-medium">{t('roomTypeLabel')}</Label>
             <RadioGroup value={selectedRoomType} onValueChange={(value) => setSelectedRoomType(value as RoomType)}>
-              {Object.entries(ROOM_TYPE_LABELS).map(([key, label]) => (
+              {SELECTABLE_ROOM_TYPES.map((key) => (
                 <div key={key} className="flex items-center space-x-2">
                   <RadioGroupItem value={key} id={key} />
                   <Label htmlFor={key} className="font-normal cursor-pointer">
-                    {label}
+                    {ROOM_TYPE_LABELS[key]}
                   </Label>
                 </div>
               ))}
