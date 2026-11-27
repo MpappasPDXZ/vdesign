@@ -14,7 +14,6 @@ import { SectionalEditor, isSectionalCouch } from './SectionalEditor'
 import { BedSizeInput } from './BedSizeInput'
 import { LengthInput } from './LengthInput'
 import { FloorplannerControls } from './FloorplannerControls'
-import { Viewer3DControls } from './Viewer3DControls'
 import { BlueprintScaleBar } from './BlueprintScaleBar'
 import { WallPropertiesPanel, type WallConnectSave } from './WallPropertiesPanel'
 import { EntrancePropertiesPanel } from './EntrancePropertiesPanel'
@@ -205,8 +204,21 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   /** 3D session: area names turned off in the layers panel */
   const [hiddenAreas, setHiddenAreas] = useState<string[]>([])
   const [measureActive, setMeasureActive] = useState(false)
-  /** 3D: pick/move fixtures — off by default so pan/orbit aren't stolen */
-  const [itemSelectActive, setItemSelectActive] = useState(false)
+  /**
+   * Bottom-left Edit toolbar. OFF by default: plan/3D are view-only (pan/orbit/zoom) —
+   * no wall/entrance/furniture selection, drag, draw, or delete until Edit is clicked.
+   * Done (or Edit again) turns it off. Drives Floorplanner.editEnabled + 3D item/wall/floor picking.
+   */
+  const [editActive, setEditActive] = useState(false)
+  const editActiveRef = useRef(false)
+  /** Real edits since last successful Save (enables toolbar Save). */
+  const [editDirty, setEditDirty] = useState(false)
+  const [toolbarSaving, setToolbarSaving] = useState(false)
+  /** handleSave sets true only when the repo write succeeded. */
+  const lastSaveOkRef = useRef(false)
+  const markEditDirty = useCallback(() => {
+    if (editActiveRef.current && itemsLoadingRef.current === 0) setEditDirty(true)
+  }, [])
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [wallSchedule, setWallSchedule] = useState<WallScheduleEntry[]>([])
   const [overlays, setOverlays] = useState<OverlayDescriptor[]>([])
@@ -433,6 +445,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       blueprint3d.three.getController().setSelectedObject(item)
     })
 
+    // Real edits → enable toolbar Save (only while Edit is on, never during bulk load).
+    blueprint3d.floorplanner?.editedCallbacks.add(() => markEditDirty())
+    blueprint3d.three.itemEditedCallbacks.add(() => markEditDirty())
+    blueprint3d.model.scene.itemRemovedCallbacks.add(() => markEditDirty())
+
     blueprint3d.model.scene.itemLoadingCallbacks.add(() => {
       itemsLoadingRef.current += 1
       // Avoid 2×N React re-renders during bulk Reload (was hundreds of setStates).
@@ -442,6 +459,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     blueprint3d.model.scene.itemLoadedCallbacks.add((item) => {
       itemsLoadingRef.current = Math.max(0, itemsLoadingRef.current - 1)
       const left = itemsLoadingRef.current
+      if (editActiveRef.current && left === 0) setEditDirty(true)
       if (left === 0) setItemsLoading(0)
       else if (left % 40 === 0) setItemsLoading(left)
       const loadingToasts = loadingToastsRef.current
@@ -739,8 +757,6 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       if (mode !== '3d') {
         blueprint3dRef.current.three.setMeasureMode(false)
         setMeasureActive(false)
-        blueprint3dRef.current.three.setItemSelectEnabled(false)
-        setItemSelectActive(false)
       }
       setViewMode(mode)
       onViewModeChange?.(mode)
@@ -791,6 +807,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     blueprint3dRef.current?.three?.setShortWalls(shortWalls)
   }, [shortWalls, viewMode])
 
+  // Adjust Floor / Areas & floor need 3D wall+floor picks even when Edit is off.
+  useEffect(() => {
+    blueprint3dRef.current?.three?.setStructurePickOverride(Boolean(textureType) || areaFormOpen)
+  }, [textureType, areaFormOpen])
+
   useEffect(() => {
     const three = blueprint3dRef.current?.three
     if (!three) return
@@ -827,7 +848,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
   const handleResizeItem = useCallback(
     (height: number, width: number, depth: number) => {
-      if (selectedItem) selectedItem.resize(height, width, depth)
+      if (selectedItem) {
+        selectedItem.resize(height, width, depth)
+        blueprint3dRef.current?.floorplanner?.redraw()
+        markEditDirty()
+      }
     },
     [selectedItem]
   )
@@ -972,6 +997,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     })
     if (undoStackRef.current.length > 40) undoStackRef.current.shift()
     setCanUndo(true)
+    // Every wall / entrance mutation snapshots first — that's a real edit.
+    if (editActiveRef.current) setEditDirty(true)
   }, [])
 
   const persistPlanNow = useCallback(async () => {
@@ -1199,12 +1226,41 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     [persistPlanNow]
   )
 
+  /**
+   * Single Edit switch (bottom-left toolbar). On = select/edit/add/delete allowed in 2D + 3D.
+   * Off = view only; clears wall / entrance / furniture selection and closes their editors.
+   */
+  const setEditOn = useCallback((on: boolean) => {
+    editActiveRef.current = on
+    setEditActive(on)
+    const b = blueprint3dRef.current
+    if (!b) return
+    if (on) {
+      b.three.setMeasureMode(false)
+      setMeasureActive(false)
+    }
+    b.floorplanner?.setEditEnabled(on)
+    // 3D: fixtures + walls + floors pickable only while Edit is on (off → exitItemSelectMode).
+    b.three.setItemSelectEnabled(on)
+    if (!on) {
+      setSelectedWall(null)
+      setSelectedWallNumber(null)
+      setSelectedEntranceItem(null)
+      setSelectedItem(null)
+      setTextureType(null)
+      setAreaFormOpen(false)
+      // Add Items drawer is an edit tool — close it with Edit.
+      setActiveTab((tab) => (tab === 'items' ? 'edit' : tab))
+    }
+  }, [])
+
   const selectWallByIndex = useCallback((index0: number) => {
     const b = blueprint3dRef.current
     if (!b) return
     const walls = b.model.floorplan.getWalls()
     const wall = walls[index0]
     if (!wall) return
+    setEditOn(true)
     setViewMode('2d')
     setFloorplannerMode('move')
     b.floorplanner?.setMode(floorplannerModes.MOVE)
@@ -1212,7 +1268,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     setSelectedWall(wall)
     setSelectedWallNumber(index0 + 1)
     b.floorplanner?.redraw()
-  }, [])
+  }, [setEditOn])
 
   const handleAddExteriorWall = useCallback(() => {
     const b = blueprint3dRef.current
@@ -1243,6 +1299,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           notes: 'Added via exterior walls modal'
         })
       )
+      setEditOn(true)
       setViewMode('2d')
       setFloorplannerMode('move')
       b.floorplanner?.setMode(floorplannerModes.MOVE)
@@ -1256,7 +1313,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       console.error(err)
       toast.error('Could not add wall')
     }
-  }, [pushUndoSnapshot, persistPlanNow])
+  }, [pushUndoSnapshot, persistPlanNow, setEditOn])
 
   const handleExteriorWallChanged = useCallback(() => {
     const b = blueprint3dRef.current
@@ -1301,6 +1358,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
 
   // Save: IndexedDB + repo plans/{slug}.json + plans/versions/…
   const handleSave = useCallback(async () => {
+    lastSaveOkRef.current = false
     if (currentBlueprint) {
       if (itemsLoadingRef.current > 0) {
         toast.message(tMain('savePlanWaitItems') || 'Wait for items to finish loading, then Save again')
@@ -1370,6 +1428,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             repo.merged && repo.mergeNotes?.length
               ? ` · merged: ${repo.mergeNotes.join('; ')}`
               : ''
+          lastSaveOkRef.current = true
           toast.success(
             `${tMain('savePlanRepoOk', {
               path: repo.relativeLatest,
@@ -1591,6 +1650,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       schedule?: WallScheduleEntry[]
     ) => {
       if (!blueprint3dRef.current) return
+      // A fresh load is a clean slate: leave Edit, nothing unsaved.
+      setEditOn(false)
+      setEditDirty(false)
       blueprint3dRef.current.model.loadSerialized(data)
       if (loadedMode) setCurrentMode(loadedMode as Blueprint3DMode)
       if (blueprintId && blueprintName) {
@@ -2097,8 +2159,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   )
 
   const handleFloorplannerModeChange = useCallback((mode: 'move' | 'draw' | 'delete') => {
+    // Any toolbar mode (also sidebar Add/Remove) = Edit on.
+    setEditOn(true)
     setFloorplannerMode(mode)
-    setViewMode((prev) => (isPlanView(prev) ? prev : '2d'))
+    // Edit stays in the current view (2D or 3D); Draw/Delete are plan tools.
+    if (mode !== 'move') setViewMode((prev) => (isPlanView(prev) ? prev : '2d'))
     setActiveTab('edit')
     if (!blueprint3dRef.current) return
     const modeMap = {
@@ -2117,7 +2182,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     } else if (mode === 'delete') {
       toast.message(tFloorplanner('deleteWalls'))
     }
-  }, [tFloorplanner])
+  }, [tFloorplanner, setEditOn])
 
   /** Zoom — plan/blueprint uses floorplanner; 3D uses Main helpers. */
   const withViewZoom = useCallback((dir: 'in' | 'out' | 'fit') => {
@@ -2379,6 +2444,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           notes: 'Inserted stub — set length / Connect Place'
         })
       )
+      setEditOn(true)
       setFloorplannerMode('move')
       b.floorplanner?.setMode(floorplannerModes.MOVE)
       b.floorplanner?.selectWall(inserted)
@@ -2398,18 +2464,38 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     pushUndoSnapshot,
     persistPlanNow,
     handleUndo,
-    tSidebar
+    tSidebar,
+    setEditOn
   ])
 
+  /** Toolbar Edit — turn editing on (idempotent); returns Draw/Delete tool to plain Edit. */
+  const handleToolbarEdit = useCallback(() => {
+    if (editActiveRef.current && floorplannerMode === 'move') return
+    handleFloorplannerModeChange('move')
+  }, [floorplannerMode, handleFloorplannerModeChange])
+
+  /** Toolbar Save — same write as sidebar Save Plan; clears dirty only on repo success. */
+  const handleToolbarSave = useCallback(async () => {
+    setToolbarSaving(true)
+    try {
+      await handleSave()
+      if (lastSaveOkRef.current) setEditDirty(false)
+    } finally {
+      setToolbarSaving(false)
+    }
+  }, [handleSave])
+
   const handleFloorplannerDone = useCallback(() => {
+    setEditOn(false)
     if (blueprint3dRef.current) {
       blueprint3dRef.current.model.floorplan.update()
     }
     void persistPlanNow().then(() => {
       toast.success(tFloorplanner('doneSaved'))
     })
-    setViewMode('3d')
-  }, [persistPlanNow, tFloorplanner])
+    // Done = back to view mode (3D). Unsaved edits keep the toolbar Save enabled.
+    handleViewChange('3d')
+  }, [persistPlanNow, tFloorplanner, setEditOn, handleViewChange])
 
   const handleSelectWallNumber = useCallback((n: number) => {
     const b = blueprint3dRef.current
@@ -2417,13 +2503,14 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     const walls = b.model.floorplan.getWalls()
     const wall = walls[n - 1]
     if (!wall) return
+    setEditOn(true)
     setViewMode('2d')
     setFloorplannerMode('move')
     b.floorplanner?.setMode(floorplannerModes.MOVE)
     b.floorplanner?.selectWall(wall)
     setSelectedWall(wall)
     setSelectedWallNumber(n)
-  }, [])
+  }, [setEditOn])
 
   const handleTypedLength = useCallback((lengthCm: number) => {
     const fp = blueprint3dRef.current?.floorplanner
@@ -2504,7 +2591,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               wallSchedule={wallSchedule}
               selectedWallNumber={selectedWallNumber}
               onSelectWallNumber={handleSelectWallNumber}
-              onSave={handleSave}
+              editActive={editActive}
               onNew={handleNew}
               onImport={handleImportClick}
               onDownload={handleDownload}
@@ -2565,8 +2652,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                   setMeasureActive(next)
                   blueprint3dRef.current?.three.setMeasureMode(next)
                   if (next) {
-                    setItemSelectActive(false)
-                    blueprint3dRef.current?.three.setItemSelectEnabled(false)
+                    setEditOn(false)
                     if (viewMode !== '3d') handleViewChange('3d')
                   }
                 }}
@@ -2661,17 +2747,14 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 )}
                 {!isFullscreen && (
                   <div className="absolute left-14 bottom-5 z-[60] flex flex-col items-start gap-2">
-                    <Viewer3DControls
-                      selectActive={itemSelectActive}
-                      onSelectToggle={() => {
-                        const next = !itemSelectActive
-                        setItemSelectActive(next)
-                        blueprint3dRef.current?.three.setItemSelectEnabled(next)
-                        if (next && measureActive) {
-                          setMeasureActive(false)
-                          blueprint3dRef.current?.three.setMeasureMode(false)
-                        }
-                      }}
+                    <FloorplannerControls
+                      editActive={editActive}
+                      mode={floorplannerMode}
+                      dirty={editDirty}
+                      saving={toolbarSaving}
+                      onEdit={handleToolbarEdit}
+                      onSave={handleToolbarSave}
+                      onDone={handleFloorplannerDone}
                     />
                   </div>
                 )}
@@ -2688,8 +2771,12 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             {isPlanView(viewMode) && !isFullscreen && (
               <div className="absolute left-14 bottom-5 z-[60] flex flex-col items-start gap-2">
                 <FloorplannerControls
+                  editActive={editActive}
                   mode={floorplannerMode}
-                  onModeChange={handleFloorplannerModeChange}
+                  dirty={editDirty}
+                  saving={toolbarSaving}
+                  onEdit={handleToolbarEdit}
+                  onSave={handleToolbarSave}
                   onDone={handleFloorplannerDone}
                 />
                 {floorplannerMode === 'draw' && (
@@ -2708,7 +2795,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 className="absolute right-3 bottom-5 z-[60]"
               />
             )}
-            {!selectedWall && canUndo && !isFullscreen && isPlanView(viewMode) && (
+            {editActive && !selectedWall && canUndo && !isFullscreen && isPlanView(viewMode) && (
               <Button
                 type="button"
                 size="sm"
@@ -2808,6 +2895,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                     | { _needsUpdate?: boolean }
                     | undefined
                   if (three) three._needsUpdate = true
+                  // 2D footprint follows Move / Angle edits made from the plan.
+                  blueprint3dRef.current?.floorplanner?.redraw()
+                  markEditDirty()
                 }}
               />
             )}

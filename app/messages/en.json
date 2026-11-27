@@ -33,7 +33,8 @@
       "adjustFloor": "Adjust Floor",
       "adjustFloorHint": "Opens the floor texture panel — click a floor in 3D, then pick a texture",
       "areasFloor": "Areas & floor",
-      "areasFloorHint": "Click walls to form a zone, then show or hide that area’s floor"
+      "areasFloorHint": "Click walls to form a zone, then show or hide that area’s floor",
+      "plan": "Plan"
     },
     "exteriorWalls": {
       "title": "Exterior walls",

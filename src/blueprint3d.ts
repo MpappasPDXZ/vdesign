@@ -95,7 +95,10 @@ export class Blueprint3d {
     let bestD = badgeRadiusCm
     for (const wall of this.model.floorplan.getWalls()) {
       for (const item of wall.items || []) {
-        const d = Math.hypot(item.position.x - xCm, item.position.z - zCm)
+        const pos = this.floorplanner
+          ? this.floorplanner.entranceBadgeCm(wall, item)
+          : { x: item.position.x, z: item.position.z }
+        const d = Math.hypot(pos.x - xCm, pos.z - zCm)
         if (d <= bestD) {
           bestD = d
           entrance = item

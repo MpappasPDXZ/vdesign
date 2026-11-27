@@ -7,7 +7,7 @@ Canonical UI for **entrances** on walls — not door-only. Doors and **stairs** 
 | Gesture | Result |
 |---------|--------|
 | **Add** | Select a wall `#` first → sidebar **Entrance** → pick **Door** or **Stairs** → places on that wall |
-| **Edit** | Click entrance badge on 2D plan, or click entrance mesh in 3D, or Edit list row (priority #2) |
+| **Edit** | Bottom-left toolbar **Edit** must be on (off by default), then click the **E/S badge** on the 2D plan (priority #2). The E badge steps off the centerline when it would sit under the wall's own `#` badge. Panel: Width / Height (in) → **Apply** (`item.resize`), trash = delete (item + wall hole + schedule row by exact name). |
 | **Close** | Empty canvas / **X** |
 
 **Hard rule:** cannot Add without a host wall. No floating entrances.

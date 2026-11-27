@@ -275,3 +275,12 @@ Agent wrote `entrances[]` + type-7 `procedural:box` items into `plans/*.json`. L
 | 12 | **Open before fields.** If the panel cannot be opened/seen, fix that before any Apply/geometry work. |
 | 13 | **Hot reload for iteration.** Default Docker = Dockerfile.dev; rebuild prod only when needed. |
 | 14 | **Openings must show in 2D and 3D.** Plan JSON / item counts are not a pass — holes + 2D gaps after Load latest are. |
+
+## 2026-11-26 — Nothing is editable until bottom-left **Edit** is on
+
+- The bottom-left toolbar is **Edit · Save · Done** (no Draw/Delete — those are sidebar Wall / Remove) and is the **only** edit switch, in 2D **and** 3D. Off by default. **Edit** turns editing on (orange outline + EDITING tag). **Save** is enabled only after a real edit (`editDirty`: wall/corner drag, wall/entrance panel change, item move/resize/delete/add) and clears only after a successful repo write. **Done** returns to view mode (3D); unsaved edits keep Save enabled.
+- Off = pan / orbit / zoom only: no wall `#`, entrance `E/S`, furniture, corner/wall drag, 3D item/wall/floor picks. Single source: `editActive` (Blueprint3DAppBase) → `Floorplanner.editEnabled` + `three.setItemSelectEnabled`.
+- Only exceptions are explicit tool flows (Adjust Floor texture, Areas & floor): `three.setStructurePickOverride`.
+- Edit-mode clicks (2D): `#` badge → Wall Editor; `E/S` badge → Entrance Editor; furniture footprint → item editor. Mutually exclusive; empty canvas closes.
+- Overlapping `floorFinishes[].rectCm` patches: smaller rect always draws on top of larger (`syncFinishOverlays`), so a shower/bath patch inside a bedroom rect wins regardless of array order.
+- Hamburger sidebar follows the same rule: **no Save Plan there** (Save = bottom-left toolbar only). In view mode it shows only Projects / Plan tabs + file actions (Level, Reload, New Plan, Import, Download, Settings, Help). Add Items tab, Adjust Floor, Areas & floor, Exterior walls, Wall / Remove / Insert / Entrance / Item / Move tools, overlay editor, wall list, and the floating Undo appear **only while Edit is on**. Leaving Edit closes the Add Items drawer and Areas panel. Do not add edit controls to the sidebar without `editActive`.

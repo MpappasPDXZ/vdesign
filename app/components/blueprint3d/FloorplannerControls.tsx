@@ -1,79 +1,97 @@
 'use client'
 
-import { Move, Pencil, Trash2, Check } from 'lucide-react'
+import { Move, Save, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useTranslations } from 'next-intl'
 
 interface FloorplannerControlsProps {
+  /** Edit on — select / edit / move / delete allowed. Off = view only (pan / orbit / zoom). */
+  editActive: boolean
+  /** Active sidebar tool while editing (Wall = draw, Remove = delete) — label only. */
   mode: 'move' | 'draw' | 'delete'
-  onModeChange: (mode: 'move' | 'draw' | 'delete') => void
+  /** Plan has edits not yet written with Save Plan. */
+  dirty: boolean
+  saving?: boolean
+  onEdit: () => void
+  onSave: () => void
   onDone: () => void
   className?: string
 }
 
-/** Compact floating 2D toolbar — Move / Draw / Delete (also in left sidebar Add/Remove). */
+const MODE_TAG: Record<FloorplannerControlsProps['mode'], string> = {
+  move: 'Editing',
+  draw: 'Drawing',
+  delete: 'Deleting'
+}
+
+/**
+ * Bottom-left toolbar (2D + 3D): Edit → Save → Done.
+ * - Edit: turn editing on (click badges / furniture; edit, move, delete in their panels).
+ * - Save: write the plan (repo + browser) — only enabled after an edit has been made.
+ * - Done: leave edit mode, back to view mode.
+ * Draw / Delete are not here; they live in the sidebar (Wall / Remove).
+ */
 export function FloorplannerControls({
+  editActive,
   mode,
-  onModeChange,
+  dirty,
+  saving = false,
+  onEdit,
+  onSave,
   onDone,
   className
 }: FloorplannerControlsProps) {
-  const t = useTranslations('BluePrint.floorplanner')
-
   return (
     <div
       className={cn(
-        'pointer-events-auto flex items-center gap-1 rounded-lg border border-border bg-background/95 p-1 shadow-lg backdrop-blur-sm',
+        'pointer-events-auto relative flex items-center gap-1 rounded-lg border border-border bg-background/95 p-1 shadow-lg backdrop-blur-sm transition-shadow',
+        // Edit mode indicator — orange outline (same color as the selected-item ring on the plan).
+        editActive && 'border-orange-500 ring-2 ring-orange-500 shadow-orange-500/30',
         className
       )}
+      data-edit-active={editActive ? 'true' : 'false'}
     >
+      {editActive && (
+        <span className="pointer-events-none absolute -top-2.5 left-2 rounded bg-orange-500 px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-white shadow">
+          {MODE_TAG[mode]}
+        </span>
+      )}
       <Button
         size="sm"
-        variant={mode === 'move' ? 'default' : 'ghost'}
-        onClick={() => onModeChange('move')}
+        variant={editActive ? 'default' : 'ghost'}
+        onClick={onEdit}
         className="h-8 gap-1.5 px-2.5 text-xs"
-        title={t('moveWalls')}
-        aria-label={t('moveWalls')}
-        aria-pressed={mode === 'move'}
+        title="Edit — click walls, entrances and furniture to edit, move or delete"
+        aria-label="Edit"
+        aria-pressed={editActive}
       >
         <Move className="h-3.5 w-3.5" />
         Edit
       </Button>
       <Button
         size="sm"
-        variant={mode === 'draw' ? 'default' : 'ghost'}
-        onClick={() => onModeChange('draw')}
+        variant={dirty ? 'default' : 'ghost'}
+        onClick={onSave}
+        disabled={!dirty || saving}
         className="h-8 gap-1.5 px-2.5 text-xs"
-        title={t('drawWalls')}
-        aria-label={t('drawWalls')}
-        aria-pressed={mode === 'draw'}
+        title={dirty ? 'Save plan' : 'Nothing to save — make an edit first'}
+        aria-label="Save plan"
       >
-        <Pencil className="h-3.5 w-3.5" />
-        Draw
-      </Button>
-      <Button
-        size="sm"
-        variant={mode === 'delete' ? 'default' : 'ghost'}
-        onClick={() => onModeChange('delete')}
-        className="h-8 gap-1.5 px-2.5 text-xs"
-        title={t('deleteWalls')}
-        aria-label={t('deleteWalls')}
-        aria-pressed={mode === 'delete'}
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-        Delete
+        <Save className="h-3.5 w-3.5" />
+        Save
       </Button>
       <div className="mx-0.5 h-4 w-px bg-border" />
       <Button
         size="sm"
-        variant="default"
+        variant="outline"
         onClick={onDone}
+        disabled={!editActive}
         className="h-8 gap-1.5 px-2.5 text-xs"
-        aria-label={t('done')}
+        title="Done — back to view mode"
+        aria-label="Done"
       >
         <Check className="h-3.5 w-3.5" />
-        {t('done')}
+        Done
       </Button>
     </div>
   )

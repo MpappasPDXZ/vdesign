@@ -53,7 +53,8 @@ interface AppSidebarProps {
   wallSchedule: WallScheduleEntry[]
   selectedWallNumber?: number | null
   onSelectWallNumber?: (n: number) => void
-  onSave: () => void
+  /** Bottom-left toolbar Edit is on — only then are edit tools visible. */
+  editActive?: boolean
   onNew: () => void
   onImport?: () => void
   onDownload?: () => void
@@ -101,7 +102,7 @@ export function AppSidebar({
   wallSchedule,
   selectedWallNumber,
   onSelectWallNumber,
-  onSave,
+  editActive = false,
   onNew,
   onImport,
   onDownload,
@@ -141,10 +142,12 @@ export function AppSidebar({
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onOpenChange])
 
+  // 'edit' tab id = the plan/3D workspace (labelled Plan). Edit itself lives only on the
+  // bottom-left toolbar; Add Items is an edit tool, so it exists only while editing.
   const tabs = [
     { id: 'projects' as const, label: t('projects') },
-    { id: 'edit' as const, label: t('edit') },
-    { id: 'items' as const, label: t('addItems') }
+    { id: 'edit' as const, label: t('plan') },
+    ...(editActive ? [{ id: 'items' as const, label: t('addItems') }] : [])
   ]
 
   return (
@@ -188,7 +191,12 @@ export function AppSidebar({
         </div>
 
         <div className="flex-1 overflow-y-auto px-2.5 py-2.5">
-          <div className="mb-3 grid grid-cols-3 gap-0.5 rounded-lg bg-muted/60 p-0.5">
+          <div
+            className={cn(
+              'mb-3 grid gap-0.5 rounded-lg bg-muted/60 p-0.5',
+              editActive ? 'grid-cols-3' : 'grid-cols-2'
+            )}
+          >
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -211,15 +219,7 @@ export function AppSidebar({
 
           {/* Compact file actions */}
           <section className="mb-3 space-y-1">
-            <Button
-              type="button"
-              size="sm"
-              className="h-8 w-full justify-start text-xs"
-              onClick={onSave}
-              title={tMain('savePlanHint')}
-            >
-              {tMain('savePlan')}
-            </Button>
+            {/* Save lives only on the bottom-left toolbar (Edit · Save · Done). */}
             {((levels && levels.length > 0 && onSwitchLevel) || onNewLevel) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -379,7 +379,7 @@ export function AppSidebar({
                 </Button>
               )}
             </div>
-            {onAdjustFloor && (
+            {editActive && onAdjustFloor && (
               <Button
                 type="button"
                 variant="outline"
@@ -395,7 +395,7 @@ export function AppSidebar({
                 {t('adjustFloor')}
               </Button>
             )}
-            {onAreasFloor && (
+            {editActive && onAreasFloor && (
               <Button
                 type="button"
                 variant={areasFloorActive ? 'secondary' : 'outline'}
@@ -413,7 +413,7 @@ export function AppSidebar({
             )}
           </section>
 
-          {activeTab === 'edit' && onOpenExteriorWalls && (
+          {editActive && activeTab === 'edit' && onOpenExteriorWalls && (
             <section className="mb-3 space-y-1">
               <Button
                 type="button"
@@ -430,7 +430,7 @@ export function AppSidebar({
             </section>
           )}
 
-          {activeTab === 'edit' && onFloorplannerMode && (
+          {editActive && activeTab === 'edit' && onFloorplannerMode && (
             <section className="mb-3 space-y-1.5">
               <div className="flex items-center gap-1.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 <Plus className="h-3 w-3" />
@@ -552,7 +552,7 @@ export function AppSidebar({
             </section>
           )}
 
-          {activeTab === 'edit' && (
+          {editActive && activeTab === 'edit' && (
             <section className="mb-3 space-y-1.5">
               <div className="flex items-center gap-1.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 <Layers className="h-3 w-3" />
@@ -590,7 +590,7 @@ export function AppSidebar({
             </section>
           )}
 
-          {wallSchedule.length > 0 && activeTab === 'edit' && (
+          {editActive && wallSchedule.length > 0 && activeTab === 'edit' && (
             <section className="mb-2 space-y-1.5">
               <div className="flex items-center gap-1.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 <ListOrdered className="h-3 w-3" />

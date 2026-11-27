@@ -61,6 +61,36 @@ export class Floorplanner {
   /** Currently selected wall for property editing */
   public selectedWall: Wall | null = null
 
+  /**
+   * Edit toolbar gate (bottom-left Edit / Draw / Delete / Done). When false the plan only
+   * pans/zooms: no wall/entrance/furniture selection, no corner/wall drag, no draw/delete.
+   */
+  public editEnabled = false
+
+  /** Fired after a real plan edit (corner/wall drag, wall drawn, wall deleted). */
+  public editedCallbacks = new EventEmitter<void>()
+
+  /** A corner/wall drag moved geometry since mousedown. */
+  private dragEdited = false
+
+  /** Turn Edit on/off. Off clears every selection and returns to MOVE. */
+  public setEditEnabled(on: boolean): void {
+    if (this.editEnabled === on) return
+    this.editEnabled = on
+    if (!on) {
+      this.activeWall = null
+      this.activeCorner = null
+      this.clearPlanSelection()
+      if (this.selectedWall) {
+        this.selectedWall = null
+        this.connectHostWall = null
+        this.wallSelectedCallbacks.fire(null)
+      }
+      this.setMode(floorplannerModes.MOVE)
+    }
+    this.view.draw()
+  }
+
   /** Fired when a wall-hosted entrance (E/S badge) is clicked in Edit (MOVE) mode, or `null` to close. */
   public entranceSelectedCallbacks = new EventEmitter<Item | null>()
 
@@ -83,6 +113,31 @@ export class Floorplanner {
     tester: ((xCm: number, zCm: number, badgeRadiusCm: number) => PlanHit | null) | null
   ): void {
     this.planHitTester = tester
+  }
+
+  /**
+   * Where the E/S badge is drawn + hit-tested (plan cm). Normally the opening center;
+   * when that would sit under the wall's own `#` badge (opening centered on the wall),
+   * step off the centerline so both badges stay clickable.
+   */
+  public entranceBadgeCm(wall: Wall, item: Item): { x: number; z: number } {
+    const sx = wall.getStartX()
+    const sy = wall.getStartY()
+    const ex = wall.getEndX()
+    const ey = wall.getEndY()
+    const len = Math.hypot(ex - sx, ey - sy)
+    const ix = item.position.x
+    const iz = item.position.z
+    if (len < 1e-6) return { x: ix, z: iz }
+    const mx = (sx + ex) / 2
+    const my = (sy + ey) / 2
+    // wall # badge radius + E badge radius (9px) + gap
+    const clearCm = (this.wallNumberBadgeRadiusPx() * 1.25 + 9 + 4) * this.cmPerPixel
+    if (Math.hypot(ix - mx, iz - my) >= clearCm) return { x: ix, z: iz }
+    // Perpendicular (same side as the swing arc in the view)
+    const px = -(ey - sy) / len
+    const pz = (ex - sx) / len
+    return { x: ix + px * clearCm, z: iz + pz * clearCm }
   }
 
   /** Clear entrance + furniture plan selection (no events if already clear). */
@@ -291,8 +346,10 @@ export class Floorplanner {
     if (this.mode == floorplannerModes.DELETE) {
       if (this.activeCorner) {
         this.activeCorner.removeAll()
+        this.editedCallbacks.fire()
       } else if (this.activeWall) {
         this.activeWall.remove()
+        this.editedCallbacks.fire()
       } else {
         this.setMode(floorplannerModes.MOVE)
       }
@@ -365,6 +422,12 @@ export class Floorplanner {
         this.activeCorner = hoverCorner
         draw = true
       }
+      // Not in Edit: nothing is hoverable/draggable/selectable — plan is pan/zoom only.
+      if (!this.editEnabled) {
+        hoverWall = null
+        hoverCorner = null
+      }
+
       if (hoverWall != this.activeWall) {
         this.activeWall = hoverWall
         draw = true
@@ -389,9 +452,11 @@ export class Floorplanner {
     // dragging
     if (this.mode == floorplannerModes.MOVE && this.mouseDown) {
       if (this.activeCorner) {
+        this.dragEdited = true
         this.activeCorner.move(this.mouseX, this.mouseY)
         this.activeCorner.snapToAxis(snapTolerance)
       } else if (this.activeWall) {
+        this.dragEdited = true
         this.activeWall.relativeMove(
           (this.rawMouseX - this.lastX) * this.cmPerPixel,
           (this.rawMouseY - this.lastY) * this.cmPerPixel
@@ -411,6 +476,10 @@ export class Floorplanner {
     // over the plan closes the inspector.
     const canvasClick = this.mouseDown && !this.mouseMoved
     this.mouseDown = false
+    if (this.dragEdited) {
+      this.dragEdited = false
+      this.editedCallbacks.fire()
+    }
 
     // drawing — reuse an existing tip when the click is on it so we don't
     // newCorner+merge and accidentally split a long neighbor wall instead.
@@ -423,6 +492,7 @@ export class Floorplanner {
       const corner = existing ?? this.floorplan.newCorner(this.targetX, this.targetY)
       if (this.lastNode != null && this.lastNode !== corner) {
         this.floorplan.newWall(this.lastNode, corner)
+        this.editedCallbacks.fire()
       }
       if (!existing && corner.mergeWithIntersected() && this.lastNode != null) {
         this.setMode(floorplannerModes.MOVE)
@@ -433,7 +503,7 @@ export class Floorplanner {
     // # badge click opens Wall Editor (MOVE, no drag). Never toggle-close on
     // the same badge — double-click would open then instantly close.
     // Close: empty canvas click, or X in the panel.
-    if (this.mode == floorplannerModes.MOVE && canvasClick) {
+    if (this.mode == floorplannerModes.MOVE && canvasClick && this.editEnabled) {
       const wall = this.activeWall
       if (wall) {
         // Wall # badge wins over entrance/furniture; selections are mutually exclusive.

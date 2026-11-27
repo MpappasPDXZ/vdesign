@@ -132,6 +132,9 @@ export class Controller {
   }
 
   private checkWallsAndFloors(): void {
+    // Only in Edit (or an explicit tool flow like Adjust Floor / Areas) — otherwise every
+    // orbit click would open the Wall Editor / select a floor.
+    if (!this.three.isItemSelectEnabled() && !this.three.isStructurePickOverride()) return
     // double click on a wall or floor brings up texture change modal
     if (this.state === ControllerState.UNSELECTED && this.mouseoverObject === null) {
       // check walls
@@ -314,6 +317,7 @@ export class Controller {
         case ControllerState.DRAGGING:
           if (this.selectedObject) {
             this.selectedObject.clickReleased()
+            if (this.mouseMoved) this.three.itemEditedCallbacks.fire(this.selectedObject)
           }
           this.switchState(ControllerState.SELECTED)
           break
@@ -321,6 +325,7 @@ export class Controller {
           if (!this.mouseMoved) {
             this.switchState(ControllerState.ROTATING_FREE)
           } else {
+            if (this.selectedObject) this.three.itemEditedCallbacks.fire(this.selectedObject)
             this.switchState(ControllerState.SELECTED)
           }
           break

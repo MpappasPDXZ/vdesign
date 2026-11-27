@@ -789,8 +789,12 @@ export class FloorplannerView {
       // Badge — S for stairs opening, E for door
       const label = item.metadata?.entranceKind === 'stairs' ? 'S' : 'E'
       const r = 9
+      // Step off the wall's own # badge when the opening is centered on the wall.
+      const badge = this.viewmodel.entranceBadgeCm(wall, item)
+      const bx0 = this.viewmodel.convertX(badge.x)
+      const by0 = this.viewmodel.convertY(badge.z)
       this.context.beginPath()
-      this.context.arc(cx, cy, r, 0, Math.PI * 2)
+      this.context.arc(bx0, by0, r, 0, Math.PI * 2)
       this.context.fillStyle = theme.entranceFill
       this.context.fill()
       const entrancePicked = item === this.viewmodel.selectedEntrance
@@ -801,7 +805,7 @@ export class FloorplannerView {
       this.context.font = 'bold 10px Arial'
       this.context.textAlign = 'center'
       this.context.textBaseline = 'middle'
-      this.context.fillText(label, cx, cy + 0.5)
+      this.context.fillText(label, bx0, by0 + 0.5)
     })
     this.context.restore()
   }

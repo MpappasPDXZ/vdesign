@@ -37,6 +37,8 @@ export class Main {
 
   public itemSelectedCallbacks = new EventEmitter<Item>() // item
   public itemUnselectedCallbacks = new EventEmitter<void>()
+  /** Fired after a 3D drag/rotate actually moved an item (Edit mode). */
+  public itemEditedCallbacks = new EventEmitter<Item>()
   public wallClicked = new EventEmitter<HalfEdge>() // wall
   public floorClicked = new EventEmitter<Room>() // floor
   public nothingClicked = new EventEmitter<void>()
@@ -478,6 +480,20 @@ export class Main {
 
   public isItemSelectEnabled(): boolean {
     return this.itemSelectEnabled
+  }
+
+  /**
+   * Tool flows that need 3D wall/floor picks outside Edit (Adjust Floor texture,
+   * Areas & floor wall selection). Edit toolbar still gates everything else.
+   */
+  private structurePickOverride = false
+
+  public setStructurePickOverride(on: boolean): void {
+    this.structurePickOverride = on
+  }
+
+  public isStructurePickOverride(): boolean {
+    return this.structurePickOverride
   }
 
   /** Toggle pine / palm / cypress / oak / maple / named trees in the 3D scene. */
