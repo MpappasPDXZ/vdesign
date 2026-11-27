@@ -31,7 +31,9 @@
       "moveEdit": "Move",
       "exteriorWalls": "Exterior walls",
       "adjustFloor": "Adjust Floor",
-      "adjustFloorHint": "Opens the floor texture panel — click a floor in 3D, then pick a texture"
+      "adjustFloorHint": "Opens the floor texture panel — click a floor in 3D, then pick a texture",
+      "areasFloor": "Areas & floor",
+      "areasFloorHint": "Click walls to form a zone, then show or hide that area’s floor"
     },
     "exteriorWalls": {
       "title": "Exterior walls",
@@ -66,6 +68,12 @@
       "switchLevel": "Switch level",
       "switchLevelOk": "Switched to {level}",
       "switchLevelFail": "Could not switch level: {error}",
+      "newLevel": "New level…",
+      "newLevelHint": "Start a blank level in this home. Save once walls exist.",
+      "newLevelPrompt": "Name for the new level",
+      "newLevelOk": "Started {level} — draw walls, then Save Plan",
+      "newLevelExists": "Level “{level}” already exists — switch to it instead",
+      "newLevelCancel": "New level cancelled",
       "downloadPlan": "Download Plan",
       "downloadPlanHint": "Also download a JSON copy to your Downloads folder",
       "importPlan": "Import",
@@ -97,9 +105,13 @@
       "blueprint": "Blueprint"
     },
     "seedProjects": {
-      "title": "Sample / Cursor projects",
+      "title": "Projects",
+      "pickProject": "Pick a project",
+      "pickLevel": "Pick a level",
+      "loadingLevels": "Loading levels…",
+      "emptyLevels": "No levels in this project",
       "load": "Load",
-      "empty": "No seed projects found",
+      "empty": "No projects found",
       "loadError": "Failed to load project",
       "importFile": "Import JSON file…",
       "importSuccess": "Project loaded",
@@ -197,7 +209,7 @@
         "concrete": "Concrete",
         "wood": "Wood",
         "steel": "Steel",
-        "fence": "Fence",
+        "fence": "Railing",
         "partition": "Partition",
         "generic": "Generic"
       }
@@ -470,6 +482,15 @@
           "selectRoomType": "Select Room Type"
         }
       }
+    },
+    "entranceProps": {
+      "title": "Entrance Editor",
+      "titleHost": "Entrance Editor · wall #{n}",
+      "apply": "Apply",
+      "delete": "Delete entrance",
+      "confirmDeletePrompt": "Delete \"{name}\"? This removes the opening from the wall.",
+      "width": "Width (in)",
+      "height": "Height (in)"
     }
   }
 }

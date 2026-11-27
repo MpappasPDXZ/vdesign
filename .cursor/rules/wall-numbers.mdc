@@ -1,0 +1,23 @@
+---
+description: How wall numbers map to plan data. Read before referencing any "wall #N" by the user.
+alwaysApply: true
+---
+
+# Wall numbers (badges) — what "wall #N" means
+
+When the user says "wall #N" (or "walls 65/8", "furnace wall #45", etc.), **N is the 2D badge number** shown on the canvas and in the Edit sidebar list.
+
+- Badge `N` = `project.floorplan.walls[N - 1]` on that level (1-based array index).
+- The badge is **not** the `#` in the wall's `name`. Example on `upstairs`: badge **45** = `walls[44]` = name `"upstairs #47 laundry east"`. The `#47` in the name is an old design label; ignore it when resolving "wall #45".
+- Verify before acting: print `walls[N-1]` with its corner coordinates and confirm it matches the location the user means. Do not guess from the name.
+- Corners: `corner1` / `corner2` are keys into `floorplan.corners` (`{x, y}` in cm, plan `y` = world `z`).
+
+Quick check (node, after a GET for the level):
+
+```js
+const w = pr.floorplan.walls[N - 1];
+const C = pr.floorplan.corners;
+console.log(N, w.name, C[w.corner1], C[w.corner2], w.thickness, w.height);
+```
+
+If a wall the user names does not resolve to a sensible location, ask the user which badge they mean instead of picking a different wall.

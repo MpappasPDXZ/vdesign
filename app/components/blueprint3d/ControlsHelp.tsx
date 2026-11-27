@@ -180,9 +180,9 @@ export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) 
                           <MousePointer2 className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-medium mb-1">Tap Object</h3>
+                          <h3 className="font-medium mb-1">Select (toolbar)</h3>
                           <p className="text-muted-foreground text-sm">
-                            Select furniture to move, rotate, or delete
+                            Turn on Select in the bottom bar, then tap a fixture to move or delete
                           </p>
                         </div>
                       </div>
@@ -230,9 +230,9 @@ export function ControlsHelp({ className, viewMode = '3d' }: ControlsHelpProps) 
                           <MousePointer2 className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-medium mb-1">Click Object</h3>
+                          <h3 className="font-medium mb-1">Select (toolbar)</h3>
                           <p className="text-muted-foreground">
-                            Select furniture to move, rotate, or delete
+                            Turn on Select in the bottom bar, then click a fixture to move or delete
                           </p>
                         </div>
                       </div>

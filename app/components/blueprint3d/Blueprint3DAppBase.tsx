@@ -14,8 +14,17 @@ import { SectionalEditor, isSectionalCouch } from './SectionalEditor'
 import { BedSizeInput } from './BedSizeInput'
 import { LengthInput } from './LengthInput'
 import { FloorplannerControls } from './FloorplannerControls'
+import { Viewer3DControls } from './Viewer3DControls'
 import { BlueprintScaleBar } from './BlueprintScaleBar'
 import { WallPropertiesPanel, type WallConnectSave } from './WallPropertiesPanel'
+import { EntrancePropertiesPanel } from './EntrancePropertiesPanel'
+import {
+  AreaFloorPanel,
+  FULL_WALL_HEIGHT_CM,
+  FULL_WALL_THICKNESS_CM,
+  RAILING_HEIGHT_CM,
+  RAILING_THICKNESS_CM
+} from './AreaFloorPanel'
 import { ExteriorWallsModal, EXTERIOR_WALL_TARGET } from './ExteriorWallsModal'
 import { insertWallScheduleEntry } from '@/lib/wall-schedule'
 import { TextureSelector } from './TextureSelector'
@@ -43,6 +52,7 @@ import {
   getActiveLevel,
   levelToProject,
   projectToLevelPayload,
+  slugifyLevelId,
   stripLevelSuffix,
   upsertLevel
 } from '@/lib/home'
@@ -59,10 +69,6 @@ import type {
 } from '@/types/project'
 import { applyFloorFinishes, clearFloorFinishOverlays } from '@/lib/floor-finishes'
 import { SaveFloorplanDialog } from './SaveFloorplanDialog'
-
-const DEFAULT_PROJECT_ID = '2713-s-224th'
-const DEFAULT_HOME_NAME = '2713-S-224th'
-const DEFAULT_PROJECT_PATH = `/projects/${DEFAULT_PROJECT_ID}/home.json`
 import { TouchHelp } from './TouchHelp'
 import DefaultFloorplan from '@blueprint3d/templates/default.json'
 import { blueprintStorage } from '@/services/storage'
@@ -79,6 +85,42 @@ import { Blueprint3DModes, type Blueprint3DMode } from '@blueprint3d/config/mode
 import { RoomType, roomTypeForLevel } from '@blueprint3d/types/room_types'
 import { isPlanView, type ViewMode } from '@/types/view-mode'
 import { copyFramedScreenshotToClipboard } from '@/lib/copy-framed-screenshot'
+import {
+  floorPath,
+  parseAppPath,
+  projectPath,
+  projectsListPath,
+  type AppRoute
+} from '@/lib/app-routes'
+
+const DEFAULT_PROJECT_ID = '2713-s-224th'
+const DEFAULT_HOME_NAME = '2713-S-224th'
+const DEFAULT_PROJECT_PATH = `/projects/${DEFAULT_PROJECT_ID}/home.json`
+
+function readAppRoute(): AppRoute {
+  if (typeof window === 'undefined') return { kind: 'projects' }
+  try {
+    const parsed = parseAppPath(window.location.pathname)
+    if (parsed.kind !== 'other') return parsed
+    // Legacy ?slug=&level= → path URLs
+    const q = new URLSearchParams(window.location.search)
+    const slug = q.get('slug')
+    const level = q.get('level')
+    if (slug && level) return { kind: 'floor', slug, floor: level }
+    if (slug) return { kind: 'project', slug }
+    return { kind: 'projects' }
+  } catch {
+    return { kind: 'projects' }
+  }
+}
+
+function replaceAppUrl(path: string) {
+  try {
+    window.history.replaceState({}, '', path)
+  } catch {
+    /* ignore */
+  }
+}
 
 export interface Blueprint3DAppConfig {
   enableWheelZoom?: boolean | (() => boolean)
@@ -143,9 +185,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   /** Debounce idle settle — procedural loads are sync and hit 0 after every item. */
   const itemsIdleTimerRef = useRef<number | null>(null)
 
-  const [activeTab, setActiveTab] = useState<'projects' | 'edit' | 'items'>(
-    openMyFloorplans ? 'projects' : 'edit'
-  )
+  // Always start on projects for SSR/hydration match; floor deep-links flip to edit after mount.
+  const [activeTab, setActiveTab] = useState<'projects' | 'edit' | 'items'>('projects')
+  const [appRoute, setAppRoute] = useState<AppRoute>({ kind: 'projects' })
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [floorplannerMode, setFloorplannerMode] = useState<'move' | 'draw' | 'delete'>('move')
@@ -158,12 +200,26 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   const [landscapingVisible, setLandscapingVisible] = useState(true)
   /** 3D: show/hide tree meshes */
   const [treesVisible, setTreesVisible] = useState(true)
+  /** 3D: walls at 10% height (cabinets stay full) */
+  const [shortWalls, setShortWalls] = useState(false)
+  /** 3D session: area names turned off in the layers panel */
+  const [hiddenAreas, setHiddenAreas] = useState<string[]>([])
   const [measureActive, setMeasureActive] = useState(false)
+  /** 3D: pick/move fixtures — off by default so pan/orbit aren't stolen */
+  const [itemSelectActive, setItemSelectActive] = useState(false)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [wallSchedule, setWallSchedule] = useState<WallScheduleEntry[]>([])
   const [overlays, setOverlays] = useState<OverlayDescriptor[]>([])
   const [selectedWall, setSelectedWall] = useState<Wall | null>(null)
+  /** Wall-hosted entrance picked via 2D E/S badge (Entrance Editor). */
+  const [selectedEntranceItem, setSelectedEntranceItem] = useState<Item | null>(null)
   const [selectedWallNumber, setSelectedWallNumber] = useState<number | null>(null)
+  const [areaFormOpen, setAreaFormOpen] = useState(false)
+  const [areaFormWalls, setAreaFormWalls] = useState<Wall[]>([])
+  const [areas, setAreas] = useState<AreaLabel[]>([])
+  const areaFormOpenRef = useRef(false)
+  areaFormOpenRef.current = areaFormOpen
+  const toggleAreaFormWallRef = useRef<(wall: Wall) => void>(() => {})
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [exteriorWallsOpen, setExteriorWallsOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
@@ -273,12 +329,22 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     // Agent / CDP debugging — parallel item adds need a stable handle for 3D verify
     ;(window as unknown as { __vdesignBp?: typeof blueprint3d }).__vdesignBp = blueprint3d
 
+    // Room rebuilds wipe mesh state — re-apply loft carpet + open-below holes.
+    blueprint3d.model.floorplan.fireOnUpdatedRooms(() => {
+      applyFloorFinishes(
+        blueprint3d,
+        structuredClone(floorFinishesRef.current),
+        areasRef.current
+      )
+    })
+
     if (onBlueprint3DReady) {
       onBlueprint3DReady(blueprint3d)
     }
 
     blueprint3d.three.itemSelectedCallbacks.add((item) => {
       setSelectedItem(item)
+      setSelectedEntranceItem(null)
       setTextureType(null)
     })
 
@@ -287,20 +353,23 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     })
 
     // 3D: click wall to open editor (2D: single-click # badge)
+    // Areas & floor mode: click toggles wall into the area selection instead.
     blueprint3d.three.wallClicked.add((halfEdge) => {
       setCurrentTarget(halfEdge)
       setTextureType(null)
       setSelectedItem(null)
       const wall = halfEdge.wall
+      if (areaFormOpenRef.current) {
+        toggleAreaFormWallRef.current(wall)
+        return
+      }
       setSelectedWall((prev) => {
         if (prev === wall) {
           setSelectedWallNumber(null)
           blueprint3d.floorplanner?.selectWall(null)
           return null
         }
-        const walls = blueprint3d.model.floorplan.getWalls()
-        const idx = walls.indexOf(wall)
-        setSelectedWallNumber(idx >= 0 ? idx + 1 : null)
+        setSelectedWallNumber(wall.num > 0 ? wall.num : null)
         blueprint3d.floorplanner?.selectWall(wall)
         return wall
       })
@@ -323,21 +392,46 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       blueprint3d.floorplanner?.selectWall(null)
     })
 
-    // 2D wall click → property editor
+    // 2D wall click → property editor (or area-form selection)
     const onWallSelected = (wall: Wall | null) => {
+      if (areaFormOpenRef.current) {
+        if (wall) toggleAreaFormWallRef.current(wall)
+        setSelectedWall(null)
+        setSelectedWallNumber(null)
+        if (blueprint3d.floorplanner) {
+          blueprint3d.floorplanner.selectedWall = null
+          blueprint3d.floorplanner.redraw()
+        }
+        return
+      }
       if (!wall) {
         setSelectedWall(null)
         setSelectedWallNumber(null)
         return
       }
-      const walls = blueprint3d.model.floorplan.getWalls()
-      const idx = walls.indexOf(wall)
       setSelectedWall(wall)
-      setSelectedWallNumber(idx >= 0 ? idx + 1 : null)
+      setSelectedWallNumber(wall.num > 0 ? wall.num : null)
       setSelectedItem(null)
       setTextureType(null)
     }
     blueprint3d.floorplanner?.wallSelectedCallbacks.add(onWallSelected)
+
+    // 2D Edit: E/S badge → Entrance Editor; floor-item footprint → item editor (ContextMenu/Sectional).
+    // Wall, entrance, and furniture selection are mutually exclusive (Floorplanner enforces).
+    blueprint3d.floorplanner?.entranceSelectedCallbacks.add((item) => {
+      setSelectedEntranceItem(item)
+      if (item) {
+        setSelectedWall(null)
+        setSelectedWallNumber(null)
+        setSelectedItem(null)
+        setTextureType(null)
+        blueprint3d.three.getController().setSelectedObject(null)
+      }
+    })
+    blueprint3d.floorplanner?.planItemSelectedCallbacks.add((item) => {
+      // Reuses the 3D selection path → itemSelectedCallbacks → setSelectedItem.
+      blueprint3d.three.getController().setSelectedObject(item)
+    })
 
     blueprint3d.model.scene.itemLoadingCallbacks.add(() => {
       itemsLoadingRef.current += 1
@@ -452,6 +546,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       setUnderlayState(underlay)
       const areas = normalizeAreas(project.areas)
       areasRef.current = areas
+      setAreas(areas)
       setbacksRef.current = normalizeSetbacks(project.setbacks)
       setOverlays(
         buildOverlayList({
@@ -476,31 +571,40 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       })
     }
 
-    const levelIdFromUrl = (home: VdesignHome): string | null => {
-      try {
-        const raw = new URLSearchParams(window.location.search).get('level')
-        if (!raw) return null
-        const key = raw.toLowerCase()
-        const match = home.levels.find(
-          (l) =>
-            l.id === raw ||
-            l.id.toLowerCase() === key ||
-            l.name.toLowerCase() === key ||
-            (key === 'downstairs' && l.id === 'basement')
-        )
-        return match?.id ?? null
-      } catch {
-        return null
-      }
+    const matchLevelId = (home: VdesignHome, raw: string | null | undefined): string | null => {
+      if (!raw) return null
+      const key = raw.toLowerCase()
+      const match = home.levels.find(
+        (l) =>
+          l.id === raw ||
+          l.id.toLowerCase() === key ||
+          l.name.toLowerCase() === key ||
+          (key === 'downstairs' && l.id === 'basement') ||
+          (key === 'main-level' && l.id === 'main')
+      )
+      return match?.id ?? null
     }
 
     const loadInitialFloorplan = async () => {
+      const route = readAppRoute()
+      setAppRoute(route)
+
+      // /projects or /projects/{slug} → picker (no auto-open editor)
+      if (route.kind !== 'floor') {
+        blueprint3d.model.loadSerialized(JSON.stringify(DefaultFloorplan))
+        setActiveTab('projects')
+        if (route.kind === 'projects') replaceAppUrl(projectsListPath())
+        else if (route.kind === 'project') replaceAppUrl(projectPath(route.slug))
+        return
+      }
+
       try {
+        const slugHint = route.slug || DEFAULT_HOME_NAME
         // 1) Prefer repo home (source of truth across browsers)
         try {
-          const repo = await loadLatestProjectFromRepo(DEFAULT_HOME_NAME)
+          const repo = await loadLatestProjectFromRepo(slugHint)
           repoMtimeMsRef.current = repo.mtimeMs
-          const urlLevel = levelIdFromUrl(repo.home)
+          const urlLevel = matchLevelId(repo.home, route.floor)
           const levelId = urlLevel || repo.home.activeLevelId || repo.home.levels[0]?.id
           const level =
             repo.home.levels.find((l) => l.id === levelId) || getActiveLevel(repo.home)
@@ -511,6 +615,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             home.meta.name,
             home
           )
+          replaceAppUrl(floorPath(home.meta.name || slugHint, level.id))
+          setActiveTab('edit')
           return
         } catch {
           /* fall through to local caches / seed */
@@ -519,6 +625,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         const saved = await blueprintStorage.get(DEFAULT_PROJECT_ID)
         if (saved?.layoutData?.floorplan?.walls?.length) {
           applyProjectToCanvas(saved.layoutData as VdesignProject, saved.id, saved.name)
+          setActiveTab('edit')
           return
         }
         // 3) localStorage recovery (crash / last session)
@@ -534,6 +641,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
             DEFAULT_PROJECT_ID,
             recovery.meta?.name
           )
+          setActiveTab('edit')
           return
         }
         // 4) Seed home under /public
@@ -549,9 +657,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           home.meta.name,
           home
         )
+        setActiveTab('edit')
       } catch (error) {
         console.error('[Blueprint3DAppBase] Error loading default project:', error)
         blueprint3d.model.loadSerialized(JSON.stringify(DefaultFloorplan))
+        setActiveTab('projects')
       }
     }
 
@@ -570,6 +680,22 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       blueprint3dRef.current.three.controls.enableWheelZoom = getWheelZoomEnabled()
     }
   }, [getWheelZoomEnabled])
+
+  // Keep UI in sync with /projects/{slug}/floor/{floor} (back/forward + in-app pushState)
+  useEffect(() => {
+    const syncRoute = () => {
+      const route = readAppRoute()
+      setAppRoute(route)
+      if (route.kind === 'floor') {
+        setActiveTab((tab) => (tab === 'projects' ? 'edit' : tab))
+      } else {
+        setActiveTab('projects')
+      }
+    }
+    syncRoute()
+    window.addEventListener('popstate', syncRoute)
+    return () => window.removeEventListener('popstate', syncRoute)
+  }, [])
 
   // Handle window resize
   useEffect(() => {
@@ -613,6 +739,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       if (mode !== '3d') {
         blueprint3dRef.current.three.setMeasureMode(false)
         setMeasureActive(false)
+        blueprint3dRef.current.three.setItemSelectEnabled(false)
+        setItemSelectActive(false)
       }
       setViewMode(mode)
       onViewModeChange?.(mode)
@@ -658,6 +786,17 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
   useEffect(() => {
     blueprint3dRef.current?.three?.setTreesVisible(treesVisible)
   }, [treesVisible, viewMode])
+
+  useEffect(() => {
+    blueprint3dRef.current?.three?.setShortWalls(shortWalls)
+  }, [shortWalls, viewMode])
+
+  useEffect(() => {
+    const three = blueprint3dRef.current?.three
+    if (!three) return
+    three.setAreaLabelsForVisibility(areas)
+    three.setHiddenAreas(hiddenAreas)
+  }, [areas, hiddenAreas, viewMode])
 
   // Escape clears accidental item selection (closes ContextMenu / SectionalEditor)
   useEffect(() => {
@@ -783,7 +922,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       console.warn('[Blueprint3DAppBase] Thumbnail generation failed:', error)
     }
     const home = homeRef.current
-    const levelId = activeLevelIdRef.current || home?.activeLevelId || 'main'
+    const levelId =
+      activeLevelIdRef.current ||
+      home?.activeLevelId ||
+      home?.levels?.[0]?.id ||
+      'basement'
     const levelName =
       home?.levels.find((l) => l.id === levelId)?.name ||
       levelId
@@ -844,7 +987,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     if (!bp) return
     try {
       const levelId =
-        payload.layoutData.meta?.levelId || activeLevelIdRef.current || 'main'
+        payload.layoutData.meta?.levelId ||
+        activeLevelIdRef.current ||
+        homeRef.current?.activeLevelId ||
+        homeRef.current?.levels?.[0]?.id ||
+        'basement'
       const levelName = payload.layoutData.meta?.level
       const roomType = roomTypeForLevel(levelId, levelName)
       if (bp.roomType !== roomType) {
@@ -933,17 +1080,60 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     fp?.selectWall(null)
     fp?.redraw()
     if (n != null) {
-      setWallSchedule((prev) =>
-        prev
-          .filter((entry) => entry.n !== n)
-          .map((entry, idx) => ({ ...entry, n: idx + 1 }))
-      )
+      // Keep other entries' n: wall numbers are stable, so deleting #n must not renumber the rest.
+      setWallSchedule((prev) => prev.filter((entry) => entry.n !== n))
     }
     void persistPlanNow()
     toast.success('Wall deleted — plan saved', {
       action: { label: 'Undo', onClick: () => handleUndo() }
     })
   }, [selectedWall, selectedWallNumber, pushUndoSnapshot, persistPlanNow, handleUndo])
+
+  /** Close Entrance Editor (and clear the orange badge ring on the plan). */
+  const closeEntranceEditor = useCallback(() => {
+    setSelectedEntranceItem(null)
+    const fp = blueprint3dRef.current?.floorplanner
+    if (fp?.selectedEntrance) {
+      fp.selectedEntrance = null
+      fp.redraw()
+    }
+  }, [])
+
+  /** Entrance Editor Apply — schedule row (exact name match) + persist. */
+  const handleEntranceApplied = useCallback(
+    (item: Item, widthInches: number, heightInches: number) => {
+      const b = blueprint3dRef.current
+      b?.model.floorplan.update()
+      b?.floorplanner?.redraw()
+      const name = item.metadata?.itemName
+      entrancesRef.current = entrancesRef.current.map((row) =>
+        name && row.name === name ? { ...row, widthInches, heightInches } : row
+      )
+      requestAnimationFrame(() => b?.floorplanner?.redraw())
+      void persistPlanNow()
+      toast.success('Entrance updated — plan saved')
+    },
+    [persistPlanNow]
+  )
+
+  /** Entrance Editor trash — item + wall hole + schedule row; persist. */
+  const handleEntranceDelete = useCallback(
+    (item: Item) => {
+      pushUndoSnapshot()
+      const name = item.metadata?.itemName
+      item.removeFromScene()
+      entrancesRef.current = entrancesRef.current.filter((row) => !(name && row.name === name))
+      closeEntranceEditor()
+      const b = blueprint3dRef.current
+      b?.model.floorplan.update()
+      b?.floorplanner?.redraw()
+      void persistPlanNow()
+      toast.success('Entrance deleted — plan saved', {
+        action: { label: 'Undo', onClick: () => handleUndo() }
+      })
+    },
+    [pushUndoSnapshot, closeEntranceEditor, persistPlanNow, handleUndo]
+  )
 
   /** Wall Editor Connect host → orange stroke on 2D plan. */
   const handleConnectHostHighlight = useCallback((host: Wall | null) => {
@@ -1126,7 +1316,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         })
         setRecoverySavedAt(Date.now())
         const levelId =
-          payload.layoutData.meta?.levelId || activeLevelIdRef.current || 'main'
+          payload.layoutData.meta?.levelId ||
+        activeLevelIdRef.current ||
+        homeRef.current?.activeLevelId ||
+        homeRef.current?.levels?.[0]?.id ||
+        'basement'
         const levelName = payload.layoutData.meta?.level
         const saveRoomType = roomTypeForLevel(levelId, levelName)
         setCurrentBlueprint((prev) =>
@@ -1263,10 +1457,127 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     [buildSavePayload, t, tMain]
   )
 
-  const applyAreas = useCallback((areas: AreaLabel[]) => {
-    areasRef.current = areas
-    blueprint3dRef.current?.floorplanner?.setAreaLabels(areas)
+  const applyAreas = useCallback((next: AreaLabel[]) => {
+    areasRef.current = next
+    setAreas(next)
+    blueprint3dRef.current?.floorplanner?.setAreaLabels(next)
+    blueprint3dRef.current?.three?.setAreaLabelsForVisibility(next)
   }, [])
+
+  const syncAreaFormHighlight = useCallback((walls: Wall[]) => {
+    setAreaFormWalls(walls)
+    blueprint3dRef.current?.floorplanner?.setAreaFormWalls(walls)
+  }, [])
+
+  const toggleAreaFormWall = useCallback(
+    (wall: Wall) => {
+      setAreaFormWalls((prev) => {
+        const next = prev.includes(wall) ? prev.filter((w) => w !== wall) : [...prev, wall]
+        blueprint3dRef.current?.floorplanner?.setAreaFormWalls(next)
+        return next
+      })
+    },
+    []
+  )
+  toggleAreaFormWallRef.current = toggleAreaFormWall
+
+  const handleAreasApply = useCallback(
+    (next: AreaLabel[]) => {
+      applyAreas(next)
+      const b = blueprint3dRef.current
+      if (b) applyFloorFinishes(b, floorFinishesRef.current, next)
+      setOverlays((prev) => {
+        const has = next.length > 0
+        if (!has) return prev.filter((o) => o.id !== 'areaLabels')
+        if (prev.some((o) => o.id === 'areaLabels')) return prev
+        return buildOverlayList({
+          hasBlueprint: prev.some((o) => o.id === 'blueprint'),
+          blueprintOpacity: underlayConfigRef.current?.opacity ?? 0.4,
+          hasAreas: true
+        })
+      })
+      persistRecovery()
+      void persistPlanNow()
+    },
+    [applyAreas, buildOverlayList, persistPlanNow, persistRecovery]
+  )
+
+  const handleMakeRailing = useCallback(
+    (walls: Wall[]) => {
+      if (!walls.length) return
+      pushUndoSnapshot()
+      const nums: number[] = []
+      for (const wall of walls) {
+        wall.wallType = 'fence'
+        wall.height = RAILING_HEIGHT_CM
+        wall.thickness = RAILING_THICKNESS_CM
+        wall.fireRedraw()
+        if (wall.num > 0) nums.push(wall.num)
+      }
+      setWallSchedule((prev) => {
+        const next = prev.map((e) => ({ ...e }))
+        for (const n of nums) {
+          const i = next.findIndex((e) => e.n === n)
+          const patch = {
+            n,
+            wallType: 'fence' as const,
+            thickness: `${cmToInches(RAILING_THICKNESS_CM)}"`,
+            outerLength: undefined as string | undefined
+          }
+          if (i >= 0) {
+            next[i] = { ...next[i], wallType: 'fence', thickness: patch.thickness }
+          } else {
+            next.push({ n, wallType: 'fence', thickness: patch.thickness })
+          }
+        }
+        return next.sort((a, b) => a.n - b.n)
+      })
+      blueprint3dRef.current?.floorplanner?.redraw()
+      toast.success(
+        nums.length === 1
+          ? `Wall #${nums[0]} → railing`
+          : `${nums.length} walls → railing`
+      )
+      persistRecovery()
+      void persistPlanNow()
+    },
+    [pushUndoSnapshot, persistPlanNow, persistRecovery]
+  )
+
+  const handleMakeFullWall = useCallback(
+    (walls: Wall[]) => {
+      if (!walls.length) return
+      pushUndoSnapshot()
+      const nums: number[] = []
+      for (const wall of walls) {
+        wall.wallType = 'wood'
+        wall.height = FULL_WALL_HEIGHT_CM
+        wall.thickness = FULL_WALL_THICKNESS_CM
+        wall.fireRedraw()
+        if (wall.num > 0) nums.push(wall.num)
+      }
+      setWallSchedule((prev) => {
+        const next = prev.map((e) => ({ ...e }))
+        for (const n of nums) {
+          const i = next.findIndex((e) => e.n === n)
+          const patch = {
+            wallType: 'wood' as const,
+            thickness: `${cmToInches(FULL_WALL_THICKNESS_CM)}"`
+          }
+          if (i >= 0) next[i] = { ...next[i], ...patch }
+          else next.push({ n, ...patch })
+        }
+        return next.sort((a, b) => a.n - b.n)
+      })
+      blueprint3dRef.current?.floorplanner?.redraw()
+      toast.success(
+        nums.length === 1 ? `Wall #${nums[0]} → full wall` : `${nums.length} walls → full wall`
+      )
+      persistRecovery()
+      void persistPlanNow()
+    },
+    [pushUndoSnapshot, persistPlanNow, persistRecovery]
+  )
 
   // Load from saved floorplan / imported project
   const handleLoadFloorplan = useCallback(
@@ -1300,6 +1611,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
       setUnderlayState(nextUnderlay)
       const nextAreas = areas ?? []
       applyAreas(nextAreas)
+      setHiddenAreas([])
       setWallSchedule(schedule ?? [])
       setOverlays(
         buildOverlayList({
@@ -1437,23 +1749,16 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         `levels=${home.levels.length} · active=${home.activeLevelId} · mtime=${mtimeMs}`
       )
       repoMtimeMsRef.current = mtimeMs
-      const urlLevel = (() => {
-        try {
-          const raw = new URLSearchParams(window.location.search).get('level')
-          if (!raw) return null
-          const key = raw.toLowerCase()
-          const match = home.levels.find(
-            (l) =>
-              l.id === raw ||
-              l.id.toLowerCase() === key ||
-              l.name.toLowerCase() === key ||
-              (key === 'downstairs' && l.id === 'basement')
-          )
-          return match?.id ?? null
-        } catch {
-          return null
-        }
-      })()
+      const route = readAppRoute()
+      const urlLevel =
+        route.kind === 'floor'
+          ? home.levels.find(
+              (l) =>
+                l.id === route.floor ||
+                l.id.toLowerCase() === route.floor.toLowerCase() ||
+                l.name.toLowerCase() === route.floor.toLowerCase()
+            )?.id ?? null
+          : null
       const levelId =
         urlLevel ||
         (keepLevelId && home.levels.some((l) => l.id === keepLevelId)
@@ -1462,6 +1767,8 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         home.levels[0]?.id
       mark('level_resolved', levelId)
       const { project, level } = await applyHomeLevelToCanvas(home, levelId)
+      replaceAppUrl(floorPath(home.meta.name || hint, level.id))
+      setAppRoute({ kind: 'floor', slug: home.meta.name || hint, floor: level.id })
       mark('apply_returned', `${project.items?.length ?? 0} items queued`)
       const walls = project.floorplan?.walls?.length ?? 0
       toast.success(
@@ -1500,16 +1807,9 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         }
         if (!home) throw new Error('No home loaded')
         const { level } = await applyHomeLevelToCanvas(home, levelId)
-        try {
-          const url = new URL(window.location.href)
-          url.searchParams.set('level', level.id)
-          if (!url.searchParams.get('slug') && home.meta.name) {
-            url.searchParams.set('slug', home.meta.name)
-          }
-          window.history.replaceState({}, '', url)
-        } catch {
-          /* ignore */
-        }
+        const slug = home.meta.name || DEFAULT_HOME_NAME
+        replaceAppUrl(floorPath(slug, level.id))
+        setAppRoute({ kind: 'floor', slug, floor: level.id })
         toast.success(tMain('switchLevelOk', { level: level.name }))
         // Fit view after level geometry changes
         requestAnimationFrame(() => {
@@ -1527,6 +1827,72 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     },
     [applyHomeLevelToCanvas, stashActiveLevelIntoHome, tMain]
   )
+
+  /** Blank level in this home — persists on first Save Plan once walls exist. */
+  const handleNewLevel = useCallback(async () => {
+    const raw = window.prompt(tMain('newLevelPrompt'), 'Main')
+    if (raw == null) {
+      toast.message(tMain('newLevelCancel'))
+      return
+    }
+    const levelName = raw.trim()
+    if (!levelName) {
+      toast.message(tMain('newLevelCancel'))
+      return
+    }
+    const levelId = slugifyLevelId(levelName)
+    try {
+      stashActiveLevelIntoHome()
+      let home = homeRef.current
+      if (!home) {
+        const hint = currentBlueprintRef.current?.name || DEFAULT_HOME_NAME
+        const repo = await loadLatestProjectFromRepo(hint)
+        repoMtimeMsRef.current = repo.mtimeMs
+        home = repo.home
+      }
+      if (!home) throw new Error('No home loaded')
+      if (home.levels.some((l) => l.id === levelId)) {
+        toast.error(tMain('newLevelExists', { level: levelName }))
+        return
+      }
+      const blank: VdesignProject = {
+        floorplan: {
+          corners: {},
+          walls: [],
+          wallTextures: [],
+          floorTextures: {},
+          newFloorTextures: {}
+        },
+        items: [],
+        wallSchedule: [],
+        entrances: [],
+        areas: [],
+        meta: {
+          name: home.meta.name,
+          address: home.meta.address,
+          level: levelName,
+          levelId
+        }
+      }
+      const next = upsertLevel(home, levelId, projectToLevelPayload(blank), levelName)
+      await applyHomeLevelToCanvas(next, levelId)
+      const slug = home.meta.name || DEFAULT_HOME_NAME
+      replaceAppUrl(floorPath(slug, levelId))
+      setAppRoute({ kind: 'floor', slug, floor: levelId })
+      toast.success(tMain('newLevelOk', { level: levelName }))
+      requestAnimationFrame(() => {
+        blueprint3dRef.current?.three.fitCamera?.() ??
+          blueprint3dRef.current?.three.centerCamera?.()
+      })
+    } catch (err) {
+      console.error(err)
+      toast.error(
+        tMain('switchLevelFail', {
+          error: err instanceof Error ? err.message : String(err)
+        })
+      )
+    }
+  }, [applyHomeLevelToCanvas, stashActiveLevelIntoHome, tMain])
 
   const handleImportClick = useCallback(() => {
     importFileRef.current?.click()
@@ -1695,6 +2061,11 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
     (tab: 'projects' | 'edit' | 'items') => {
       setActiveTab(tab)
       setTextureType(null)
+      // Projects tab = /projects so refresh lands on the selector again.
+      if (tab === 'projects') {
+        replaceAppUrl(projectsListPath())
+        setAppRoute({ kind: 'projects' })
+      }
 
       if (blueprint3dRef.current && tab === 'edit') {
         blueprint3dRef.current.three.stopSpin()
@@ -2141,6 +2512,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               levels={homeLevels}
               activeLevelId={activeLevelId}
               onSwitchLevel={handleSwitchLevel}
+              onNewLevel={handleNewLevel}
               onSettingsClick={() => setSettingsOpen(true)}
               onAdjustFloor={() => {
                 setTextureType('floor')
@@ -2148,6 +2520,14 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 setSidebarOpen(false)
                 handleViewChange('3d')
               }}
+              onAreasFloor={() => {
+                setAreaFormOpen(true)
+                setSelectedWall(null)
+                setSelectedWallNumber(null)
+                blueprint3dRef.current?.floorplanner?.selectWall(null)
+                setSidebarOpen(false)
+              }}
+              areasFloorActive={areaFormOpen}
               projectName={homeName || currentBlueprint?.name || null}
               onHelpClick={() => setHelpOpen(true)}
               autosaveLabel={
@@ -2184,13 +2564,22 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                   const next = !measureActive
                   setMeasureActive(next)
                   blueprint3dRef.current?.three.setMeasureMode(next)
-                  if (next && viewMode !== '3d') handleViewChange('3d')
+                  if (next) {
+                    setItemSelectActive(false)
+                    blueprint3dRef.current?.three.setItemSelectEnabled(false)
+                    if (viewMode !== '3d') handleViewChange('3d')
+                  }
                 }}
                 onCopyScreenshot={handleCopyScreenshot}
                 landscapingVisible={landscapingVisible}
                 onLandscapingVisibleChange={setLandscapingVisible}
                 treesVisible={treesVisible}
                 onTreesVisibleChange={setTreesVisible}
+                shortWalls={shortWalls}
+                onShortWallsChange={setShortWalls}
+                areaNames={areas.map((a) => a.name)}
+                hiddenAreas={hiddenAreas}
+                onHiddenAreasChange={setHiddenAreas}
               />
             </div>
           </>
@@ -2203,6 +2592,13 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
         >
           {activeTab === 'projects' && (
             <ProjectsView
+              initialSlug={
+                appRoute.kind === 'project'
+                  ? appRoute.slug
+                  : appRoute.kind === 'floor'
+                    ? appRoute.slug
+                    : null
+              }
               onBlueprintLoad={(
                 layoutData,
                 roomType,
@@ -2221,6 +2617,15 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                 }
                 handleLoadFloorplan(layoutData, roomType, id, name, underlay, areas, schedule)
                 setSidebarOpen(false)
+                const slug = home?.meta.name || name || id || DEFAULT_HOME_NAME
+                const levelId = home?.activeLevelId
+                if (slug && levelId) {
+                  replaceAppUrl(floorPath(slug, levelId))
+                  setAppRoute({ kind: 'floor', slug, floor: levelId })
+                } else if (slug) {
+                  replaceAppUrl(projectPath(slug))
+                  setAppRoute({ kind: 'project', slug })
+                }
               }}
             />
           )}
@@ -2252,6 +2657,22 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
                         </span>
                       </p>
                     </div>
+                  </div>
+                )}
+                {!isFullscreen && (
+                  <div className="absolute left-14 bottom-5 z-[60] flex flex-col items-start gap-2">
+                    <Viewer3DControls
+                      selectActive={itemSelectActive}
+                      onSelectToggle={() => {
+                        const next = !itemSelectActive
+                        setItemSelectActive(next)
+                        blueprint3dRef.current?.three.setItemSelectEnabled(next)
+                        if (next && measureActive) {
+                          setMeasureActive(false)
+                          blueprint3dRef.current?.three.setMeasureMode(false)
+                        }
+                      }}
+                    />
                   </div>
                 )}
               </>
@@ -2301,7 +2722,7 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
           </div>
 
           {/* One Wall Editor instance — portaled to body (papercut: open/visibility hell). */}
-          {selectedWall && !isFullscreen && (
+          {selectedWall && !areaFormOpen && !isFullscreen && (
             <WallPropertiesPanel
               wall={selectedWall}
               wallNumber={selectedWallNumber}
@@ -2328,6 +2749,33 @@ export function Blueprint3DAppBase({ config = {} }: Blueprint3DAppBaseProps) {
               onDelete={handleDeleteWall}
               canUndo={canUndo}
               onUndo={handleUndo}
+            />
+          )}
+
+          {/* One Entrance Editor — portaled to body, opened by 2D E/S badge click. */}
+          {selectedEntranceItem && !selectedWall && !areaFormOpen && !isFullscreen && (
+            <EntrancePropertiesPanel
+              item={selectedEntranceItem}
+              onClose={closeEntranceEditor}
+              onBeforeMutate={pushUndoSnapshot}
+              onApplied={handleEntranceApplied}
+              onDelete={handleEntranceDelete}
+            />
+          )}
+
+          {areaFormOpen && !isFullscreen && (
+            <AreaFloorPanel
+              walls={areaFormWalls}
+              wallNumbers={areaFormWalls.map((w) => w.num).filter((n) => n > 0)}
+              areas={areas}
+              onClose={() => {
+                setAreaFormOpen(false)
+                syncAreaFormHighlight([])
+              }}
+              onClearSelection={() => syncAreaFormHighlight([])}
+              onApply={handleAreasApply}
+              onMakeRailing={handleMakeRailing}
+              onMakeWall={handleMakeFullWall}
             />
           )}
 
@@ -2464,7 +2912,7 @@ function ControlsHelpForced({
             ? viewMode === 'blueprint'
               ? 'Same plan tools as 2D, rendered as a classic cyan-on-navy blueprint. Click a wall # badge to open Wall Editor.'
               : 'Use the left menu for move / draw / delete. Click a wall # badge (or the Edit list) to open Wall Editor. Type a length while drawing, then Enter.'
-            : 'Click furniture to select. Drag it, or use N/E/S/W + angle (0–360). Orbit: left-drag · pan: right-drag · zoom: scroll.'}
+            : 'Orbit and pan freely by default. Turn on Select in the bottom bar to click fixtures. Orbit: left-drag · pan: right-drag · zoom: scroll.'}
         </p>
         <button
           type="button"

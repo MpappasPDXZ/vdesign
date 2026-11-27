@@ -11,6 +11,11 @@ export class FloorplanThree {
   public readonly renderer: THREE.WebGLRenderer
   public floors: Floor[] = []
   public edges: Edge[] = []
+  /**
+   * Display scale for full walls (1 = real height). Short-walls mode uses 0.1
+   * so layout stubs remain while cabinets stay full size.
+   */
+  private wallHeightScale = 1
 
   constructor(scene: THREE.Scene, floorplan: FloorplanModel, controls: Controls, renderer: THREE.WebGLRenderer) {
     this.scene = scene
@@ -19,6 +24,18 @@ export class FloorplanThree {
     this.renderer = renderer
 
     this.floorplan.fireOnUpdatedRooms(this.redraw.bind(this))
+  }
+
+  public getWallHeightScale(): number {
+    return this.wallHeightScale
+  }
+
+  /** Rebuild wall meshes at the given height scale (fixtures unchanged). */
+  public setWallHeightScale(scale: number): void {
+    const next = Math.max(0.05, Math.min(1, scale))
+    if (Math.abs(next - this.wallHeightScale) < 1e-6) return
+    this.wallHeightScale = next
+    this.edges.forEach((edge) => edge.rebuild())
   }
 
   private redraw(): void {
@@ -42,7 +59,13 @@ export class FloorplanThree {
 
     // draw edges (reads wall.items for openings — items must already be on walls)
     this.floorplan.wallEdges().forEach((edge) => {
-      const threeEdge = new Edge(this.scene, edge, this.controls, this.renderer)
+      const threeEdge = new Edge(
+        this.scene,
+        edge,
+        this.controls,
+        this.renderer,
+        () => this.wallHeightScale
+      )
       this.edges.push(threeEdge)
     })
 

@@ -8,6 +8,8 @@ import { Skybox } from './skybox'
 import { Controls } from './controls'
 import { HUD } from './hud'
 import { MeasureTool } from './measure_tool'
+import { areaNameAt, roomFullyHidden } from './area_layers'
+import type { AreaLabel } from '../floorplanner/area_label'
 import type { Model } from '../model/model'
 import type { Scene } from '../model/scene'
 import type { Item } from '../items/item'
@@ -63,6 +65,17 @@ export class Main {
 
   /** 3D layer: show/hide tree meshes (pine, palm, cypress, …). */
   private treesVisible = true
+
+  /** Session: area names currently turned off in the layers panel. */
+  private hiddenAreaNames = new Set<string>()
+  /** Area labels used to map rooms / items → named zones. */
+  private areaLabelsForVisibility: AreaLabel[] = []
+
+  /**
+   * Opt-in fixture pick/move. Off by default so orbit/pan/zoom aren't stolen
+   * by dense cabinets. Toggle from the 3D bottom toolbar.
+   */
+  private itemSelectEnabled = false
 
   constructor(
     model: Model,
@@ -145,7 +158,8 @@ export class Main {
       if (!this.hasFittedToPlan && span > 200) {
         this.centerCamera()
       }
-      this._needsUpdate = true
+      // Floors/edges were rebuilt — reapply Trees + Areas layers
+      this.refreshLayerVisibility()
     })
 
     // @ts-ignore - Item is imported but not used, keeping for future use
@@ -153,11 +167,9 @@ export class Main {
 
     this.floorplan = new FloorplanThree(this.scene.getScene(), this.model.floorplan, this.controls, this.renderer)
 
-    // Keep tree visibility when items load / reload
-    this.scene.itemLoadedCallbacks.add((item) => {
-      if (!this.treesVisible && Main.isTreeItemName(item.metadata?.itemName || '')) {
-        item.visible = false
-      }
+    // Keep Trees + Areas layer visibility when items load / reload
+    this.scene.itemLoadedCallbacks.add(() => {
+      this.refreshLayerVisibility()
     })
 
     this.animate()
@@ -399,14 +411,14 @@ export class Main {
   }
 
   /** Zoom camera toward the orbit target (see less of the plan). */
-  public zoomIn(steps = 6): void {
+  public zoomIn(steps = 2): void {
     for (let i = 0; i < steps; i++) this.controls.dollyOut()
     this.controls.update()
     this._needsUpdate = true
   }
 
   /** Zoom camera away from the orbit target (see more of the plan). */
-  public zoomOut(steps = 6): void {
+  public zoomOut(steps = 2): void {
     for (let i = 0; i < steps; i++) this.controls.dollyIn()
     this.controls.update()
     this._needsUpdate = true
@@ -456,19 +468,135 @@ export class Main {
     return this.measureTool.isEnabled()
   }
 
+  /** When false, 3D clicks never pick/drag fixtures — camera only. */
+  public setItemSelectEnabled(on: boolean): void {
+    this.itemSelectEnabled = on
+    if (!on && this.controller) {
+      this.controller.exitItemSelectMode()
+    }
+  }
+
+  public isItemSelectEnabled(): boolean {
+    return this.itemSelectEnabled
+  }
+
   /** Toggle pine / palm / cypress / oak / maple / named trees in the 3D scene. */
   public setTreesVisible(show: boolean): void {
     this.treesVisible = show
-    for (const item of this.model.scene.getItems()) {
-      if (Main.isTreeItemName(item.metadata?.itemName || '')) {
-        item.visible = show
-      }
-    }
-    this._needsUpdate = true
+    this.refreshLayerVisibility()
   }
 
   public getTreesVisible(): boolean {
     return this.treesVisible
+  }
+
+  /**
+   * Short walls (10% height) — layout stubs stay; cabinets/appliances stay full size.
+   * Door leaves (pantry pocket, swing, etc.) shrink with the walls.
+   */
+  public setShortWalls(on: boolean): void {
+    if (!this.floorplan) return
+    this.floorplan.setWallHeightScale(on ? 0.1 : 1)
+    this.applyShortWallsToDoors(on)
+    this._needsUpdate = true
+  }
+
+  public getShortWalls(): boolean {
+    return !!this.floorplan && this.floorplan.getWallHeightScale() < 0.99
+  }
+
+  /**
+   * Door / entrance leaves only — not cabinets, appliances, or stairs openings.
+   * Measured from floor: scale Y so the leaf is 10% of full height.
+   */
+  private static isDoorLeafItem(item: Item): boolean {
+    const kind = item.metadata?.entranceKind
+    if (kind === 'stairs') return false
+    if (kind === 'door') return true
+    const name = item.metadata?.itemName || ''
+    if (!/door/i.test(name)) return false
+    // Procedural cabinets/appliances sometimes say “door” in notes — names do not.
+    if (
+      /cabinet|fridge|freezer|oven|dishwasher|micro|sauna|nuvio|ice\b|openshelf|counter/i.test(
+        name
+      )
+    ) {
+      return false
+    }
+    return true
+  }
+
+  private applyShortWallsToDoors(on: boolean): void {
+    const target = on ? 0.1 : 1
+    for (const item of this.model.scene.getItems()) {
+      if (!Main.isDoorLeafItem(item)) continue
+      const tagged = item as Item & { __shortWallsY?: number }
+      const cur = tagged.__shortWallsY ?? 1
+      if (Math.abs(cur - target) < 1e-6) continue
+      const ratio = target / cur
+      item.setScale(1, ratio, 1)
+      tagged.__shortWallsY = target
+    }
+  }
+
+  /** Keep area label list in sync after plan load / Areas & floor edits. */
+  public setAreaLabelsForVisibility(areas: AreaLabel[]): void {
+    this.areaLabelsForVisibility = areas || []
+    this.refreshLayerVisibility()
+  }
+
+  /** Session layer: hide named areas (floors, walls, fixtures inside). */
+  public setHiddenAreas(names: string[]): void {
+    this.hiddenAreaNames = new Set(names)
+    this.refreshLayerVisibility()
+  }
+
+  public getHiddenAreas(): string[] {
+    return [...this.hiddenAreaNames]
+  }
+
+  /**
+   * Apply Trees + Areas layer toggles to floors, walls, items, finish overlays.
+   * Unlabeled rooms / fixtures stay visible.
+   */
+  public refreshLayerVisibility(): void {
+    if (!this.floorplan) return
+    const areas = this.areaLabelsForVisibility
+    const hidden = this.hiddenAreaNames
+    const rooms = this.model.floorplan.getRooms()
+
+    for (const floor of this.floorplan.floors) {
+      floor.setVisible(!roomFullyHidden(floor.room, areas, hidden))
+    }
+
+    for (const edge of this.floorplan.edges) {
+      const room = edge.getRoom()
+      const hide = room != null && roomFullyHidden(room, areas, hidden)
+      edge.setAreaLayerVisible(!hide)
+    }
+
+    for (const item of this.model.scene.getItems()) {
+      const name = areaNameAt(item.position.x, item.position.z, areas, rooms)
+      const areaOn = !name || !hidden.has(name)
+      const isTree = Main.isTreeItemName(item.metadata?.itemName || '')
+      item.visible = areaOn && (!isTree || this.treesVisible)
+    }
+
+    // Late-loaded doors pick up short-walls scale
+    this.applyShortWallsToDoors(this.getShortWalls())
+
+    const scene = this.scene.getScene()
+    const overlays = scene.getObjectByName('__floorFinishOverlays')
+    if (overlays) {
+      overlays.children.forEach((child) => {
+        const label = child.name.startsWith('floorFinish:')
+          ? child.name.slice('floorFinish:'.length)
+          : ''
+        child.visible = !label || !hidden.has(label)
+      })
+    }
+
+    this._needsUpdate = true
   }
 
   private static isTreeItemName(name: string): boolean {

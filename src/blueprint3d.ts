@@ -1,5 +1,6 @@
 import { Model } from './model/model'
-import { Floorplanner } from './floorplanner/floorplanner'
+import { Floorplanner, type PlanHit } from './floorplanner/floorplanner'
+import type { Item } from './items/item'
 import { Main } from './three/main'
 import { WallItem } from './items/wall_item'
 import type { ItemFootprint } from './floorplanner/item_footprint'
@@ -46,6 +47,7 @@ export class Blueprint3d {
     if (!options.widget) {
       this.floorplanner = new Floorplanner(options.floorplannerElement || '', this.model.floorplan)
       this.floorplanner.setItemFootprintProvider(() => this.collectItemFootprints())
+      this.floorplanner.setPlanHitTester((x, z, r) => this.hitTestPlan(x, z, r))
       // Items load async after plan JSON — refresh footprints as each mesh arrives.
       this.model.scene.itemLoadedCallbacks.add(() => {
         this.floorplanner?.redraw()
@@ -59,23 +61,72 @@ export class Blueprint3d {
    * Non-wall scene items as 2D footprints (skips doors/stairs/wall-hung).
    * Drops giant shells (roofs, pads, aprons) that would bury fixtures on the plan.
    */
-  private collectItemFootprints(): ItemFootprint[] {
+  private planFootprintItems(): Item[] {
     return this.model.scene
       .getItems()
       .filter((item) => !(item instanceof WallItem))
-      .filter((item) => this.isPlanFixtureFootprint(item.metadata.itemName || '', item.getWidth(), item.getDepth()))
-      .map((item) => {
-        const label = item.metadata.itemName || ''
-        return {
-          xCm: item.position.x,
-          zCm: item.position.z,
-          widthCm: item.getWidth(),
-          depthCm: item.getDepth(),
-          rotationY: item.rotation.y,
-          label,
-          kind: this.footprintKind(label)
+      .filter((item) =>
+        this.isPlanFixtureFootprint(item.metadata.itemName || '', item.getWidth(), item.getDepth())
+      )
+  }
+
+  private collectItemFootprints(): ItemFootprint[] {
+    return this.planFootprintItems().map((item) => {
+      const label = item.metadata.itemName || ''
+      return {
+        xCm: item.position.x,
+        zCm: item.position.z,
+        widthCm: item.getWidth(),
+        depthCm: item.getDepth(),
+        rotationY: item.rotation.y,
+        label,
+        ref: item,
+        kind: this.footprintKind(label)
+      }
+    })
+  }
+
+  /**
+   * Edit-mode click: nearest wall-hosted entrance badge first, else the smallest
+   * floor-item footprint under the cursor (same rotation/size as drawn on the plan).
+   */
+  private hitTestPlan(xCm: number, zCm: number, badgeRadiusCm: number): PlanHit | null {
+    let entrance: Item | null = null
+    let bestD = badgeRadiusCm
+    for (const wall of this.model.floorplan.getWalls()) {
+      for (const item of wall.items || []) {
+        const d = Math.hypot(item.position.x - xCm, item.position.z - zCm)
+        if (d <= bestD) {
+          bestD = d
+          entrance = item
         }
-      })
+      }
+    }
+    if (entrance) return { kind: 'entrance', item: entrance }
+
+    const showPlants = this.floorplanner?.getShowLandscapingMovable() !== false
+    let best: Item | null = null
+    let bestArea = Infinity
+    for (const item of this.planFootprintItems()) {
+      if (!showPlants && this.footprintKind(item.metadata.itemName || '') === 'plant') continue
+      // Point → footprint local space (Three Y rotation; plan canvas negates it, so inverse is +rotation)
+      const dx = xCm - item.position.x
+      const dz = zCm - item.position.z
+      const c = Math.cos(item.rotation.y)
+      const s = Math.sin(item.rotation.y)
+      const lx = dx * c - dz * s
+      const lz = dx * s + dz * c
+      const w = item.getWidth()
+      const dpt = item.getDepth()
+      if (Math.abs(lx) <= w / 2 && Math.abs(lz) <= dpt / 2) {
+        const area = w * dpt
+        if (area < bestArea) {
+          bestArea = area
+          best = item
+        }
+      }
+    }
+    return best ? { kind: 'item', item: best } : null
   }
 
   private footprintKind(name: string): 'plant' | 'furniture' | 'structure' | 'framing' {

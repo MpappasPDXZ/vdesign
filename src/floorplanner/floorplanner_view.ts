@@ -33,7 +33,6 @@ const gridWidth = 1
 // wall stroke base sizes (colors come from theme)
 const wallWidth = 5
 const wallWidthHover = 7
-const edgeWidth = 1
 
 const deleteColor = '#ff0000'
 
@@ -49,6 +48,7 @@ type PlanTheme = {
   wallColorHover: string
   wallColorSelected: string
   wallColorConnectHost: string
+  wallColorAreaForm: string
   edgeColor: string
   edgeColorHover: string
   cornerColor: string
@@ -86,6 +86,7 @@ const normalTheme: PlanTheme = {
   wallColorHover: '#008cba',
   wallColorSelected: '#1d4ed8',
   wallColorConnectHost: '#ea580c',
+  wallColorAreaForm: '#0d9488',
   edgeColor: '#888888',
   edgeColorHover: '#008cba',
   cornerColor: '#cccccc',
@@ -124,6 +125,7 @@ const blueprintTheme: PlanTheme = {
   wallColorHover: '#1d4ed8',
   wallColorSelected: '#b45309',
   wallColorConnectHost: '#c2410c',
+  wallColorAreaForm: '#0f766e',
   edgeColor: '#374151',
   edgeColorHover: '#1d4ed8',
   cornerColor: '#111827',
@@ -428,8 +430,9 @@ export class FloorplannerView {
       this.context.rect(-halfW, -halfD, halfW * 2, halfD * 2)
       this.context.fillStyle = fill
       this.context.fill()
-      this.context.lineWidth = this.blueprintMode ? 1.6 : 1.25
-      this.context.strokeStyle = stroke
+      const picked = fp.ref != null && fp.ref === this.viewmodel.selectedPlanItem
+      this.context.lineWidth = picked ? 3 : this.blueprintMode ? 1.6 : 1.25
+      this.context.strokeStyle = picked ? '#f97316' : stroke
       this.context.stroke()
 
       const label = (fp.label || '').trim()
@@ -541,24 +544,28 @@ export class FloorplannerView {
   /** Number walls in array order (matches floorplan.json wallSchedule). */
   private drawWallNumbers(): void {
     const walls = this.floorplan.getWalls()
+    const r = this.viewmodel.wallNumberBadgeRadiusPx()
+    const fontPx = Math.max(8, Math.round(r * 0.92))
+    const stroke = Math.max(1.5, Math.min(2.5, r * 0.14))
     this.context.save()
     walls.forEach((wall, index) => {
       const mx = (wall.getStartX() + wall.getEndX()) / 2
       const my = (wall.getStartY() + wall.getEndY()) / 2
       const x = this.viewmodel.convertX(mx)
       const y = this.viewmodel.convertY(my)
-      const n = String(index + 1)
-      const r = 11
+      const n = String(wall.num > 0 ? wall.num : index + 1)
+      // Widen circle slightly for 2–3 digit labels so text stays inside the ring.
+      const badgeR = n.length > 1 ? r + (n.length - 1) * (fontPx * 0.22) : r
       const theme = this.theme
       this.context.beginPath()
-      this.context.arc(x, y, r, 0, Math.PI * 2)
+      this.context.arc(x, y, badgeR, 0, Math.PI * 2)
       this.context.fillStyle = theme.wallNumberFill
       this.context.fill()
       this.context.strokeStyle = theme.wallNumberStroke
-      this.context.lineWidth = 2
+      this.context.lineWidth = stroke
       this.context.stroke()
       this.context.fillStyle = theme.wallNumberText
-      this.context.font = 'bold 11px Arial'
+      this.context.font = `bold ${fontPx}px Arial`
       this.context.textAlign = 'center'
       this.context.textBaseline = 'middle'
       this.context.fillText(n, x, y + 0.5)
@@ -641,6 +648,7 @@ export class FloorplannerView {
     const hover = wall === this.viewmodel.activeWall
     const selected = wall === this.viewmodel.selectedWall
     const connectHost = wall === this.viewmodel.connectHostWall
+    const areaForm = this.viewmodel.areaFormWalls.includes(wall)
     let color = this.blueprintMode
       ? theme.wallColor
       : wall.getDisplayColor() || theme.wallColor
@@ -649,6 +657,9 @@ export class FloorplannerView {
     if (hover && this.viewmodel.mode == floorplannerModes.DELETE) {
       color = deleteColor
       width = Math.max(thickPx, wallWidthHover)
+    } else if (areaForm) {
+      color = theme.wallColorAreaForm
+      width = Math.max(thickPx, wallWidthHover) + 1
     } else if (selected) {
       color = theme.wallColorSelected
       width = Math.max(thickPx, wallWidthHover) + 1
@@ -675,12 +686,8 @@ export class FloorplannerView {
     } else {
       this.drawWallSegmentsWithGaps(wall, openings, width, color)
     }
-    if (!hover && wall.frontEdge) {
-      this.drawEdge(wall.frontEdge, hover)
-    }
-    if (!hover && wall.backEdge) {
-      this.drawEdge(wall.backEdge, hover)
-    }
+    // Do not also stroke half-edge face outlines — that double-draws every wall
+    // as a grey "ghost" offset by thickness/2 (reads as duplicates everywhere).
   }
 
   /** Along-wall spans [t0,t1] in 0..1 for each InWall item on this wall. */
@@ -786,8 +793,9 @@ export class FloorplannerView {
       this.context.arc(cx, cy, r, 0, Math.PI * 2)
       this.context.fillStyle = theme.entranceFill
       this.context.fill()
-      this.context.strokeStyle = theme.wallNumberStroke
-      this.context.lineWidth = 1.5
+      const entrancePicked = item === this.viewmodel.selectedEntrance
+      this.context.strokeStyle = entrancePicked ? '#f97316' : theme.wallNumberStroke
+      this.context.lineWidth = entrancePicked ? 3 : 1.5
       this.context.stroke()
       this.context.fillStyle = theme.wallNumberText
       this.context.font = 'bold 10px Arial'
@@ -798,10 +806,16 @@ export class FloorplannerView {
     this.context.restore()
   }
 
-  /** */
+  /**
+   * Dimension label for a wall that has room half-edges.
+   * Always use centerline length (Wall.getLength) so the label matches Wall
+   * Editor Apply. interiorDistance() is the clear span between interior
+   * corners and reads short once rooms close (e.g. after deleting walls and
+   * enclosing a zone) — that was showing 7'6" on a 7'10" wall.
+   */
   private drawEdgeLabel(edge: HalfEdge) {
-    const length = edge.interiorDistance()
     const wall = edge.wall
+    const length = wall.getLength()
     // Anchor on the wall centerline, then offset so E/W (and N/S edge)
     // labels aren't clipped off the canvas.
     this.drawDimensionAnnotation(
@@ -930,32 +944,6 @@ export class FloorplannerView {
     this.context.strokeText(text, 0, 0)
     this.context.fillText(text, 0, 0)
     this.context.restore()
-  }
-
-  /** */
-  private drawEdge(edge: HalfEdge, hover: boolean) {
-    const theme = this.theme
-    let color = theme.edgeColor
-    if (hover && this.viewmodel.mode == floorplannerModes.DELETE) {
-      color = deleteColor
-    } else if (hover) {
-      color = theme.edgeColorHover
-    }
-    const corners = edge.corners()
-
-    this.drawPolygon(
-      Utils.map(corners, (corner) => {
-        return this.viewmodel.convertX(corner.x)
-      }),
-      Utils.map(corners, (corner) => {
-        return this.viewmodel.convertY(corner.y)
-      }),
-      false,
-      null,
-      true,
-      color,
-      edgeWidth
-    )
   }
 
   /** */

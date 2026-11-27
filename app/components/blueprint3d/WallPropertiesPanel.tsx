@@ -110,8 +110,7 @@ function parseSavedHostTip(
 
 function defaultName(wall: Wall, wallNumber?: number | null): string {
   if (wall.name) return wall.name
-  const n = wallNumber != null ? `#${wallNumber}` : ''
-  return `basement ${n}`.trim()
+  return wallNumber != null ? `wall #${wallNumber}` : 'wall'
 }
 
 function roundIn(n: number): number {
@@ -394,6 +393,15 @@ export function WallPropertiesPanel({
     wall.thickness = inchesToCm(thicknessInches)
     wall.wallType = wallType
     wall.exposure = exposure
+    // Fence type builds rails from wall.height — force guard height so Apply
+    // doesn't leave a full-story "fence" that still looks like a wall.
+    if (wallType === 'fence') {
+      wall.height = 106.68 // 42″
+    } else if (wall.height > 0 && wall.height <= 122) {
+      // Was a railing; restore typical upstairs stud height
+      wall.height = 274.32
+    }
+    wall.fireRedraw()
 
     const host =
       connectTo === '' ? null : otherWalls.find((w) => w.n === connectTo)?.wall ?? null
@@ -472,13 +480,21 @@ export function WallPropertiesPanel({
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="mb-2 border-b border-border pb-1.5">
-        <div className="flex items-center gap-1">
+        <div
+          className="flex items-center gap-1"
+          title={wallNumber != null ? t('titleNumbered', { n: wallNumber }) : t('title')}
+        >
           <span
             className="h-2.5 w-2.5 shrink-0 rounded-sm border border-border"
             style={{ backgroundColor: wallDisplayColor(wallType, exposure) }}
           />
+          {wallNumber != null ? (
+            <span className="shrink-0 rounded bg-primary/15 px-1.5 py-0.5 text-xs font-bold tabular-nums text-primary">
+              #{wallNumber}
+            </span>
+          ) : null}
           <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
-            {wallNumber != null ? t('titleNumbered', { n: wallNumber }) : t('title')}
+            {t('title')}
           </span>
           <Button type="button" size="sm" className="h-6 px-2 text-[10px]" onClick={apply} title={t('apply')}>
             <Check className="h-3 w-3" />
@@ -625,6 +641,10 @@ export function WallPropertiesPanel({
                 setWallType(next)
                 if (next === 'concrete' && exposure === 'exterior') {
                   setThicknessInches(DEFAULT_EXTERIOR_CONCRETE_IN)
+                }
+                // Guard-height railing (42″ / 2″) — same as Areas → Make railing
+                if (next === 'fence') {
+                  setThicknessInches(2)
                 }
               }}
               className={fieldClass}

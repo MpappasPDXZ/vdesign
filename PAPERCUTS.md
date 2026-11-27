@@ -6,6 +6,18 @@ Living list of agent mistakes that burned cycles. Read before adding UI fields o
 
 ---
 
+## 2026-11-26 — Cabinets saved as `item_type: 7` became fake doors (walk-in "entrances", nuked walls)
+
+**What happened**  
+Master walk-in closet cabinets were saved with `item_type: 7` after a load error (`item_type: "procedural"` string). In `src/items/factory.ts`, **7 = `InWallFloorItem`** (wall-cutting door/opening class). Each cabinet snapped to the nearest wall, cut a hole in it, and drew an **E** arc in 2D. Looked like garage→walk-in doors, E arcs that could not be edited, and a "nuked" wall 80. No door entrance was ever added.
+
+**Rules**  
+- Procedural **cabinets / cabdrawers / openshelf / counter** use **`item_type: 8`** (`OnFloorItem`). Copy `item_type` from an existing cabinet of the same procedural kind — never from a door.
+- `7` is for openings that cut walls (doors, slabs, cased openings). If E arcs appear where no door belongs, check `item_type` first.
+- 2D **E badges** come from `wall.items`, not the `entrances[]` schedule. There is no E-badge click editor yet.
+
+---
+
 ## 2026-11-23 — White breakthrough / floor z-fighting when orbiting 3D
 
 **What happened**  

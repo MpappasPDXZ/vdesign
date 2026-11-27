@@ -50,7 +50,6 @@ export class HalfEdge {
    * @param front True if front side.
    */
   constructor(
-    // @ts-ignore - room is declared but not used, keeping for future use
     private room: Room | null,
     public wall: Wall,
     public front: boolean
@@ -65,6 +64,11 @@ export class HalfEdge {
     } else {
       this.wall.backEdge = this
     }
+  }
+
+  /** Room on this side of the wall (null for exterior / unassigned). */
+  public getRoom(): Room | null {
+    return this.room
   }
 
   /**

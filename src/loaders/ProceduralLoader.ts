@@ -9,18 +9,57 @@ import * as THREE from 'three'
  * procedural:bike:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Peloton Bike+ (frame, flywheel, screen)
  * procedural:sauna:WIDTH:HEIGHT:DEPTH:HEXCOLOR — 3-person IR cabin + glass door + red light
  * procedural:plunge:WIDTH:HEIGHT:DEPTH:HEXCOLOR — NuRecover-style ice bath (rim, water, frame)
+ * procedural:tub:WIDTH:HEIGHT:DEPTH:HEXCOLOR — standard alcove bathtub (rim, basin, water)
+ * procedural:fstub:WIDTH:HEIGHT:DEPTH:HEXCOLOR — freestanding soaking tub · back on −Z · deck faucet
+ * procedural:showerdoor:WIDTH:HEIGHT:DEPTH:HEXCOLOR — frameless glass shower door (+Z face)
+ * procedural:showerbench:WIDTH:HEIGHT:DEPTH:HEXCOLOR — L corner bench (backs on −X/−Z)
+ * procedural:showerhead:WIDTH:HEIGHT:DEPTH:HEXCOLOR — wall arm + round head (arm along +Z)
+ * procedural:valvetrim:PLATE_D:LEVER_LEN:HEXCOLOR — pressure-balance valve trim, round plate on +Z face, two levers
+ * procedural:handshower:BAR_LEN:ARM_LEN:HEXCOLOR — vertical slide bar + hand-shower head projecting +Z
  * procedural:chiller:WIDTH:HEIGHT:DEPTH:HEXCOLOR — compact chiller Pro beside plunge
  * procedural:pool:WIDTH:HEIGHT:DEPTH:HEXCOLOR — inground pool (coping, water, tile band, steps)
  * procedural:coverbox:WIDTH:HEIGHT:DEPTH:HEXCOLOR — automatic pool-cover housing lid
  * procedural:phroof:WIDTH:HEIGHT:DEPTH:HEXCOLOR — pool-house gable standing-seam roof
  * procedural:stonebar:WIDTH:HEIGHT:DEPTH:HEXCOLOR — L-shaped stacked-stone outdoor bar
  * procedural:phdoor:WIDTH:HEIGHT:DEPTH:HEXCOLOR — X-brace pool-house door with lites
+ * procedural:barndoor:WIDTH:HEIGHT:DEPTH:HEXCOLOR — custom barn leaf · planks · black strap + rollers
+ * procedural:barntrack:LENGTH:HEIGHT:DEPTH:HEXCOLOR — black sliding barn-door track + mounts
+ * procedural:garagedoor:WIDTH:HEIGHT:DEPTH:HEXCOLOR — craftsman OHD (two leaves, brown, 4 black-framed lites per leaf)
+ * procedural:entrydbl:WIDTH:HEIGHT:DEPTH:HEXCOLOR — front entry double doors (black clad glass)
+ * procedural:slider:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Pella-style sliding patio (black clad, 2-lite)
+ * procedural:bcasement:WIDTH:HEIGHT:DEPTH:HEXCOLOR — black-clad double casement (office)
+ * procedural:bfixed:WIDTH:HEIGHT:DEPTH:HEXCOLOR — black-clad single-lite fixed (basement bar FXD)
+ * procedural:bfarm:WIDTH:HEIGHT:DEPTH:HEXCOLOR — farmhouse fixed 2-over-1 (high lite, no center mullion)
  * procedural:ytruss:WIDTH:HEIGHT:DEPTH:HEXCOLOR — decorative Y gable timber truss
  * procedural:sofa:WIDTH:HEIGHT:DEPTH:HEXCOLOR — sofa run (cushions, arms, back)
  * procedural:lsofa:BOUND_W:HEIGHT:BOUND_D:ARM_D:HEXCOLOR — one congruent L-sectional
  *   Backs on +Z (south) and +X (east); open toward −X/−Z. ARM_D = seat depth both arms.
  * procedural:fridge:WIDTH:HEIGHT:DEPTH:HEXCOLOR — glass-front commercial fridge
+ * procedural:frenchdoor:WIDTH:HEIGHT:DEPTH:HEXCOLOR — French-door fridge (dual doors + freezer drawer, face +Z)
+ * procedural:farmsink:WIDTH:HEIGHT:DEPTH:HEXCOLOR — undivided farm apron sink (open top, apron on +Z)
+ * procedural:gooseneck:HEIGHT:REACH:HEXCOLOR — pull-down gooseneck faucet (spout toward +Z, base at −Z)
+ * procedural:saylor:HEIGHT:REACH:HEXCOLOR — Delta 536 Saylor single-hole lav faucet (spout +Z, lever +X, y=0 deck)
+ * procedural:highline:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Kohler Highline Curve two-piece elongated (lofted bowl, rounded tank, seat ring; tank +Z, left-hand lever on tank front)
+ * procedural:in2ition:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Delta In2ition 2-in-1 head on a 5½″ arm (flange −Z, head +Z)
+ * procedural:saylortrim:PLATE_D:LEVER_LEN:HEXCOLOR — Delta Monitor 17 single lever + temp dial (plate face +Z)
  * procedural:cabinet:WIDTH:HEIGHT:DEPTH:HEXCOLOR — base/wall cabinet with doors + toe-kick
+ * procedural:cabdrawers:WIDTH:HEIGHT:DEPTH:HEXCOLOR — base cabinet · 3-drawer stack (paint grade)
+ * procedural:kfridgewall:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Titan dual-fridge + coffee-nook wall (112″ elev)
+ * procedural:bsmtbar:WIDTH:HEIGHT:DEPTH:HEXCOLOR — basement bar elevation (BSMT BAR · BIRCH, 165¼″×104¾″×25½″)
+ *   Face +Z. L/R appl-panel fridges · center coffee nook + machine · glass above · full-width flip-up top.
+ * procedural:range:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Monogram-style 48″ dual-fuel (6+griddle, dual oven)
+ * procedural:woodhood:WIDTH:HEIGHT:DEPTH:HEXCOLOR — coastal-modern wood hood (apron + chimney, face +Z)
+ * procedural:sshood:WIDTH:HEIGHT:DEPTH:HEXCOLOR — pro stainless canopy hood (wider than range, face +Z)
+ * procedural:dishwasher:WIDTH:HEIGHT:DEPTH:HEXCOLOR — GE Profile-style 24″ DW (pocket handle, face +Z)
+ * procedural:wallovenmono:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Monogram 30″ single wall oven (black glass control band + door, stainless handle bar, face +Z)
+ * procedural:micromono:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Monogram-style 30″ microwave (black glass window + control panel, face +Z)
+ * procedural:cabframe:WIDTH:HEIGHT:DEPTH:DRAWER_H:TOE:HEXCOLOR — frame-and-panel cabinet (2 doors, optional
+ *   bottom drawer when DRAWER_H > 0). Frame proud of carcass, panels recessed, vertical door pulls, horizontal drawer pull.
+ * procedural:bowltop:WIDTH:DEPTH:THK:BOWL_DIA:BOWL_DEPTH:BOWL_Z:HEXCOLOR — granite vanity top with a round
+ *   cut-out and a porcelain bowl recessed into it (top surface at Y=0; BOWL_Z = bowl center offset along depth)
+ * procedural:vesselsink:WIDTH:HEIGHT:DEPTH:HEXCOLOR — Stainless single bowl sitting on top of a counter (rim lip, drain). Base at Y=0 = counter top
+* procedural:washtower:WIDTH:HEIGHT:DEPTH:HEXCOLOR — LG single-unit wash tower (dryer over washer, round doors, face +Z)
+ * procedural:openshelf:WIDTH:HEIGHT:DEPTH:HEXCOLOR — open face-frame shelf unit (no doors)
  * procedural:ssbase:WIDTH:HEIGHT:DEPTH:HEXCOLOR — outdoor base cab · stainless drawers on +X · stone/wood top
  * procedural:sswall:WIDTH:HEIGHT:DEPTH:HEXCOLOR — upper wall cab · stainless doors on +X
  * procedural:island:WIDTH:HEIGHT:DEPTH:HEXCOLOR — kitchen island base
@@ -31,7 +70,8 @@ import * as THREE from 'three'
  * procedural:vanity:WIDTH:HEIGHT:DEPTH:HEXCOLOR — floating vanity + stone top + sink + faucet
  * procedural:furnace:WIDTH:HEIGHT:DEPTH:HEXCOLOR — residential furnace cabinet
  * procedural:tv:WIDTH:HEIGHT:DEPTH:HEXCOLOR — flat-panel TV with bezel + mount
- * procedural:ustairs:WELL_W:WELL_D:FLIGHT_W:TOTAL_RISE:RISERS:HEXCOLOR
+ * procedural:ustairs:WELL_W:WELL_D:FLIGHT_W:TOTAL_RISE:RISERS:HEXCOLOR[:flipns]
+ *   flipns — top landing SW (upstairs loft arrival). Place ypos ≈ −TOTAL_RISE/2 so top sits on this floor and the run hangs from below.
  * procedural:lscreen:WIDTH:HEIGHT:CUTOUT:TUBE:HEXCOLOR
  *   Letter-L screen: long foot on the ground, stem west, opening top-east (RH).
  * procedural:tannertee:BASE:HEIGHT:BASE:HEX — Tanner Tee (9.5″ base, 26–43″ stem)
@@ -48,6 +88,8 @@ import * as THREE from 'three'
  * procedural:rock:WIDTH:HEIGHT:DEPTH:HEX — irregular landscape boulder
  * procedural:chaise:WIDTH:HEIGHT:DEPTH:HEX — outdoor lounge chaise (head/back −Z, feet +Z)
  * procedural:barstool:WIDTH:HEIGHT:DEPTH:HEX — 4-leg plastic low-back bar stool (seat faces +Z)
+ * procedural:swivelchair:WIDTH:HEIGHT:DEPTH:HEX — barrel-back upholstered swivel chair (Payton-style: 30×31×36″; seat faces +Z, back −Z)
+ * procedural:roundtable:DIA:HEIGHT:HEX — 36″ round wood-top table on a pedestal base (top at HEIGHT)
  * procedural:fan:DIAMETER:HEIGHT:DIAMETER:HEX — ceiling fan (blade span × overall drop incl. downrod)
  * procedural:acunit:WIDTH:HEIGHT:DEPTH:HEX — outdoor AC condenser (coil sides, top fan grille)
  * procedural:planter:WIDTH:HEIGHT:DEPTH:HEX — large concrete box planter (rim + soil)
@@ -58,6 +100,20 @@ import * as THREE from 'three'
  *   +X end is high by DROP; y=0 at low-end bottom rail. One mesh replaces dozens of boxes.
  * procedural:rakehoriz:SPAN:DROP:GUARD_H:HEX — raked stair guard with horizontal members
  *   Same span/drop convention as rakeguard; end posts + 4 rake-parallel rails (no pickets).
+ * procedural:vehicle:WIDTH:HEIGHT:DEPTH:HEX:STYLE — parked vehicle as furniture (one mesh)
+ *   WIDTH = body width (X), HEIGHT = overall height (Y), DEPTH = overall length nose→tail (Z).
+ *   Nose faces +Z. STYLE: suv | truck | jeep (default suv).
+ * procedural:shakerbase:WIDTH:HEIGHT:DEPTH:HEX:MODE[:DOORS] — detailed shaker base cabinet (face +Z).
+ *   MODE: doors | sink (hollow, false front) | drawers (3) | open (face-frame shelves).
+ *   DEPTH is OVERALL incl. door + 3 cm pull projection (open: no pull). Toe kick 10.16 cm.
+ * procedural:shakerwall:WIDTH:HEIGHT:DEPTH:HEX[:DOORS[:CROWN[:L|R]]] — shaker upper w/ stepped crown.
+ *   HEIGHT includes CROWN; DEPTH overall incl. door + pull. L/R = pull edge for a single door.
+ * procedural:counterx:WIDTH:THK:DEPTH:HEX:CUT_W:CUT_D:CUT_X:CUT_Z:SPLASH_H:FLAGS — slab with rounded
+ *   undermount cutout (0 = none) + back/side splash. FLAGS: 1 back(−Z) · 2 left(−X) · 4 right(+X).
+ *   Slab bottom at Y=0; splash rises above THK (bbox is THK+SPLASH_H tall).
+ * procedural:lsink:OPEN_W:HEIGHT:OPEN_D:HEX — undermount acrylic laundry sink (rim at Y=HEIGHT).
+ * procedural:pulldown:HEIGHT:REACH:HEX — PROFLO Loftus-style pull-down kitchen faucet + escutcheon (spout +Z).
+ * procedural:frontload:WIDTH:HEIGHT:DEPTH:HEX:KIND — GE front-load washer|dryer (porthole door, console; face +Z).
  * Dimensions are centimeters (scene units).
  */
 export class ProceduralLoader {
@@ -82,7 +138,7 @@ export class ProceduralLoader {
     materials: THREE.Material[]
   } {
     const parts = url.split(':')
-    if (parts[0] !== 'procedural' || parts.length < 6) {
+    if (parts[0] !== 'procedural' || parts.length < 5) {
       throw new Error(`Invalid procedural URL: ${url}`)
     }
 
@@ -94,7 +150,8 @@ export class ProceduralLoader {
 
     switch (shape) {
       case 'ustairs': {
-        // procedural:ustairs:WELL_W:WELL_D:FLIGHT_W:TOTAL_RISE:RISERS:HEX
+        // procedural:ustairs:WELL_W:WELL_D:FLIGHT_W:TOTAL_RISE:RISERS:HEX[:flipns]
+        // Optional flipns: swap N/S so top landing is SW (upstairs) instead of NW (basement default).
         if (parts.length < 8) {
           throw new Error(`Invalid ustairs URL: ${url}`)
         }
@@ -104,10 +161,11 @@ export class ProceduralLoader {
         const totalRise = parseFloat(parts[5])
         const risers = Math.max(4, Math.round(parseFloat(parts[6])))
         hex = parts[7].replace(/^#/, '')
+        const flipNS = /flipns/i.test(parts[8] || '')
         if ([wellW, wellD, flightW, totalRise].some((n) => Number.isNaN(n) || n <= 0)) {
           throw new Error(`Invalid ustairs dimensions: ${url}`)
         }
-        geometry = buildUStairsGeometry(wellW, wellD, flightW, totalRise, risers)
+        geometry = buildUStairsGeometry(wellW, wellD, flightW, totalRise, risers, flipNS)
         break
       }
       case 'lscreen': {
@@ -203,6 +261,118 @@ export class ProceduralLoader {
         materialsOverride = built.materials
         break
       }
+      case 'tub': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        opacity = parts[6] != null ? parseFloat(parts[6]) : 1
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid tub dimensions: ${url}`)
+        }
+        const built = buildTubGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'fstub': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid fstub dimensions: ${url}`)
+        }
+        {
+          const built = buildFreestandingTubGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'showerdoor': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid showerdoor dimensions: ${url}`)
+        }
+        {
+          const built = buildShowerDoorGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'showerbench': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid showerbench dimensions: ${url}`)
+        }
+        {
+          const built = buildShowerBenchGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'in2ition':
+      case 'showerhead': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid showerhead dimensions: ${url}`)
+        }
+        {
+          const built =
+            shape === 'in2ition'
+              ? buildIn2itionGeometry(width, height, depth, hex)
+              : buildShowerHeadGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'saylortrim':
+      case 'valvetrim': {
+        // procedural:valvetrim|saylortrim:PLATE_D:LEVER_LEN:HEX
+        const plateD = parseFloat(parts[2])
+        const leverLen = parseFloat(parts[3])
+        hex = parts[4].replace(/^#/, '')
+        if ([plateD, leverLen].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid ${shape} dimensions: ${url}`)
+        }
+        {
+          const built =
+            shape === 'saylortrim'
+              ? buildSaylorTrimGeometry(plateD, leverLen, hex)
+              : buildValveTrimGeometry(plateD, leverLen, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'handshower': {
+        // procedural:handshower:BAR_LEN:ARM_LEN:HEX
+        const barLen = parseFloat(parts[2])
+        const armLen = parseFloat(parts[3])
+        hex = parts[4].replace(/^#/, '')
+        if ([barLen, armLen].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid handshower dimensions: ${url}`)
+        }
+        {
+          const built = buildHandShowerGeometry(barLen, armLen, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
       case 'chiller': {
         const width = parseFloat(parts[2])
         const height = parseFloat(parts[3])
@@ -278,6 +448,114 @@ export class ProceduralLoader {
           throw new Error(`Invalid phdoor dimensions: ${url}`)
         }
         const built = buildPoolHouseDoorGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'barndoor': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid barndoor dimensions: ${url}`)
+        }
+        {
+          const built = buildBarnDoorGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'barntrack': {
+        const length = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([length, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid barntrack dimensions: ${url}`)
+        }
+        {
+          const built = buildBarnTrackGeometry(length, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'garagedoor': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid garagedoor dimensions: ${url}`)
+        }
+        const built = buildCraftsmanGarageDoorGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'entrydbl': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid entrydbl dimensions: ${url}`)
+        }
+        const built = buildEntryDoubleDoorGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'slider': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid slider dimensions: ${url}`)
+        }
+        const built = buildSlidingPatioGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'bcasement': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid bcasement dimensions: ${url}`)
+        }
+        const built = buildBlackCasementGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'bfixed': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid bfixed dimensions: ${url}`)
+        }
+        const built = buildBlackFixedGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'bfarm': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid bfarm dimensions: ${url}`)
+        }
+        const built = buildFarmhouseFixedGeometry(width, height, depth, hex)
         geometry = built.geometry
         materialsOverride = built.materials
         break
@@ -430,12 +708,19 @@ export class ProceduralLoader {
       case 'sofa':
       case 'fridge':
       case 'cabinet':
+      case 'cabdrawers':
+      case 'kfridgewall':
+      case 'bsmtbar':
+      case 'range':
+      case 'woodhood':
+      case 'openshelf':
       case 'ssbase':
       case 'sswall':
       case 'island':
       case 'counter':
       case 'bed':
       case 'dresser':
+      case 'highline':
       case 'toilet':
       case 'vanity':
       case 'furnace':
@@ -455,27 +740,264 @@ export class ProceduralLoader {
               ? buildFridgeGeometry(width, height, depth, hex)
               : shape === 'cabinet'
                 ? buildCabinetGeometry(width, height, depth, hex)
-                : shape === 'ssbase'
-                  ? buildSsBaseCabinetGeometry(width, height, depth, hex)
-                  : shape === 'sswall'
-                    ? buildSsWallCabinetGeometry(width, height, depth, hex)
-                    : shape === 'island'
-                      ? buildIslandGeometry(width, height, depth, hex)
-                      : shape === 'counter'
-                        ? buildCounterGeometry(width, height, depth, hex)
-                        : shape === 'bed'
-                          ? buildBedGeometry(width, height, depth, hex)
-                          : shape === 'dresser'
-                            ? buildDresserGeometry(width, height, depth, hex)
-                            : shape === 'toilet'
-                              ? buildToiletGeometry(width, height, depth, hex)
-                              : shape === 'vanity'
-                                ? buildVanityGeometry(width, height, depth, hex)
-                                : shape === 'furnace'
-                                  ? buildFurnaceGeometry(width, height, depth, hex)
-                                  : buildTvGeometry(width, height, depth, hex)
+                : shape === 'cabdrawers'
+                  ? buildCabDrawersGeometry(width, height, depth, hex)
+                  : shape === 'kfridgewall'
+                    ? buildKitchenFridgeWallGeometry(width, height, depth, hex)
+                    : shape === 'bsmtbar'
+                      ? buildBsmtBarWallGeometry(width, height, depth, hex)
+                      : shape === 'range'
+                      ? buildRangeGeometry(width, height, depth, hex)
+                      : shape === 'woodhood'
+                        ? buildWoodHoodGeometry(width, height, depth, hex)
+                        : shape === 'openshelf'
+                          ? buildOpenShelfGeometry(width, height, depth, hex)
+                        : shape === 'ssbase'
+                          ? buildSsBaseCabinetGeometry(width, height, depth, hex)
+                          : shape === 'sswall'
+                            ? buildSsWallCabinetGeometry(width, height, depth, hex)
+                            : shape === 'island'
+                              ? buildIslandGeometry(width, height, depth, hex)
+                              : shape === 'counter'
+                                ? buildCounterGeometry(width, height, depth, hex)
+                                : shape === 'bed'
+                                  ? buildBedGeometry(width, height, depth, hex)
+                                  : shape === 'dresser'
+                                    ? buildDresserGeometry(width, height, depth, hex)
+                                    : shape === 'highline'
+                                      ? buildHighlineGeometry(width, height, depth, hex)
+                                      : shape === 'toilet'
+                                        ? buildToiletGeometry(width, height, depth, hex)
+                                      : shape === 'vanity'
+                                        ? buildVanityGeometry(width, height, depth, hex)
+                                        : shape === 'furnace'
+                                          ? buildFurnaceGeometry(width, height, depth, hex)
+                                          : buildTvGeometry(width, height, depth, hex)
         geometry = built.geometry
         materialsOverride = built.materials
+        break
+      }
+      case 'sshood': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid sshood dimensions: ${url}`)
+        }
+        {
+          const built = buildSsHoodGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'farmsink': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid farmsink dimensions: ${url}`)
+        }
+        {
+          const built = buildFarmSinkGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'gooseneck':
+      case 'saylor': {
+        const height = parseFloat(parts[2])
+        const reach = parseFloat(parts[3])
+        hex = parts[4].replace(/^#/, '')
+        if ([height, reach].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid ${shape} dimensions: ${url}`)
+        }
+        {
+          const built =
+            shape === 'saylor'
+              ? buildSaylorFaucetGeometry(height, reach, hex)
+              : buildGooseneckGeometry(height, reach, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'frenchdoor': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid frenchdoor dimensions: ${url}`)
+        }
+        {
+          const built = buildFrenchDoorFridgeGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'cabframe': {
+        // procedural:cabframe:WIDTH:HEIGHT:DEPTH:DRAWER_H:TOE:HEX
+        const [width, height, depth, drawerH, toe] = parts.slice(2, 7).map((p) => parseFloat(p))
+        hex = parts[7].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0) || Number.isNaN(drawerH) || Number.isNaN(toe) || drawerH < 0 || toe < 0) {
+          throw new Error(`Invalid cabframe dimensions: ${url}`)
+        }
+        {
+          const built = buildFramedCabinetGeometry(width, height, depth, drawerH, toe, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'bowltop': {
+        // procedural:bowltop:WIDTH:DEPTH:THK:BOWL_DIA:BOWL_DEPTH:BOWL_Z:HEX
+        const [width, depth, thk, bowlDia, bowlDepth, bowlZ] = parts.slice(2, 8).map((p) => parseFloat(p))
+        hex = parts[8].replace(/^#/, '')
+        if ([width, depth, thk, bowlDia, bowlDepth].some((n) => Number.isNaN(n) || n <= 0) || Number.isNaN(bowlZ)) {
+          throw new Error(`Invalid bowltop dimensions: ${url}`)
+        }
+        {
+          const built = buildBowlTopGeometry(width, depth, thk, bowlDia, bowlDepth, bowlZ, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'vesselsink': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid vesselsink dimensions: ${url}`)
+        }
+        {
+          const built = buildVesselSinkGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'shakerbase':
+      case 'shakerwall':
+      case 'frontload': {
+        // shakerbase:W:H:D:HEX:MODE[:DOORS] · shakerwall:W:H:D:HEX[:DOORS[:CROWN[:L|R]]] · frontload:W:H:D:HEX:KIND
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = (parts[5] ?? '').replace(/^#/, '')
+        if (!hex || [width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid ${shape} dimensions: ${url}`)
+        }
+        const built =
+          shape === 'shakerbase'
+            ? buildShakerBaseGeometry(width, height, depth, hex, parts[6] || 'doors', parseInt(parts[7] ?? '0', 10) || 0)
+            : shape === 'shakerwall'
+              ? buildShakerWallGeometry(
+                  width,
+                  height,
+                  depth,
+                  hex,
+                  parseInt(parts[6] ?? '0', 10) || 0,
+                  parseFloat(parts[7] ?? '0') || 0,
+                  parts[8] === 'L' ? 'L' : 'R'
+                )
+              : buildFrontLoadGeometry(width, height, depth, hex, parts[6] === 'dryer' ? 'dryer' : 'washer')
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'counterx': {
+        // counterx:W:THK:D:HEX:CUT_W:CUT_D:CUT_X:CUT_Z:SPLASH_H:FLAGS
+        const [width, thk, depth] = parts.slice(2, 5).map((p) => parseFloat(p))
+        hex = (parts[5] ?? '').replace(/^#/, '')
+        const [cutW, cutD, cutX, cutZ, splashH] = parts.slice(6, 11).map((p) => parseFloat(p) || 0)
+        const flags = parseInt(parts[11] ?? '1', 10) || 0
+        if (!hex || [width, thk, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid counterx dimensions: ${url}`)
+        }
+        const built = buildCounterXGeometry(width, thk, depth, hex, cutW, cutD, cutX, cutZ, splashH, flags)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'lsink': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = (parts[5] ?? '').replace(/^#/, '')
+        if (!hex || [width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid lsink dimensions: ${url}`)
+        }
+        const built = buildLaundrySinkGeometry(width, height, depth, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'pulldown': {
+        const height = parseFloat(parts[2])
+        const reach = parseFloat(parts[3])
+        hex = (parts[4] ?? '').replace(/^#/, '')
+        if (!hex || [height, reach].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid pulldown dimensions: ${url}`)
+        }
+        const built = buildPulldownFaucetGeometry(height, reach, hex)
+        geometry = built.geometry
+        materialsOverride = built.materials
+        break
+      }
+      case 'washtower': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid washtower dimensions: ${url}`)
+        }
+        {
+          const built = buildWashTowerGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'wallovenmono':
+      case 'micromono': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid ${shape} dimensions: ${url}`)
+        }
+        {
+          const built =
+            shape === 'wallovenmono'
+              ? buildMonoWallOvenGeometry(width, height, depth, hex)
+              : buildMonoMicrowaveGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'dishwasher': {
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid dishwasher dimensions: ${url}`)
+        }
+        {
+          const built = buildDishwasherGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
         break
       }
       case 'cypress': {
@@ -537,6 +1059,37 @@ export class ProceduralLoader {
         }
         {
           const built = buildAcUnitGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'swivelchair': {
+        // procedural:swivelchair:WIDTH:HEIGHT:DEPTH:HEX
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid swivelchair dimensions: ${url}`)
+        }
+        {
+          const built = buildSwivelChairGeometry(width, height, depth, hex)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
+      case 'roundtable': {
+        // procedural:roundtable:DIA:HEIGHT:HEX
+        const dia = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        hex = parts[4].replace(/^#/, '')
+        if ([dia, height].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid roundtable dimensions: ${url}`)
+        }
+        {
+          const built = buildRoundTableGeometry(dia, height, hex)
           geometry = built.geometry
           materialsOverride = built.materials
         }
@@ -713,6 +1266,24 @@ export class ProceduralLoader {
         }
         break
       }
+      case 'vehicle': {
+        // procedural:vehicle:WIDTH:HEIGHT:DEPTH:HEX:STYLE
+        // WIDTH=body width (X), HEIGHT=overall (Y), DEPTH=length nose→tail (Z). Nose +Z.
+        const width = parseFloat(parts[2])
+        const height = parseFloat(parts[3])
+        const depth = parseFloat(parts[4])
+        hex = parts[5].replace(/^#/, '')
+        const style = (parts[6] || 'suv').toLowerCase().replace(/[^a-z]/g, '')
+        if ([width, height, depth].some((n) => Number.isNaN(n) || n <= 0)) {
+          throw new Error(`Invalid vehicle dimensions: ${url}`)
+        }
+        {
+          const built = buildVehicleGeometry(width, height, depth, hex, style)
+          geometry = built.geometry
+          materialsOverride = built.materials
+        }
+        break
+      }
       case 'box':
       default: {
         const width = parseFloat(parts[2])
@@ -762,9 +1333,11 @@ function buildUStairsGeometry(
   wellD: number,
   flightW: number,
   totalRise: number,
-  risers: number
+  risers: number,
+  flipNS = false
 ): THREE.BufferGeometry {
-  // Open side = west (−X). Lower flight along south (west→east), upper along north (east→west).
+  // Default (basement): open west (−X). Lower = south W→E, mid = SE, upper = north E→W, top = NW.
+  // flipNS (upstairs): lower = north W→E, mid = NE, upper = south E→W, top = SW.
   const fw = Math.min(flightW, wellD * 0.42)
   const landing = Math.min(fw, wellW * 0.32)
   const runLen = Math.max(wellW - landing, fw)
@@ -782,31 +1355,33 @@ function buildUStairsGeometry(
 
   const southZ = wellD / 2 - fw / 2
   const northZ = -wellD / 2 + fw / 2
+  const lowerZ = flipNS ? northZ : southZ
+  const upperZ = flipNS ? southZ : northZ
   const lowerCount = Math.floor(risers / 2)
   const upperCount = risers - lowerCount
 
-  // Lower flight (basement start at west / hall): south run, west → east
+  // Lower flight: west → east along lowerZ
   for (let i = 0; i < lowerCount; i++) {
     const y0 = i * rise
     const x0 = -wellW / 2 + (i + 0.5) * tread
-    addBox(tread * 0.92, Math.max(rise * 0.9, 2), fw, x0, y0, southZ)
+    addBox(tread * 0.92, Math.max(rise * 0.9, 2), fw, x0, y0, lowerZ)
   }
 
-  // Mid landing (SE) + east turn slab
+  // Mid landing (east) + east turn slab
   const midY = lowerCount * rise
-  addBox(landing, Math.max(rise * 0.45, 3), fw, wellW / 2 - landing / 2, midY, southZ)
+  addBox(landing, Math.max(rise * 0.45, 3), fw, wellW / 2 - landing / 2, midY, lowerZ)
   addBox(landing * 0.95, Math.max(rise * 0.4, 3), wellD - fw * 0.5, wellW / 2 - landing / 2, midY, 0)
 
-  // Upper flight: north run, east → west (continues up toward main)
+  // Upper flight: east → west along upperZ
   for (let i = 0; i < upperCount; i++) {
     const y0 = (lowerCount + i) * rise
     const x0 = wellW / 2 - landing - (i + 0.5) * tread
-    addBox(tread * 0.92, Math.max(rise * 0.9, 2), fw, x0, y0, northZ)
+    addBox(tread * 0.92, Math.max(rise * 0.9, 2), fw, x0, y0, upperZ)
   }
 
-  // Top landing (NW of north flight / toward hall-theatre open side)
+  // Top landing (west end of upper flight)
   const topY = risers * rise
-  addBox(landing, Math.max(rise * 0.4, 3), fw, -wellW / 2 + landing / 2, topY, northZ)
+  addBox(landing, Math.max(rise * 0.4, 3), fw, -wellW / 2 + landing / 2, topY, upperZ)
 
   const merged = mergeGeometries(geometries)
   for (const g of geometries) g.dispose()
@@ -1866,6 +2441,21 @@ function pushBox(
   target.push(g)
 }
 
+/** Box centered at (x, y, z) — for frames/glass authored in center-space. */
+function pushBoxAt(
+  target: THREE.BufferGeometry[],
+  w: number,
+  h: number,
+  d: number,
+  x: number,
+  y: number,
+  z: number
+) {
+  const g = new THREE.BoxGeometry(w, h, d)
+  g.translate(x, y, z)
+  target.push(g)
+}
+
 function pushCyl(
   target: THREE.BufferGeometry[],
   r: number,
@@ -1955,6 +2545,339 @@ function buildLSofaGeometry(
   const cush = phong(hex, { shininess: 8 })
   cush.color.offsetHSL(0, 0, 0.06)
   return { geometry, materials: [base, cush] }
+}
+
+/**
+ * Parked vehicle furniture. Local +Z = nose, X = width, Y = up from garage slab.
+ * STYLE: suv (Escalade), truck (F-150 Tremor SuperCrew + bed), jeep (Wrangler + spare).
+ */
+function buildVehicleGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string,
+  style: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const rubber: THREE.BufferGeometry[] = []
+  const trim: THREE.BufferGeometry[] = []
+  const accent: THREE.BufferGeometry[] = []
+
+  const halfW = width / 2
+  const halfD = depth / 2
+  const isTruck = style === 'truck' || style === 'tremor' || style === 'f150'
+  const isJeep = style === 'jeep' || style === 'wrangler'
+
+  if (isTruck) {
+    buildPickupTruckParts(width, height, depth, body, glass, rubber, trim, accent)
+  } else if (isJeep) {
+    buildJeepParts(width, height, depth, body, glass, rubber, trim, accent)
+  } else {
+    buildSuvParts(width, height, depth, body, glass, rubber, trim, accent)
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 },
+    { geoms: rubber, materialIndex: 2 },
+    { geoms: trim, materialIndex: 3 },
+    { geoms: accent, materialIndex: 4 }
+  ])
+  for (const g of [...body, ...glass, ...rubber, ...trim, ...accent]) g.dispose()
+
+  const bodyMat = phong(hex || '111111', {
+    shininess: isTruck ? 65 : 55,
+    specular: new THREE.Color(isTruck ? 0x888888 : 0x666666)
+  })
+  const glassMat = phong('0f172a', {
+    shininess: 80,
+    specular: new THREE.Color(0xffffff),
+    transparent: true,
+    opacity: 0.55,
+    depthWrite: false
+  })
+  const rubberMat = phong('111111', { shininess: 8, specular: new THREE.Color(0x222222) })
+  const trimMat = phong(isTruck ? '1a1a1a' : 'c0c0c0', {
+    shininess: 70,
+    specular: new THREE.Color(0xffffff)
+  })
+  // Tremor orange accent (grille bar / bedside badge)
+  const accentMat = phong('e85d04', { shininess: 40, specular: new THREE.Color(0xffaa66) })
+
+  return { geometry, materials: [bodyMat, glassMat, rubberMat, trimMat, accentMat] }
+}
+
+/**
+ * Full-size SUV (Escalade) — simple long greenhouse silhouette.
+ * Nose +Z: short hood → long cabin → vertical rear (−Z).
+ */
+function buildSuvParts(
+  width: number,
+  height: number,
+  depth: number,
+  body: THREE.BufferGeometry[],
+  glass: THREE.BufferGeometry[],
+  rubber: THREE.BufferGeometry[],
+  trim: THREE.BufferGeometry[],
+  _accent: THREE.BufferGeometry[]
+) {
+  const halfW = width / 2
+  const halfD = depth / 2
+
+  const wheelR = Math.min(height * 0.155, width * 0.19, 34)
+  const wheelW = Math.min(width * 0.12, 26)
+  const frameY = wheelR * 0.45
+
+  // Escalade: short nose, long cabin (hood 18% | cabin 82%)
+  const hoodLen = depth * 0.18
+  const cabLen = depth * 0.82
+  const hoodZ = halfD - hoodLen / 2
+  const cabZ = -halfD + cabLen / 2
+
+  const rockerH = Math.min(18, height * 0.09)
+  const hoodH = height * 0.26
+  const cabBodyH = height * 0.34
+  const greenH = height * 0.4
+
+  // Lower body slab
+  pushBox(body, width * 0.9, rockerH, depth * 0.96, 0, frameY, 0)
+  // Hood
+  const hoodY = frameY + rockerH * 0.55
+  pushBox(body, width * 0.88, hoodH, hoodLen * 0.92, 0, hoodY, hoodZ)
+
+  // Chrome grille block + horizontal bar (Escalade cue)
+  const grilleW = width * 0.72
+  const grilleH = hoodH * 0.9
+  const grilleY = hoodY + hoodH * 0.05
+  pushBox(trim, grilleW, grilleH, 5, 0, grilleY, halfD - 2)
+  pushBox(trim, grilleW * 0.92, Math.max(3, grilleH * 0.14), 3, 0, grilleY + grilleH * 0.15, halfD)
+  // Headlight bars
+  const lampW = width * 0.1
+  pushBox(trim, lampW, grilleH * 0.55, 4, -halfW + lampW * 1.15, grilleY + grilleH * 0.15, halfD - 1)
+  pushBox(trim, lampW, grilleH * 0.55, 4, halfW - lampW * 1.15, grilleY + grilleH * 0.15, halfD - 1)
+  // Bumper
+  pushBox(trim, width * 0.94, rockerH * 0.95, 14, 0, 4, halfD - 5)
+
+  // Long cabin + greenhouse
+  const cabBottom = frameY + rockerH * 0.45
+  pushBox(body, width * 0.92, cabBodyH, cabLen * 0.98, 0, cabBottom, cabZ)
+  const greenY = cabBottom + cabBodyH * 0.82
+  pushBox(body, width * 0.86, greenH * 0.72, cabLen * 0.9, 0, greenY, cabZ - cabLen * 0.02)
+  // Windshield + continuous side glass + rear glass
+  pushBox(glass, width * 0.72, greenH * 0.65, 3, 0, greenY + greenH * 0.12, cabZ + cabLen * 0.42)
+  pushBox(glass, 2.5, greenH * 0.58, cabLen * 0.75, -halfW + 4, greenY + greenH * 0.1, cabZ)
+  pushBox(glass, 2.5, greenH * 0.58, cabLen * 0.75, halfW - 4, greenY + greenH * 0.1, cabZ)
+  pushBox(glass, width * 0.68, greenH * 0.55, 2.5, 0, greenY + greenH * 0.1, cabZ - cabLen * 0.46)
+
+  // Rear bumper
+  pushBox(trim, width * 0.9, rockerH * 0.85, 12, 0, 3, -halfD + 4)
+  // Vertical taillight stubs
+  pushBox(trim, 8, cabBodyH * 0.7, 5, -halfW + 7, cabBottom + cabBodyH * 0.15, -halfD + 2)
+  pushBox(trim, 8, cabBodyH * 0.7, 5, halfW - 7, cabBottom + cabBodyH * 0.15, -halfD + 2)
+
+  // Wheels
+  const track = width * 0.78
+  const wheelbase = depth * 0.58
+  const wx = track / 2
+  const fronts = halfD - (depth - wheelbase) / 2 - wheelR * 0.2
+  const rears = -halfD + (depth - wheelbase) / 2 + wheelR * 0.22
+  for (const z of [fronts, rears]) {
+    pushCyl(rubber, wheelR, wheelW, -wx, wheelR, z, 'x')
+    pushCyl(rubber, wheelR, wheelW, wx, wheelR, z, 'x')
+    pushCyl(trim, wheelR * 0.55, wheelW * 0.35, -wx, wheelR, z, 'x')
+    pushCyl(trim, wheelR * 0.55, wheelW * 0.35, wx, wheelR, z, 'x')
+  }
+}
+
+/**
+ * Wrangler Unlimited 4-door — simple boxy silhouette.
+ * Nose +Z: short hood → upright cab → rear spare (−Z).
+ */
+function buildJeepParts(
+  width: number,
+  height: number,
+  depth: number,
+  body: THREE.BufferGeometry[],
+  glass: THREE.BufferGeometry[],
+  rubber: THREE.BufferGeometry[],
+  trim: THREE.BufferGeometry[],
+  _accent: THREE.BufferGeometry[]
+) {
+  const halfW = width / 2
+  const halfD = depth / 2
+
+  // Tall stance, big tires
+  const wheelR = Math.min(height * 0.19, width * 0.23, 38)
+  const wheelW = Math.min(width * 0.13, 28)
+  const frameY = wheelR * 0.48
+
+  // Length: hood 22% | cab 78% (boxy Unlimited — no separate bed)
+  const hoodLen = depth * 0.22
+  const cabLen = depth * 0.78
+  const hoodZ = halfD - hoodLen / 2
+  const cabZ = -halfD + cabLen / 2
+
+  const rockerH = Math.min(18, height * 0.09)
+  const hoodH = height * 0.28
+  const cabBodyH = height * 0.32
+  const greenH = height * 0.4
+
+  // Tub / lower body
+  pushBox(body, width * 0.9, rockerH, depth * 0.94, 0, frameY, 0)
+  // Hood (short, flat)
+  const hoodY = frameY + rockerH * 0.55
+  pushBox(body, width * 0.86, hoodH, hoodLen * 0.9, 0, hoodY, hoodZ)
+
+  // 7-slot grille (few vertical bars only)
+  const grilleW = width * 0.55
+  const grilleH = hoodH * 0.95
+  const grilleY = hoodY + hoodH * 0.05
+  pushBox(trim, grilleW, grilleH, 4, 0, grilleY, halfD - 2)
+  const slotW = grilleW * 0.08
+  for (let i = -3; i <= 3; i++) {
+    pushBox(trim, slotW, grilleH * 0.78, 2, i * (grilleW * 0.12), grilleY, halfD)
+  }
+  // Round-ish headlight blocks
+  const lamp = Math.min(width * 0.1, grilleH * 0.7)
+  pushBox(trim, lamp, lamp, 4, -halfW + lamp * 1.2, grilleY + grilleH * 0.05, halfD - 1)
+  pushBox(trim, lamp, lamp, 4, halfW - lamp * 1.2, grilleY + grilleH * 0.05, halfD - 1)
+  // Bumper
+  pushBox(trim, width * 0.92, rockerH * 0.9, 12, 0, 4, halfD - 4)
+
+  // Upright greenhouse (boxy Wrangler cue)
+  const cabBottom = frameY + rockerH * 0.45
+  pushBox(body, width * 0.9, cabBodyH, cabLen * 0.96, 0, cabBottom, cabZ)
+  const greenY = cabBottom + cabBodyH * 0.85
+  pushBox(body, width * 0.86, greenH * 0.75, cabLen * 0.88, 0, greenY, cabZ - cabLen * 0.02)
+  // Flat windshield + side glass + rear glass
+  pushBox(glass, width * 0.72, greenH * 0.7, 3, 0, greenY + greenH * 0.12, cabZ + cabLen * 0.42)
+  pushBox(glass, 2.5, greenH * 0.6, cabLen * 0.7, -halfW + 4, greenY + greenH * 0.1, cabZ)
+  pushBox(glass, 2.5, greenH * 0.6, cabLen * 0.7, halfW - 4, greenY + greenH * 0.1, cabZ)
+  pushBox(glass, width * 0.65, greenH * 0.55, 2.5, 0, greenY + greenH * 0.1, cabZ - cabLen * 0.45)
+
+  // Fender flares (simple pads over wheels)
+  const track = width * 0.78
+  const wheelbase = depth * 0.56
+  const wx = track / 2
+  const fronts = halfD - (depth - wheelbase) / 2 - wheelR * 0.2
+  const rears = -halfD + (depth - wheelbase) / 2 + wheelR * 0.25
+  for (const z of [fronts, rears]) {
+    pushBox(body, width * 0.08, wheelR * 0.85, wheelR * 1.5, -halfW + 3, wheelR * 0.65, z)
+    pushBox(body, width * 0.08, wheelR * 0.85, wheelR * 1.5, halfW - 3, wheelR * 0.65, z)
+  }
+
+  // Rear bumper + spare tire (signature Wrangler)
+  pushBox(trim, width * 0.88, rockerH * 0.85, 10, 0, 3, -halfD + 3)
+  const spareR = Math.min(wheelR * 1.05, 34)
+  const spareY = frameY + rockerH + spareR * 0.35
+  pushCyl(rubber, spareR, wheelW * 0.65, 0, spareY, -halfD + 5, 'z')
+  pushCyl(trim, spareR * 0.45, wheelW * 0.3, 0, spareY, -halfD + 7, 'z')
+
+  // Wheels
+  for (const z of [fronts, rears]) {
+    pushCyl(rubber, wheelR, wheelW, -wx, wheelR, z, 'x')
+    pushCyl(rubber, wheelR, wheelW, wx, wheelR, z, 'x')
+    pushCyl(trim, wheelR * 0.55, wheelW * 0.35, -wx, wheelR, z, 'x')
+    pushCyl(trim, wheelR * 0.55, wheelW * 0.35, wx, wheelR, z, 'x')
+  }
+}
+
+/**
+ * SuperCrew short-bed pickup (F-150 Tremor) — simple readable silhouette.
+ * Nose +Z: hood → long cab → open bed → tailgate (−Z).
+ * Few boxes: clear cab/bed step-down, big tires, flat grille + orange bar.
+ */
+function buildPickupTruckParts(
+  width: number,
+  height: number,
+  depth: number,
+  body: THREE.BufferGeometry[],
+  glass: THREE.BufferGeometry[],
+  rubber: THREE.BufferGeometry[],
+  trim: THREE.BufferGeometry[],
+  accent: THREE.BufferGeometry[]
+) {
+  const halfW = width / 2
+  const halfD = depth / 2
+
+  // Tremor: taller tires / stance
+  const wheelR = Math.min(height * 0.19, width * 0.22, 40)
+  const wheelW = Math.min(width * 0.13, 30)
+  const frameY = wheelR * 0.5
+
+  // SuperCrew 5.5′ bed: long cab, short bed (hood 17% | cab 54% | bed 29%)
+  const hoodLen = depth * 0.17
+  const cabLen = depth * 0.54
+  const bedLen = depth * 0.29
+  const hoodZ = halfD - hoodLen / 2
+  const cabZ = halfD - hoodLen - cabLen / 2
+  const bedZ = -halfD + bedLen / 2
+
+  const rockerH = Math.min(20, height * 0.09)
+  const hoodH = height * 0.24
+  const cabBodyH = height * 0.34
+  const greenH = height * 0.38
+  const bedRailH = height * 0.2
+  const wallT = Math.min(8, width * 0.035)
+
+  // Chassis under hood+cab only (bed reads open)
+  pushBox(body, width * 0.86, rockerH, hoodLen + cabLen, 0, frameY, halfD - (hoodLen + cabLen) / 2)
+  pushBox(body, width * 0.8, rockerH * 0.75, bedLen * 0.92, 0, frameY - 1, bedZ)
+
+  // Hood
+  const hoodY = frameY + rockerH * 0.55
+  pushBox(body, width * 0.88, hoodH, hoodLen * 0.92, 0, hoodY, hoodZ)
+
+  // Flat grille + Tremor orange bar (no honeycomb grid)
+  const grilleW = width * 0.7
+  const grilleH = hoodH * 0.9
+  const grilleY = hoodY + hoodH * 0.05
+  pushBox(trim, grilleW, grilleH, 5, 0, grilleY, halfD - 2)
+  pushBox(accent, grilleW * 0.9, Math.max(3.5, grilleH * 0.12), 3, 0, grilleY + grilleH * 0.2, halfD)
+  // Headlight blocks
+  const lampW = width * 0.09
+  pushBox(trim, lampW, grilleH * 0.95, 4, -halfW + lampW * 1.15, grilleY, halfD - 1.5)
+  pushBox(trim, lampW, grilleH * 0.95, 4, halfW - lampW * 1.15, grilleY, halfD - 1.5)
+  // Bumper
+  pushBox(trim, width * 0.94, rockerH, 14, 0, 4, halfD - 5)
+
+  // SuperCrew cab (long greenhouse)
+  const cabBottom = frameY + rockerH * 0.45
+  pushBox(body, width * 0.92, cabBodyH, cabLen * 0.98, 0, cabBottom, cabZ)
+  const greenY = cabBottom + cabBodyH * 0.82
+  pushBox(body, width * 0.84, greenH * 0.7, cabLen * 0.9, 0, greenY, cabZ - cabLen * 0.02)
+  // Windshield + continuous side glass + backlight
+  pushBox(glass, width * 0.7, greenH * 0.65, 3, 0, greenY + greenH * 0.12, cabZ + cabLen * 0.42)
+  pushBox(glass, 2.5, greenH * 0.58, cabLen * 0.72, -halfW + 4, greenY + greenH * 0.1, cabZ)
+  pushBox(glass, 2.5, greenH * 0.58, cabLen * 0.72, halfW - 4, greenY + greenH * 0.1, cabZ)
+  pushBox(glass, width * 0.68, greenH * 0.5, 2.5, 0, greenY + greenH * 0.1, cabZ - cabLen * 0.46)
+
+  // Open bed — step down from cab roof
+  const bedFloorY = frameY + rockerH * 0.15
+  pushBox(trim, width * 0.84, 5, bedLen * 0.88, 0, bedFloorY, bedZ)
+  pushBox(body, wallT, bedRailH, bedLen * 0.88, -halfW + wallT * 1.5, bedFloorY, bedZ)
+  pushBox(body, wallT, bedRailH, bedLen * 0.88, halfW - wallT * 1.5, bedFloorY, bedZ)
+  // Bulkhead + tailgate
+  pushBox(body, width * 0.9, bedRailH * 1.05, wallT * 1.4, 0, bedFloorY, bedZ + bedLen * 0.46)
+  pushBox(body, width * 0.88, bedRailH * 0.95, wallT * 1.4, 0, bedFloorY, -halfD + wallT * 1.2)
+  // Taillight stubs
+  pushBox(trim, 8, bedRailH * 0.85, 5, -halfW + 7, bedFloorY + 2, -halfD + 3)
+  pushBox(trim, 8, bedRailH * 0.85, 5, halfW - 7, bedFloorY + 2, -halfD + 3)
+  pushBox(trim, width * 0.9, rockerH * 0.85, 12, 0, 3, -halfD + 4)
+
+  // Wheels — wide track, long wheelbase
+  const track = width * 0.8
+  const wheelbase = depth * 0.66
+  const wx = track / 2
+  const fronts = halfD - (depth - wheelbase) / 2 - wheelR * 0.12
+  const rears = -halfD + (depth - wheelbase) / 2 + wheelR * 0.18
+  for (const z of [fronts, rears]) {
+    pushCyl(rubber, wheelR, wheelW, -wx, wheelR, z, 'x')
+    pushCyl(rubber, wheelR, wheelW, wx, wheelR, z, 'x')
+    pushCyl(trim, wheelR * 0.55, wheelW * 0.35, -wx, wheelR, z, 'x')
+    pushCyl(trim, wheelR * 0.55, wheelW * 0.35, wx, wheelR, z, 'x')
+  }
 }
 
 /** Straight sofa run — seat cushions, back, arms. */
@@ -2051,6 +2974,1096 @@ function buildFridgeGeometry(
   }
 }
 
+/**
+ * French-door refrigerator (Frigidaire Gallery–style).
+ * Face +Z: dual fresh-food doors over a full-width freezer drawer + bar handles.
+ */
+function buildFrenchDoorFridgeGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const doors: THREE.BufferGeometry[] = []
+  const accent: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const toe = Math.min(10, height * 0.055)
+  const doorT = Math.min(5.5, depth * 0.08)
+  const gap = 1.2
+  const freezerH = height * 0.28
+  const freshH = height - freezerH - toe - gap
+  const freshY = toe + freezerH + gap
+  const doorZ = halfD - doorT / 2
+  const cabD = depth - doorT - 1
+
+  // Cabinet body (set back behind doors)
+  pushBox(body, width * 0.98, height - toe, cabD, 0, toe, -doorT * 0.35)
+  pushBox(body, width * 0.94, toe, cabD * 0.92, 0, 0, -doorT * 0.2)
+
+  // Freezer drawer (+Z)
+  const fzW = width * 0.96
+  pushBox(doors, fzW, freezerH - gap, doorT, 0, toe, doorZ)
+  // Drawer handle bar
+  pushBox(accent, fzW * 0.55, 2.2, 2.4, 0, toe + freezerH * 0.72, halfD + 1.2)
+
+  // Dual French doors
+  const doorW = (width - gap * 3) / 2
+  const leftX = -halfW + gap + doorW / 2
+  const rightX = halfW - gap - doorW / 2
+  pushBox(doors, doorW, freshH, doorT, leftX, freshY, doorZ)
+  pushBox(doors, doorW, freshH, doorT, rightX, freshY, doorZ)
+  // Vertical bar handles near center stile
+  const handleH = freshH * 0.55
+  const handleY = freshY + freshH * 0.22
+  pushBox(accent, 2.2, handleH, 2.6, leftX + doorW * 0.38, handleY, halfD + 1.4)
+  pushBox(accent, 2.2, handleH, 2.6, rightX - doorW * 0.38, handleY, halfD + 1.4)
+  // Water dispenser hint on left door
+  pushBox(accent, doorW * 0.28, freshH * 0.22, 1.2, leftX - doorW * 0.08, freshY + freshH * 0.35, halfD - 0.2)
+  // Top hinge caps
+  pushBox(accent, width * 0.98, 2.5, depth * 0.2, 0, height - 1.5, -halfD * 0.15)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: doors, materialIndex: 1 },
+    { geoms: accent, materialIndex: 2 }
+  ])
+  for (const g of [...body, ...doors, ...accent]) g.dispose()
+  const shell = phong(hex, { shininess: 55, specular: new THREE.Color(0x666666) })
+  const face = phong(hex, { shininess: 70, specular: new THREE.Color(0x888888) })
+  face.color.offsetHSL(0, 0, 0.04)
+  const trim = phong('1a1a1c', { shininess: 80, specular: new THREE.Color(0x999999) })
+  return { geometry, materials: [shell, face, trim] }
+}
+
+/**
+ * Undivided farm apron sink. Y=0 at the sink bottom, open top.
+ * Apron (front) faces +Z; basin depth runs along Z, length along X.
+ */
+function buildFarmSinkGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const shell: THREE.BufferGeometry[] = []
+  const basin: THREE.BufferGeometry[] = []
+  const drain: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const wall = 2.5
+  const floorT = 2
+
+  // Apron front (+Z) — full height, with a proud top lip
+  pushBox(shell, width, height, wall, 0, 0, halfD - wall / 2)
+  pushBox(shell, width + 1.2, 1.2, wall + 1, 0, height - 1.2, halfD - wall / 2 + 0.5)
+  // Back wall (−Z) + end walls
+  pushBox(shell, width, height, wall, 0, 0, -halfD + wall / 2)
+  pushBox(shell, wall, height, depth, -halfW + wall / 2, 0, 0)
+  pushBox(shell, wall, height, depth, halfW - wall / 2, 0, 0)
+  // Basin floor + drain (no divider — undivided)
+  pushBox(basin, width - wall * 2, floorT, depth - wall * 2, 0, 0, 0)
+  pushCyl(drain, 3.2, 0.6, 0, floorT, 0)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: shell, materialIndex: 0 },
+    { geoms: basin, materialIndex: 1 },
+    { geoms: drain, materialIndex: 2 }
+  ])
+  for (const g of [...shell, ...basin, ...drain]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(hex, { shininess: 70, specular: new THREE.Color(0x888888) }),
+      phong('d6d3cf', { shininess: 40 }),
+      phong('3f3f46', { shininess: 60 })
+    ]
+  }
+}
+
+/**
+ * Pull-down gooseneck faucet (Ridgeway-style). Base at −Z, spout head at +Z.
+ * Y=0 at base plate bottom. Brushed-gold finish.
+ */
+function buildGooseneckGeometry(
+  height: number,
+  reach: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const gold: THREE.BufferGeometry[] = []
+  const R = reach / 2
+  const yc = height - R // arc center height so the top of the arc = height
+  const up = new THREE.Vector3(0, 1, 0)
+
+  // Straight segment between two points (cylinder oriented a→b)
+  const seg = (a: THREE.Vector3, b: THREE.Vector3, r: number) => {
+    const dir = b.clone().sub(a)
+    const len = dir.length()
+    const g = new THREE.CylinderGeometry(r, r, len, 8)
+    g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up, dir.clone().normalize()))
+    g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2)
+    gold.push(g)
+  }
+
+  // Base plate (2-1/16″ dia) + body column
+  pushCyl(gold, 2.6, 1.8, 0, 0, -R)
+  pushCyl(gold, 1.5, yc - 1.8, 0, 1.8, -R)
+  // Gooseneck arc in the YZ plane: base (−Z) → over the top → spout (+Z)
+  const N = 16
+  for (let k = 0; k < N; k++) {
+    const t0 = (Math.PI * k) / N
+    const t1 = (Math.PI * (k + 1)) / N
+    const a = new THREE.Vector3(0, yc + R * Math.sin(t0), -R * Math.cos(t0))
+    const b = new THREE.Vector3(0, yc + R * Math.sin(t1), -R * Math.cos(t1))
+    seg(a, b, 1.5)
+  }
+  // Pull-down spout + head at the front end
+  pushCyl(gold, 1.4, 14, 0, yc - 14, R)
+  pushCyl(gold, 2.2, 4.5, 0, yc - 18.5, R)
+  // Side lever
+  pushCyl(gold, 0.7, 7, 0, 8, -R, 'x')
+
+  const geometry = mergeGeometriesGrouped([{ geoms: gold, materialIndex: 0 }])
+  for (const g of gold) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex, { shininess: 90, specular: new THREE.Color(0xffe2a0) })]
+  }
+}
+
+/**
+ * Titan kitchen dual-fridge + coffee-nook wall (112″ elev).
+ * Face on +Z. L/R appl-panel fridge towers; center coffee nook (counter +
+ * machine) with glass cabinets above; one full-width flip-up cabinet on top.
+ * Y=0 at floor.
+ */
+function buildKitchenFridgeWallGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const paint: THREE.BufferGeometry[] = []
+  const drawer: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const birch: THREE.BufferGeometry[] = []
+  const metal: THREE.BufferGeometry[] = []
+  const stone: THREE.BufferGeometry[] = []
+
+  const sx = width / (112 * 2.54)
+  const sy = height / (108.25 * 2.54)
+  const inX = (inches: number) => inches * 2.54 * sx
+  const inY = (inches: number) => inches * 2.54 * sy
+
+  const filler = inX(2)
+  const fridgeW = inX(35.8125)
+  const stile = inX(1.5)
+  const centerW = inX(33.375)
+  const flipH = inY(21.25) // full-width flip-up top
+  const counterH = inY(36)
+  const nookH = inY(18) // clear coffee recess above counter
+  const fridgeH = height - flipH // towers stop under flip-up
+  const glassH = Math.max(inY(12), fridgeH - counterH - nookH)
+  const toe = Math.min(inY(4), counterH * 0.12)
+  const halfW = width / 2
+  const halfD = depth / 2
+  const frontZ = halfD - 1.2
+  const ret = Math.min(inX(6), depth * 0.22)
+
+  let x = -halfW
+  const fillerL = x + filler / 2
+  x += filler
+  const fridgeL = x + fridgeW / 2
+  x += fridgeW
+  const stileL = x + stile / 2
+  x += stile
+  const centerX = x + centerW / 2
+  x += centerW
+  const stileR = x + stile / 2
+  x += stile
+  const fridgeR = x + fridgeW / 2
+  x += fridgeW
+  const fillerR = x + filler / 2
+
+  // Fillers + stiles up to underside of flip-up
+  pushBox(paint, filler, fridgeH, depth, fillerL, 0, 0)
+  pushBox(paint, filler, fridgeH, depth, fillerR, 0, 0)
+  pushBox(paint, stile, fridgeH, depth, stileL, 0, 0)
+  pushBox(paint, stile, fridgeH, depth, stileR, 0, 0)
+
+  const buildFridgeTower = (cx: number) => {
+    pushBox(paint, fridgeW, fridgeH, depth - 2, cx, 0, -1)
+    pushBox(paint, ret, fridgeH, 2.2, cx - fridgeW / 2 + ret / 2, 0, frontZ)
+    pushBox(paint, ret, fridgeH, 2.2, cx + fridgeW / 2 - ret / 2, 0, frontZ)
+    const panelW = fridgeW - ret * 2 - 1.5
+    pushBox(paint, panelW, fridgeH - toe - 4, 1.8, cx, toe + 2, frontZ + 0.4)
+    pushBox(metal, 1.6, fridgeH * 0.55, 2.4, cx + panelW * 0.42, toe + fridgeH * 0.2, frontZ + 2)
+    pushBox(paint, fridgeW * 0.96, toe, depth * 0.88, cx, 0, -depth * 0.02)
+  }
+  buildFridgeTower(fridgeL)
+  buildFridgeTower(fridgeR)
+
+  // ——— Center: drawers below · counter · open coffee nook · glass above ———
+  pushBox(paint, centerW, counterH - toe, depth, centerX, toe, 0)
+  pushBox(paint, centerW * 0.94, toe, depth * 0.88, centerX, 0, -depth * 0.02)
+  {
+    const faceH = counterH - toe - 3.2 // leave room for counter slab
+    const t5 = inY(5)
+    const t101 = inY(10.125)
+    const sum = t5 + t101 + t101
+    const scale = faceH / sum
+    const banks = [t101 * scale, t101 * scale, t5 * scale]
+    const gap = 0.35
+    let y = toe + gap
+    for (const h of banks) {
+      pushBox(drawer, centerW * 0.9, h - gap, 1.8, centerX, y, frontZ)
+      pushBox(drawer, centerW * 0.5, 1.3, 2.1, centerX, y + (h - gap) * 0.72, frontZ + 1.4)
+      y += h + gap
+    }
+  }
+  // Counter slab (stone) — top at counterH
+  const slab = 3.2
+  pushBox(stone, centerW + 1.5, slab, depth + 2, centerX, counterH - slab, 1)
+
+  // Nook recess: back wall + side returns (open on +Z)
+  const nookY = counterH
+  const nookD = depth * 0.72
+  pushBox(paint, centerW, nookH, 2.5, centerX, nookY, -halfD + 1.5) // back
+  pushBox(paint, 2.2, nookH, nookD, centerX - centerW / 2 + 1.1, nookY, -halfD + nookD / 2 + 1)
+  pushBox(paint, 2.2, nookH, nookD, centerX + centerW / 2 - 1.1, nookY, -halfD + nookD / 2 + 1)
+  // Underside of glass bank (nook ceiling)
+  pushBox(paint, centerW, 2, nookD, centerX, nookY + nookH - 2, -halfD + nookD / 2 + 1)
+
+  // Espresso / coffee machine on counter
+  {
+    const mw = inX(11)
+    const mh = inY(13.5)
+    const md = Math.min(depth * 0.45, inX(10))
+    const mz = -halfD + md / 2 + 8
+    pushBox(metal, mw, mh * 0.55, md, centerX, nookY, mz) // body
+    pushBox(metal, mw * 0.92, mh * 0.28, md * 0.7, centerX, nookY + mh * 0.55, mz - md * 0.05) // hoppers
+    pushBox(metal, mw * 0.35, mh * 0.12, md * 0.25, centerX, nookY + mh * 0.82, mz + md * 0.15) // group
+    pushCyl(metal, 1.4, md * 0.35, centerX + mw * 0.28, nookY + mh * 0.35, mz + md * 0.35, 'z') // steam wand
+    // Cup on drip tray
+    pushCyl(stone, 2.2, 4.5, centerX - mw * 0.15, nookY + 1, mz + md * 0.4, 'y')
+  }
+
+  // Glass cabinets above nook (up to flip-up)
+  const gy = nookY + nookH
+  pushBox(birch, centerW * 0.96, glassH, depth * 0.85, centerX, gy, -depth * 0.04)
+  pushBox(birch, centerW * 0.88, 1.8, depth * 0.7, centerX, gy + glassH * 0.45, 0)
+  pushBox(paint, centerW, 3.2, 2, centerX, gy, frontZ)
+  pushBox(paint, centerW, 3.2, 2, centerX, gy + glassH - 3.2, frontZ)
+  pushBox(paint, 3.2, glassH, 2, centerX - centerW / 2 + 1.6, gy, frontZ)
+  pushBox(paint, 3.2, glassH, 2, centerX + centerW / 2 - 1.6, gy, frontZ)
+  pushBox(paint, 2, glassH * 0.92, 2, centerX, gy + glassH * 0.04, frontZ + 0.3)
+  const leafW = (centerW - 3.2 * 2 - 2.2) / 2
+  pushBox(glass, leafW, glassH * 0.86, 1.4, centerX - leafW / 2 - 1.1, gy + glassH * 0.07, frontZ + 0.6)
+  pushBox(glass, leafW, glassH * 0.86, 1.4, centerX + leafW / 2 + 1.1, gy + glassH * 0.07, frontZ + 0.6)
+
+  // ——— Full-width flip-up top (2 doors, horizontal pulls) ———
+  const fy = fridgeH
+  pushBox(paint, width, flipH, depth * 1.02, 0, fy, 0)
+  const doorGap = 1.2
+  const doorW = (width * 0.96 - doorGap) / 2
+  const doorH = flipH * 0.88
+  const doorY = fy + flipH * 0.06
+  for (const dx of [-doorW / 2 - doorGap / 2, doorW / 2 + doorGap / 2]) {
+    pushBox(paint, doorW, doorH, 1.8, dx, doorY, frontZ + 0.3)
+    // Horizontal lift-up pull near bottom of door
+    pushBox(metal, doorW * 0.55, 1.5, 2.2, dx, doorY + doorH * 0.18, frontZ + 2)
+  }
+  // Center stile between flip doors
+  pushBox(paint, doorGap + 0.8, doorH * 0.95, 2, 0, doorY, frontZ + 0.5)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: paint, materialIndex: 0 },
+    { geoms: drawer, materialIndex: 1 },
+    { geoms: glass, materialIndex: 2 },
+    { geoms: birch, materialIndex: 3 },
+    { geoms: metal, materialIndex: 4 },
+    { geoms: stone, materialIndex: 5 }
+  ])
+  for (const g of [...paint, ...drawer, ...glass, ...birch, ...metal, ...stone]) g.dispose()
+  const paintMat = phong(hex || 'f5f5f4', { shininess: 35, specular: new THREE.Color(0x888888) })
+  const drawerMat = phong(hex || 'f5f5f4')
+  drawerMat.color.offsetHSL(0, 0, 0.05)
+  return {
+    geometry,
+    materials: [
+      paintMat,
+      drawerMat,
+      phong('b8d4e8', {
+        shininess: 90,
+        specular: new THREE.Color(0xffffff),
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false
+      }),
+      phong('d4c4a8', { shininess: 20, specular: new THREE.Color(0x666666) }),
+      phong('9ca3af', { shininess: 70, specular: new THREE.Color(0xffffff) }),
+      phong('e8e4df', { shininess: 55, specular: new THREE.Color(0xaaaaaa) })
+    ]
+  }
+}
+
+/**
+ * Basement bar elevation (BSMT BAR · BIRCH) — 165¼″ × 104¾″ × 25½″, face +Z, y=0 floor.
+ * L→R: #52 end · 24″ panel-ready fridge (#60) + open shelves + 3″ top · #53 ·
+ * base #54 (2 drawers | drawer+rollouts) · #55 sink (false front + doors) ·
+ * #56 (drawer+trash | 2 LOCK drawers) · #57 · #58 (drawer + rollouts, glass-door cabinet,
+ * wine rack, 3″ top) · #59 end. Base carcass 34¾″ × 24″ deep; towers 25½″ deep.
+ * Countertop + sink are separate items.
+ */
+function buildBsmtBarWallGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const paint: THREE.BufferGeometry[] = []
+  const drawer: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const metal: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const wine: THREE.BufferGeometry[] = []
+
+  const sx = width / (165.25 * 2.54)
+  const sy = height / (104.75 * 2.54)
+  const sz = depth / (25.5 * 2.54)
+  const X = (i: number) => i * 2.54 * sx
+  const Y = (i: number) => i * 2.54 * sy
+  const Z = (i: number) => i * 2.54 * sz
+  const halfW = width / 2
+  const halfD = depth / 2
+  const backZ = -halfD
+  const frontT = halfD // tower faces
+  const baseD = Z(24)
+  const frontB = backZ + baseD // base faces
+  const baseH = Y(34.75)
+  const toe = Y(4)
+  const toeIn = Z(3)
+  const gap = 0.3
+  const fT = 1.9
+
+  const w52 = X(2)
+  const wFr = X(24)
+  const w53 = X(1.5)
+  const w54 = X(40.125)
+  const w55 = X(30)
+  const w56 = X(40.125)
+  const w57 = X(1.5)
+  const w58 = X(24)
+  const w59 = X(2)
+  const e52 = -halfW
+  const eFr = e52 + w52
+  const e53 = eFr + wFr
+  const e54 = e53 + w53
+  const e55 = e54 + w54
+  const e56 = e55 + w55
+  const e57 = e56 + w56
+  const e58 = e57 + w57
+  const e59 = e58 + w58
+  const mid = (a: number, w: number) => a + w / 2
+
+  // Full-height end panels / stiles
+  pushBox(paint, w52, height, depth, mid(e52, w52), 0, 0)
+  pushBox(paint, w53, height, depth, mid(e53, w53), 0, 0)
+  pushBox(paint, w57, height, depth, mid(e57, w57), 0, 0)
+  pushBox(paint, w59, height, depth, mid(e59, w59), 0, 0)
+
+  const front = (
+    list: THREE.BufferGeometry[],
+    cx: number,
+    w: number,
+    y0: number,
+    h: number,
+    zFace: number
+  ) => pushBox(list, w - gap, h - gap, fT, cx, y0 + gap / 2, zFace - fT / 2 + 0.5)
+  const pullH = (cx: number, y: number, w: number, zFace: number) =>
+    pushBox(metal, w, 1.1, 1.5, cx, y, zFace + 0.5)
+  const pullV = (cx: number, y0: number, h: number, zFace: number) =>
+    pushBox(metal, 1.1, h, 1.5, cx, y0, zFace + 0.5)
+  const lock = (cx: number, y: number, zFace: number) =>
+    pushBox(metal, 1.6, 1.6, 1.0, cx, y, zFace + 0.4)
+
+  // ——— Left tower: fridge (#60) · open shelves · 3″ top ———
+  {
+    const cx = mid(eFr, wFr)
+    const fy1 = Y(70)
+    pushBox(dark, wFr, fy1, 1.2, cx, 0, backZ + 0.6)
+    pushBox(dark, wFr * 0.97, fy1 - Y(1), baseD - 4, cx, Y(0.5), backZ + (baseD - 4) / 2)
+    const zF = backZ + Z(24.5)
+    const seam = eFr + wFr * 0.74
+    const lw = seam - eFr - gap
+    const rw = eFr + wFr - seam - gap
+    pushBox(paint, lw, fy1 - Y(2), fT, eFr + gap / 2 + lw / 2, Y(1), zF - fT / 2 + 0.5)
+    pushBox(paint, rw, fy1 - Y(2), fT, seam + gap / 2 + rw / 2, Y(1), zF - fT / 2 + 0.5)
+    pullV(seam - 2.5, Y(26), Y(30), zF)
+    pullV(seam + 1.6, Y(26), Y(30), zF)
+    // Roof of fridge niche + open shelf bay
+    pushBox(paint, wFr, Y(2), depth, cx, fy1, 0)
+    const oy0 = fy1 + Y(2)
+    const oy1 = Y(99.75)
+    pushBox(paint, wFr, oy1 - oy0, 1.2, cx, oy0, backZ + 0.6)
+    pushBox(paint, wFr, 1.9, depth * 0.9, cx, Y(85.5), backZ + (depth * 0.9) / 2)
+    pushBox(paint, wFr, Y(2), depth, cx, oy1, 0)
+    pushBox(paint, wFr + X(0.6), Y(3), depth, cx, Y(101.75), 0)
+  }
+
+  // ——— Base run #54 · #55 · #56 ———
+  {
+    const runW = w54 + w55 + w56
+    pushBox(paint, runW, baseH - toe, baseD, e54 + runW / 2, toe, backZ + baseD / 2)
+    pushBox(dark, runW * 0.98, toe, baseD - toeIn, e54 + runW / 2, 0, backZ + (baseD - toeIn) / 2)
+
+    const wh = X(18.5625)
+    const edge = X(0.75)
+    const doorY = Y(4.5)
+    const doorH = Y(21.75)
+    const drY = Y(28)
+    const drH = Y(5)
+    const stY1 = Y(4.5)
+    const stY2 = Y(19.375)
+    const stH = Y(13.375)
+
+    const twoDrawers = (cx: number, withLock: boolean) => {
+      for (const y of [stY1, stY2]) {
+        front(drawer, cx, wh, y, stH, frontB)
+        pullH(cx, y + stH * 0.78, wh * 0.35, frontB)
+        if (withLock) lock(cx, y + stH * 0.5, frontB)
+      }
+    }
+    const drawerOverDoor = (cx: number, pull: 'side' | 'top', sideX: number) => {
+      front(drawer, cx, wh, drY, drH, frontB)
+      pullH(cx, drY + drH * 0.5, wh * 0.35, frontB)
+      front(paint, cx, wh, doorY, doorH, frontB)
+      if (pull === 'side') pullV(sideX, doorY + doorH * 0.55, Y(8), frontB)
+      else pullH(cx, doorY + doorH * 0.88, wh * 0.4, frontB)
+    }
+
+    // #54
+    const c54L = e54 + edge + wh / 2
+    const c54R = e55 - edge - wh / 2
+    twoDrawers(c54L, false)
+    drawerOverDoor(c54R, 'side', c54R - wh / 2 + X(1.5))
+
+    // #55 sink: false front + double doors
+    const c55 = mid(e55, w55)
+    const sw = w55 - X(3)
+    front(drawer, c55, sw, drY, drH, frontB)
+    pullH(c55, drY + drH * 0.5, X(8), frontB)
+    const leaf = sw / 2
+    front(paint, c55 - leaf / 2 - gap / 2, leaf, doorY, doorH, frontB)
+    front(paint, c55 + leaf / 2 + gap / 2, leaf, doorY, doorH, frontB)
+    pullV(c55 - 2.2, doorY + doorH * 0.55, Y(8), frontB)
+    pullV(c55 + 2.2, doorY + doorH * 0.55, Y(8), frontB)
+
+    // #56
+    const c56L = e56 + edge + wh / 2
+    const c56R = e57 - edge - wh / 2
+    drawerOverDoor(c56L, 'top', c56L)
+    twoDrawers(c56R, true)
+  }
+
+  // ——— Right tower #58: base · glass-door cabinet · wine rack · 3″ top ———
+  {
+    const cx = mid(e58, w58)
+    pushBox(paint, w58, baseH - toe, depth, cx, toe, 0)
+    pushBox(dark, w58 * 0.96, toe, depth - toeIn, cx, 0, backZ + (depth - toeIn) / 2)
+    const fw = w58 - X(1.5)
+    const drY = Y(28)
+    const drH = Y(5)
+    front(drawer, cx, fw, drY, drH, frontT)
+    pullH(cx, drY + drH * 0.5, fw * 0.35, frontT)
+    front(paint, cx, fw, Y(4.5), Y(21.75), frontT)
+    pullV(cx - fw / 2 + X(1.5), Y(4.5) + Y(21.75) * 0.55, Y(8), frontT)
+
+    // Glass-door cabinet (35¼″)
+    const gy0 = baseH
+    const gy1 = Y(70)
+    const gH = gy1 - gy0
+    pushBox(paint, w58, 1.8, depth, cx, gy0, 0)
+    pushBox(paint, w58, 1.8, depth, cx, gy1 - 1.8, 0)
+    pushBox(paint, w58, gH, 1.2, cx, gy0, backZ + 0.6)
+    for (const f of [0.34, 0.67]) {
+      pushBox(paint, w58, 1.0, depth * 0.9, cx, gy0 + gH * f, backZ + (depth * 0.9) / 2)
+    }
+    const dw = w58 - X(1)
+    const sw = X(2.5)
+    const rh = Y(2.5)
+    const zc = frontT - fT / 2 + 0.5
+    pushBox(paint, dw, rh, fT, cx, gy0 + 0.5, zc)
+    pushBox(paint, dw, rh, fT, cx, gy1 - rh - 0.5, zc)
+    pushBox(paint, sw, gH - 1, fT, cx - dw / 2 + sw / 2, gy0 + 0.5, zc)
+    pushBox(paint, sw, gH - 1, fT, cx + dw / 2 - sw / 2, gy0 + 0.5, zc)
+    pushBox(glass, dw - 2 * sw, gH - 1 - 2 * rh, 0.6, cx, gy0 + 0.5 + rh, frontT - 0.9)
+    pullV(cx - dw / 2 + sw / 2, gy0 + gH * 0.45, Y(10), frontT)
+
+    // Wine rack (31¾″ bay) + 3″ top
+    const wy0 = Y(70)
+    const wy1 = Y(101.75)
+    pushBox(paint, w58, Y(1.5), depth, cx, wy0, 0)
+    pushBox(paint, w58, Y(2), depth, cx, wy1 - Y(2), 0)
+    pushBox(paint, w58, wy1 - wy0, 1.2, cx, wy0, backZ + 0.6)
+    const r0 = wy0 + Y(1.5)
+    const rH = wy1 - Y(2) - r0
+    const rD = depth * 0.86
+    for (let i = 1; i <= 4; i++) {
+      pushBox(wine, 1.0, rH, rD, e58 + (w58 * i) / 5, r0, backZ + rD / 2)
+    }
+    for (let k = 1; k <= 4; k++) {
+      pushBox(wine, w58, 0.9, rD, cx, r0 + (rH * k) / 5 - 0.45, backZ + rD / 2)
+    }
+    pushBox(paint, w58 + X(0.6), Y(3), depth, cx, wy1, 0)
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: paint, materialIndex: 0 },
+    { geoms: drawer, materialIndex: 1 },
+    { geoms: glass, materialIndex: 2 },
+    { geoms: metal, materialIndex: 3 },
+    { geoms: dark, materialIndex: 4 },
+    { geoms: wine, materialIndex: 5 }
+  ])
+  for (const g of [...paint, ...drawer, ...glass, ...metal, ...dark, ...wine]) g.dispose()
+  const paintMat = phong(hex || 'c9b896', { shininess: 30, specular: new THREE.Color(0x666666) })
+  const drawerMat = phong(hex || 'c9b896', { shininess: 30, specular: new THREE.Color(0x666666) })
+  drawerMat.color.offsetHSL(0, 0, 0.035)
+  return {
+    geometry,
+    materials: [
+      paintMat,
+      drawerMat,
+      phong('b8d4e8', {
+        shininess: 90,
+        specular: new THREE.Color(0xffffff),
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false
+      }),
+      phong('9ca3af', { shininess: 70, specular: new THREE.Color(0xffffff) }),
+      phong('3a3732'),
+      phong('b08a5a', { shininess: 20 })
+    ]
+  }
+}
+
+/**
+ * Paint-grade 3-drawer base (Titan kitchen #9/#10).
+ * Face on +Z. Toe-kick + drawers: ~5″ / 10⅛″ / 10⅛″ of clear face.
+ */
+function buildCabDrawersGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const drawer: THREE.BufferGeometry[] = []
+  const toe = Math.min(10.16, height * 0.12) // ~4″
+  const faceH = height - toe
+  const halfW = width / 2
+
+  pushBox(body, width, faceH, depth, 0, toe, 0)
+  pushBox(body, width * 0.92, toe, depth * 0.85, 0, 0, -depth * 0.04)
+
+  // Titan face: top 5″, middle 10⅛″, bottom 10⅛″ (scaled to clear height)
+  const t5 = 5 * 2.54
+  const t101 = 10.125 * 2.54
+  const sum = t5 + t101 + t101
+  const scale = faceH / sum
+  const hTop = t5 * scale
+  const hMid = t101 * scale
+  const hBot = t101 * scale
+  const gap = 0.35
+  const frontZ = depth / 2 - 1
+  let y = toe + gap
+  const banks = [
+    { h: hBot, y0: y },
+    { h: hMid, y0: (y += hBot + gap) },
+    { h: hTop, y0: (y += hMid + gap) }
+  ]
+  for (const d of banks) {
+    pushBox(drawer, width * 0.92, d.h - gap, 1.8, 0, d.y0, frontZ)
+    // Horizontal bar pull
+    pushBox(drawer, width * 0.55, 1.4, 2.2, 0, d.y0 + (d.h - gap) * 0.72, frontZ + 1.5)
+  }
+  // Side stiles hint
+  pushBox(body, 2.2, faceH * 0.96, 2, -halfW + 1.2, toe, frontZ + 0.2)
+  pushBox(body, 2.2, faceH * 0.96, 2, halfW - 1.2, toe, frontZ + 0.2)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: drawer, materialIndex: 1 }
+  ])
+  for (const g of [...body, ...drawer]) g.dispose()
+  const a = phong(hex || 'f5f5f4')
+  const b = phong(hex || 'f5f5f4')
+  b.color.offsetHSL(0, 0, 0.06)
+  return { geometry, materials: [a, b] }
+}
+
+/**
+ * Monogram ZDP486-style 48″ dual-fuel pro range.
+ * Front face +Z: dual side-by-side ovens (narrow L / wide R), brass-accent knobs,
+ * center display, 6 burners + right griddle on cooktop. Y=0 at floor.
+ */
+function buildRangeGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const steel: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const iron: THREE.BufferGeometry[] = []
+  const brass: THREE.BufferGeometry[] = []
+  const display: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const steelHex = hex && hex !== '2a2a2a' ? hex : 'c8ccd0'
+  const toe = Math.max(6, height * 0.07)
+  const cookH = Math.max(4.5, height * 0.055)
+  const railH = Math.max(9, height * 0.11)
+  const ovenTop = height - cookH - railH
+  const ovenH = ovenTop - toe - 2
+  const faceZ = halfD - 0.8
+
+  // ——— Body / toe / side panels ———
+  pushBox(steel, width, toe * 0.85, depth * 0.92, 0, 0, -depth * 0.01)
+  pushBox(steel, width, ovenH + railH + cookH * 0.35, depth, 0, toe, 0)
+  // Side skins (slightly proud)
+  pushBox(steel, 1.2, height - toe * 0.3, depth * 0.98, -halfW + 0.6, toe * 0.15, 0)
+  pushBox(steel, 1.2, height - toe * 0.3, depth * 0.98, halfW - 0.6, toe * 0.15, 0)
+
+  // ——— Dual oven doors (narrow left ~36%, wide right ~62%) ———
+  const gap = 1.6
+  const leftW = width * 0.34
+  const rightW = width * 0.58
+  const leftCx = -halfW + leftW / 2 + width * 0.035
+  const rightCx = halfW - rightW / 2 - width * 0.035
+  const doorY = toe + 1.5
+  const doorH = ovenH - 2
+  for (const { cx, dw } of [
+    { cx: leftCx, dw: leftW },
+    { cx: rightCx, dw: rightW }
+  ]) {
+    // Door frame (stainless)
+    pushBox(steel, dw, doorH, 2.2, cx, doorY, faceZ)
+    // Black glass lite
+    const gInsetX = dw * 0.1
+    const gInsetY = doorH * 0.1
+    pushBox(
+      glass,
+      dw - gInsetX * 2,
+      doorH - gInsetY * 2 - 4,
+      1.2,
+      cx,
+      doorY + gInsetY + 2,
+      faceZ + 1.2
+    )
+    // Inner window reveal
+    pushBox(steel, dw - gInsetX * 2 + 1.5, 1.2, 1.4, cx, doorY + doorH - gInsetY - 1, faceZ + 1.5)
+    pushBox(steel, dw - gInsetX * 2 + 1.5, 1.2, 1.4, cx, doorY + gInsetY + 1, faceZ + 1.5)
+    // Tubular handle (per door — leave a clear gap at the mullion)
+    const handleY = doorY + doorH - Math.min(7, doorH * 0.12)
+    const handleW = dw * 0.72
+    pushCyl(steel, 1.7, handleW, cx - handleW / 2, handleY, faceZ + 5.2, 'x')
+    pushBox(steel, 2.4, 2.4, 4.2, cx - handleW / 2 + 2.2, handleY - 1.2, faceZ + 2)
+    pushBox(steel, 2.4, 2.4, 4.2, cx + handleW / 2 - 2.2, handleY - 1.2, faceZ + 2)
+  }
+  // Center mullion between ovens
+  pushBox(steel, gap + 1.2, doorH + 2, 2.4, (leftCx + rightCx) / 2 + (rightW - leftW) * 0.02, doorY, faceZ + 0.3)
+
+  // Kick / brand rail under right oven — "MONOGRAM" as plaque dashes
+  const brandY = toe * 0.35
+  const brandZ = faceZ + 0.6
+  pushBox(steel, rightW * 0.55, 2.2, 1.2, rightCx, brandY, brandZ)
+  for (let i = 0; i < 8; i++) {
+    pushBox(brass, 1.6, 0.7, 0.6, rightCx - rightW * 0.2 + i * 3.2, brandY + 0.7, brandZ + 0.5)
+  }
+
+  // ——— Control rail (front of cooktop) ———
+  const railY = toe + ovenH + 1
+  pushBox(steel, width * 0.98, railH, depth * 0.22, 0, railY, halfD - depth * 0.12)
+  // Bevel / drip edge
+  pushBox(steel, width * 0.96, 1.5, depth * 0.08, 0, railY + railH - 1, halfD - depth * 0.02)
+
+  // Center digital display + buttons
+  const dispW = Math.min(22, width * 0.14)
+  const dispH = railH * 0.42
+  pushBox(display, dispW, dispH, 1.5, 0, railY + railH * 0.38, faceZ + 0.5)
+  pushBox(steel, dispW + 2, dispH + 2, 1.2, 0, railY + railH * 0.35, faceZ)
+  for (let i = -2; i <= 2; i++) {
+    pushCyl(steel, 0.7, 0.8, i * 3.2, railY + railH * 0.18, faceZ + 1.2, 'z')
+  }
+
+  // Knobs — 5 left of display, 5 right (Monogram pro layout); brass center fin
+  const knobR = Math.min(3.4, width * 0.022)
+  const knobY = railY + railH * 0.48
+  const knobZ = faceZ + 2.2
+  const leftKnobXs = [-0.42, -0.32, -0.22, -0.14, -0.08].map((t) => t * width)
+  const rightKnobXs = [0.08, 0.14, 0.22, 0.32, 0.42].map((t) => t * width)
+  for (const kx of [...leftKnobXs, ...rightKnobXs]) {
+    pushCyl(steel, knobR, 2.2, kx, knobY, knobZ, 'z')
+    pushCyl(brass, knobR * 0.35, 2.6, kx, knobY, knobZ + 0.2, 'z')
+    // Pointer tick
+    pushBox(brass, knobR * 0.35, knobR * 1.1, 0.5, kx, knobY + knobR * 0.35, knobZ + 2.4)
+  }
+
+  // ——— Cooktop ———
+  const topY = height - cookH
+  pushBox(steel, width * 0.98, cookH * 0.55, depth * 0.88, 0, topY, -depth * 0.02)
+  // Burner zone (left ~62%) + griddle (right ~32%)
+  const burnZoneW = width * 0.62
+  const burnCx = -halfW + burnZoneW / 2 + width * 0.04
+  const gridW = width * 0.3
+  const gridCx = halfW - gridW / 2 - width * 0.04
+  const topZ0 = -halfD + depth * 0.18
+  const topZ1 = halfD - depth * 0.22
+
+  // Cast-iron continuous grates (3 columns × 2 burners)
+  const colXs = [-0.32, 0, 0.32].map((t) => burnCx + t * burnZoneW * 0.85)
+  const rowZs = [0.28, -0.22].map((t) => (topZ0 + topZ1) / 2 + t * (topZ1 - topZ0))
+  for (const bx of colXs) {
+    // Longitudinal grate bars
+    for (let i = 0; i < 5; i++) {
+      const gz = topZ0 + ((i + 0.5) / 5) * (topZ1 - topZ0)
+      pushBox(iron, burnZoneW * 0.28, 1.2, 1.1, bx, topY + cookH * 0.55, gz)
+    }
+    // Cross bars
+    for (const rz of rowZs) {
+      pushBox(iron, burnZoneW * 0.3, 1.1, depth * 0.12, bx, topY + cookH * 0.5, rz)
+    }
+  }
+  // Burner caps
+  for (const bx of colXs) {
+    for (const bz of rowZs) {
+      pushCyl(iron, Math.min(7.5, width * 0.045), 1.4, bx, topY + cookH * 0.62, bz, 'y')
+      pushCyl(steel, Math.min(3.2, width * 0.02), 1.0, bx, topY + cookH * 0.75, bz, 'y')
+    }
+  }
+
+  // Stainless griddle plate + front grease trough + lid lip
+  pushBox(steel, gridW * 0.92, 1.8, (topZ1 - topZ0) * 0.92, gridCx, topY + cookH * 0.55, (topZ0 + topZ1) / 2)
+  pushBox(iron, gridW * 0.88, 0.6, 2.2, gridCx, topY + cookH * 0.7, topZ1 - 3)
+  // Griddle cover (tilted-ish as thin plate parked up)
+  pushBox(steel, gridW * 0.9, 1.2, (topZ1 - topZ0) * 0.5, gridCx, topY + cookH * 0.9, topZ0 + 8)
+
+  // Backsplash / island trim at rear of cooktop
+  pushBox(steel, width * 0.96, Math.min(8, height * 0.06), 2.5, 0, topY + cookH * 0.3, -halfD + 2)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: steel, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 },
+    { geoms: iron, materialIndex: 2 },
+    { geoms: brass, materialIndex: 3 },
+    { geoms: display, materialIndex: 4 }
+  ])
+  for (const g of [...steel, ...glass, ...iron, ...brass, ...display]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(steelHex, { shininess: 85, specular: new THREE.Color(0xffffff) }),
+      phong('0a0a0a', {
+        shininess: 120,
+        specular: new THREE.Color(0x666666),
+        transparent: true,
+        opacity: 0.92
+      }),
+      phong('1a1a1a', { shininess: 25, specular: new THREE.Color(0x333333) }),
+      phong('b8923a', { shininess: 90, specular: new THREE.Color(0xffe2a0) }),
+      phong('1e2930', { shininess: 40, emissive: new THREE.Color(0x1a3040), emissiveIntensity: 0.35 })
+    ]
+  }
+}
+
+/**
+ * GE Profile-style 24″ built-in dishwasher (PDP755 look):
+ * fingerprint-resistant stainless door, recessed pocket handle, top-control
+ * (no front buttons), status LED, black toe-kick. Face +Z. Y=0 at floor.
+ */
+function buildDishwasherGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const steel: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const accent: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const steelHex = hex || 'c0c5ca'
+  const toe = Math.max(8, height * 0.1)
+  const doorH = height - toe - 1.5
+  const faceZ = halfD - 0.6
+
+  // Body / tub shell
+  pushBox(steel, width * 0.98, height - toe * 0.15, depth * 0.96, 0, toe * 0.1, -depth * 0.01)
+  // Black toe-kick
+  pushBox(dark, width * 0.96, toe * 0.92, depth * 0.88, 0, 0, -depth * 0.02)
+
+  // Door panel (full stainless face)
+  pushBox(steel, width * 0.94, doorH, 2.4, 0, toe + 0.8, faceZ)
+  // Subtle vertical grain ribs (fingerprint-resistant look)
+  const ribs = 9
+  for (let i = 0; i < ribs; i++) {
+    const rx = -width * 0.42 + ((i + 0.5) / ribs) * width * 0.84
+    pushBox(accent, 0.35, doorH * 0.92, 0.5, rx, toe + doorH * 0.08, faceZ + 1.3)
+  }
+
+  // Recessed pocket handle — centered, mid-upper door (GE Profile style)
+  const pocketW = Math.min(28, width * 0.42)
+  const pocketH = Math.max(3.2, height * 0.035)
+  const pocketY = toe + doorH * 0.52
+  // Pocket cavity (dark recess)
+  pushBox(dark, pocketW, pocketH, 2.8, 0, pocketY, faceZ - 0.2)
+  // Upper lip of pocket
+  pushBox(steel, pocketW + 1.5, 1.1, 1.6, 0, pocketY + pocketH * 0.55, faceZ + 1.0)
+  // Lower grip edge
+  pushBox(steel, pocketW + 0.8, 0.9, 2.0, 0, pocketY - pocketH * 0.35, faceZ + 0.6)
+
+  // Status LED strip above pocket (small horizontal indicator)
+  pushBox(accent, Math.min(10, width * 0.14), 0.7, 0.6, 0, pocketY + pocketH + 2.2, faceZ + 1.5)
+
+  // Top edge control hint (hidden top-control — thin dark strip at door top)
+  pushBox(dark, width * 0.88, 1.2, 1.8, 0, toe + doorH - 1.5, faceZ + 0.4)
+
+  // Side reveals / install flanges
+  pushBox(dark, 0.8, doorH * 0.98, depth * 0.5, -halfW + 0.5, toe + 0.5, -depth * 0.05)
+  pushBox(dark, 0.8, doorH * 0.98, depth * 0.5, halfW - 0.5, toe + 0.5, -depth * 0.05)
+
+  // Bottom door seal line
+  pushBox(dark, width * 0.9, 0.6, 1.2, 0, toe + 1.2, faceZ + 1.0)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: steel, materialIndex: 0 },
+    { geoms: dark, materialIndex: 1 },
+    { geoms: accent, materialIndex: 2 }
+  ])
+  for (const g of [...steel, ...dark, ...accent]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(steelHex, { shininess: 88, specular: new THREE.Color(0xffffff) }),
+      phong('141414', { shininess: 30, specular: new THREE.Color(0x333333) }),
+      phong('9aa3aa', { shininess: 70, specular: new THREE.Color(0xcccccc) })
+    ]
+  }
+}
+
+/**
+ * Pro stainless canopy hood — wide canopy (meant wider than the range),
+ * under-lights, baffle filters, grease trough, tall chimney. Face +Z. Y=0 at canopy lip.
+ */
+function buildSsHoodGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const steel: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const steelHex = hex || 'c8ccd0'
+  const canopyH = Math.max(22, Math.min(height * 0.32, 42))
+  const chimneyH = height - canopyH
+  const lip = Math.max(3.5, canopyH * 0.12)
+
+  // ——— Wide canopy shell ———
+  pushBox(steel, width, canopyH * 0.55, depth * 0.95, 0, lip, -depth * 0.02)
+  // Front apron face (proud)
+  pushBox(steel, width * 1.0, canopyH * 0.5, 2.8, 0, lip + 1, halfD - 1.2)
+  // Angled-look front bevel (stepped)
+  pushBox(steel, width * 0.98, canopyH * 0.22, depth * 0.35, 0, lip + canopyH * 0.45, halfD * 0.35)
+  pushBox(steel, width * 0.92, canopyH * 0.18, depth * 0.22, 0, lip + canopyH * 0.62, halfD * 0.05)
+  // Bottom lip / grease trough
+  pushBox(steel, width * 1.02, lip, depth * 1.0, 0, 0, 0)
+  pushBox(dark, width * 0.94, 1.6, depth * 0.7, 0, lip * 0.35, -depth * 0.05)
+
+  // Side cheeks (canopy wider silhouette)
+  pushBox(steel, 3.2, canopyH - 2, depth * 0.92, -halfW + 1.6, 1, 0)
+  pushBox(steel, 3.2, canopyH - 2, depth * 0.92, halfW - 1.6, 1, 0)
+
+  // Baffle filter bank (dark slots under canopy)
+  const filters = 4
+  const fw = (width * 0.7) / filters
+  for (let i = 0; i < filters; i++) {
+    const fx = -width * 0.35 + (i + 0.5) * fw
+    pushBox(dark, fw * 0.88, 1.2, depth * 0.45, fx, lip + 2.5, -depth * 0.08)
+    // Baffle ribs
+    for (let r = 0; r < 3; r++) {
+      pushBox(steel, fw * 0.8, 0.7, 1.1, fx, lip + 3.2, -depth * 0.2 + r * (depth * 0.12))
+    }
+  }
+
+  // Under-cabinet LED strips
+  for (const side of [-0.28, 0.28] as const) {
+    pushBox(glass, width * 0.28, 1.0, 2.2, side * width, lip + 1.2, halfD * 0.55)
+  }
+
+  // Control / heat lamps strip on front lip
+  pushBox(dark, width * 0.35, 2.4, 2.0, 0, lip + canopyH * 0.28, halfD + 0.4)
+  for (const lx of [-0.12, 0, 0.12] as const) {
+    pushCyl(glass, 1.1, 1.4, lx * width, lip + canopyH * 0.28, halfD + 1.6, 'z')
+  }
+
+  // ——— Tall chimney (rises to crown) ———
+  const stackW = Math.min(width * 0.42, 70)
+  const stackD = depth * 0.55
+  pushBox(steel, stackW, chimneyH * 0.92, stackD, 0, canopyH, -depth * 0.12)
+  // Chimney side reveals / seams
+  pushBox(dark, 0.6, chimneyH * 0.88, stackD * 0.98, -stackW / 2 + 0.4, canopyH + 2, -depth * 0.12)
+  pushBox(dark, 0.6, chimneyH * 0.88, stackD * 0.98, stackW / 2 - 0.4, canopyH + 2, -depth * 0.12)
+  // Front chimney face with horizontal seams
+  const seams = 5
+  for (let i = 1; i < seams; i++) {
+    const sy = canopyH + (chimneyH * 0.92 * i) / seams
+    pushBox(dark, stackW * 0.92, 0.55, 0.8, 0, sy, -depth * 0.12 + stackD / 2 - 0.3)
+  }
+  // Top duct collar / ceiling trim
+  pushBox(steel, stackW * 1.08, 4.5, stackD * 1.1, 0, height - 5, -depth * 0.12)
+  pushBox(steel, stackW * 0.7, 3, stackD * 0.7, 0, height - 2, -depth * 0.12)
+
+  // Canopy-to-chimney transition collar
+  pushBox(steel, Math.min(width * 0.55, stackW * 1.35), 5, depth * 0.7, 0, canopyH - 1, -depth * 0.08)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: steel, materialIndex: 0 },
+    { geoms: dark, materialIndex: 1 },
+    { geoms: glass, materialIndex: 2 }
+  ])
+  for (const g of [...steel, ...dark, ...glass]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(steelHex, { shininess: 95, specular: new THREE.Color(0xffffff) }),
+      phong('1a1a1a', { shininess: 40, specular: new THREE.Color(0x555555) }),
+      phong('dceeff', {
+        shininess: 100,
+        transparent: true,
+        opacity: 0.75,
+        emissive: new THREE.Color(0xaaccff),
+        emissiveIntensity: 0.45
+      })
+    ]
+  }
+}
+
+/**
+ * Coastal-modern wood range hood — grand apron that spans between wall cabinets,
+ * tapered chimney to crown, vertical oak boards, corbels, black liner. Face +Z.
+ * Y=0 at apron underside (align with adjacent wall-cab bottoms).
+ */
+function buildWoodHoodGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const oak: THREE.BufferGeometry[] = []
+  const accent: THREE.BufferGeometry[] = []
+  const liner: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const oakHex = hex || 'd7c4a3'
+  // Proportions: deep apron (~38% H), chimney fills the rest to crown
+  const apronH = Math.max(28, height * 0.38)
+  const chimneyH = height - apronH
+  const shelfT = Math.max(5.5, height * 0.045)
+  const boardT = 1.15
+  const nBoards = Math.max(7, Math.round(width / 14))
+
+  // ——— Apron body (full width — butts into flanking cabinets) ———
+  pushBox(oak, width, apronH - shelfT, depth * 0.92, 0, shelfT, -depth * 0.02)
+  // Thick floating mantel / light rail at bottom
+  pushBox(oak, width * 1.01, shelfT, depth * 1.02, 0, 0, depth * 0.02)
+  // Front bullnose lip
+  pushBox(accent, width * 1.01, shelfT * 0.55, 2.2, 0, shelfT * 0.15, halfD + 0.6)
+
+  // Vertical board cladding on apron face (+Z)
+  const boardW = (width * 0.96) / nBoards
+  for (let i = 0; i < nBoards; i++) {
+    const bx = -width * 0.48 + (i + 0.5) * boardW
+    pushBox(oak, boardW * 0.9, apronH - shelfT - 2, boardT, bx, shelfT + 1, halfD - 0.4)
+    // Reveal shadow line
+    if (i < nBoards - 1) {
+      pushBox(accent, 0.45, apronH - shelfT - 3, 0.6, bx + boardW * 0.5, shelfT + 1.5, halfD - 0.1)
+    }
+  }
+  // Top rail of apron (under chimney)
+  pushBox(accent, width * 0.98, 3.2, depth * 0.88, 0, apronH - 3.2, -depth * 0.02)
+
+  // Side returns / ears — full-height rails that seat into flanking cabinets
+  pushBox(oak, 4.5, height - 2, depth * 0.95, -halfW + 2.25, 1, 0)
+  pushBox(oak, 4.5, height - 2, depth * 0.95, halfW - 2.25, 1, 0)
+  // Apron end caps (connect look)
+  pushBox(accent, 2.2, apronH - shelfT, depth * 0.98, -halfW + 1.1, shelfT, 0)
+  pushBox(accent, 2.2, apronH - shelfT, depth * 0.98, halfW - 1.1, shelfT, 0)
+
+  // Corbels under mantel (grand coastal — chunky scrolled blocks)
+  for (const side of [-1, 1] as const) {
+    const cx = side * (halfW * 0.72)
+    pushBox(oak, 7, shelfT + 10, depth * 0.55, cx, 0, halfD * 0.15)
+    pushBox(oak, 5.5, 6, depth * 0.4, cx, shelfT + 2, halfD * 0.28)
+    pushBox(accent, 4, 3.5, 3, cx, shelfT + 0.5, halfD * 0.45)
+  }
+
+  // Black metal liner recess (functional hood mouth)
+  pushBox(liner, width * 0.72, 3.5, depth * 0.55, 0, shelfT + 0.5, -depth * 0.05)
+  pushBox(liner, width * 0.68, apronH * 0.35, 1.5, 0, shelfT + apronH * 0.15, halfD - depth * 0.35)
+
+  // ——— Full-width chimney body (reads continuous with flanking cabs) ———
+  const bodyH = chimneyH * 0.72
+  pushBox(oak, width * 0.995, bodyH, depth * 0.88, 0, apronH, -depth * 0.03)
+  // Vertical boards continue up the face
+  const cn = Math.max(7, Math.round(width / 14))
+  const cw = (width * 0.96) / cn
+  for (let i = 0; i < cn; i++) {
+    const bx = -width * 0.48 + (i + 0.5) * cw
+    pushBox(oak, cw * 0.9, bodyH - 2, boardT, bx, apronH + 1, halfD * 0.78)
+    if (i < cn - 1) {
+      pushBox(accent, 0.4, bodyH - 4, 0.55, bx + cw * 0.5, apronH + 2, halfD * 0.82)
+    }
+  }
+  // Mid belt / light reveal (breaks the tall face)
+  pushBox(accent, width * 1.0, 2.8, depth * 0.9, 0, apronH + bodyH * 0.55, -depth * 0.02)
+
+  // Upper stepped chase (grand, but still wide enough to read connected)
+  const chaseH = chimneyH - bodyH
+  pushBox(oak, width * 0.88, chaseH * 0.55, depth * 0.72, 0, apronH + bodyH, -depth * 0.05)
+  pushBox(oak, width * 0.72, chaseH * 0.45, depth * 0.58, 0, apronH + bodyH + chaseH * 0.55, -depth * 0.08)
+  pushBox(accent, width * 0.9, 1.6, depth * 0.75, 0, apronH + bodyH + chaseH * 0.55 - 1.6, -depth * 0.03)
+
+  // Crown / light rail at top — ties into adjacent cabinet crowns
+  pushBox(oak, width * 0.995, 5.5, depth * 0.7, 0, height - 5.5, -depth * 0.05)
+  pushBox(accent, width * 1.0, 2.4, depth * 0.76, 0, height - 2.4, -depth * 0.03)
+  pushBox(accent, width * 0.92, 1.8, depth * 0.5, 0, height - 7.4, halfD * 0.1)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: oak, materialIndex: 0 },
+    { geoms: accent, materialIndex: 1 },
+    { geoms: liner, materialIndex: 2 }
+  ])
+  for (const g of [...oak, ...accent, ...liner]) g.dispose()
+  const light = phong(oakHex, { shininess: 28, specular: new THREE.Color(0x887766) })
+  const dark = phong(oakHex, { shininess: 35, specular: new THREE.Color(0x665544) })
+  dark.color.offsetHSL(0.02, 0.05, -0.12)
+  return {
+    geometry,
+    materials: [
+      light,
+      dark,
+      phong('1a1a1a', { shininess: 60, specular: new THREE.Color(0x444444) })
+    ]
+  }
+}
+
 /** Base or wall cabinet with door reveals + toe-kick. */
 function buildCabinetGeometry(
   width: number,
@@ -2060,20 +4073,20 @@ function buildCabinetGeometry(
 ): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
   const body: THREE.BufferGeometry[] = []
   const door: THREE.BufferGeometry[] = []
-  const halfW = width / 2
-  const isWall = height < 100 && depth < 45
+  // Shallow depth = wall cabinet (no toe), including tall 51″ Titan uppers
+  const isWall = depth <= 40
   const toe = isWall ? 0 : Math.min(10, height * 0.12)
 
   pushBox(body, width, height - toe, depth, 0, toe, 0)
   if (toe > 0) pushBox(body, width * 0.92, toe, depth * 0.85, 0, 0, -depth * 0.02)
 
-  const doors = Math.max(1, Math.round(width / 60))
+  const doors = Math.max(1, Math.round(width / 55))
   const dw = (width * 0.92) / doors
   for (let i = 0; i < doors; i++) {
     const x = -width * 0.46 + (i + 0.5) * dw
     pushBox(door, dw * 0.92, (height - toe) * 0.88, 1.8, x, toe + (height - toe) * 0.06, depth / 2 - 1)
     // Handle
-    pushBox(door, 1.2, Math.min(12, height * 0.12), 2.5, x + dw * 0.28, toe + (height - toe) * 0.5, depth / 2 + 1)
+    pushBox(door, 1.2, Math.min(14, height * 0.12), 2.5, x + dw * 0.28, toe + (height - toe) * 0.5, depth / 2 + 1)
   }
 
   const geometry = mergeGeometriesGrouped([
@@ -2084,6 +4097,52 @@ function buildCabinetGeometry(
   const a = phong(hex)
   const b = phong(hex)
   b.color.offsetHSL(0, 0, 0.08)
+  return { geometry, materials: [a, b] }
+}
+
+/**
+ * Open face-frame shelf unit (office uppers). Open on +Z.
+ * Y=0 at unit bottom (pushBox bottom-origin). 2″ stiles, rails, back, 3 shelves.
+ */
+function buildOpenShelfGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const frame: THREE.BufferGeometry[] = []
+  const shelf: THREE.BufferGeometry[] = []
+  const stile = Math.min(5.08, width * 0.05) // ~2″
+  const rail = Math.min(5.08, height * 0.04)
+  const back = Math.min(1.2, depth * 0.08)
+  const shelfT = Math.min(2.2, height * 0.03)
+  const halfW = width / 2
+  const halfD = depth / 2
+
+  // Sides + bottom/top rails (carcass) — y is bottom of each box
+  pushBox(frame, stile, height, depth, -halfW + stile / 2, 0, 0)
+  pushBox(frame, stile, height, depth, halfW - stile / 2, 0, 0)
+  pushBox(frame, width - stile * 2, rail, depth, 0, 0, 0)
+  pushBox(frame, width - stile * 2, rail, depth, 0, height - rail, 0)
+  // Back panel
+  pushBox(frame, width - stile * 0.4, height, back, 0, 0, -halfD + back / 2)
+
+  // Adjustable shelves — ~1 per 14″ of clear height (pantry towers ≈7)
+  const innerH = height - rail * 2
+  const shelfCount = Math.max(3, Math.min(8, Math.round(innerH / 35.5)))
+  for (let i = 1; i <= shelfCount; i++) {
+    const y = rail + (innerH * i) / (shelfCount + 1) - shelfT / 2
+    pushBox(shelf, width - stile * 2 - 0.4, shelfT, depth - back - 1.5, 0, y, back * 0.3)
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: frame, materialIndex: 0 },
+    { geoms: shelf, materialIndex: 1 }
+  ])
+  for (const g of [...frame, ...shelf]) g.dispose()
+  const a = phong(hex)
+  const b = phong(hex)
+  b.color.offsetHSL(0, 0, 0.06)
   return { geometry, materials: [a, b] }
 }
 
@@ -2320,6 +4379,237 @@ function buildDresserGeometry(
 }
 
 /** Toilet — bowl, tank (+Z), seat, flush plate. */
+/**
+ * Delta 536-CZMPU-DST Saylor single-hole lav faucet.
+ * Deck at y=0, spout toward +Z, lever on +X.
+ * HEIGHT is deck-to-top (8⅜″), REACH is spout (5³⁄₁₆″). Outlet at 4½″.
+ */
+function buildSaylorFaucetGeometry(
+  height: number,
+  reach: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const metal: THREE.BufferGeometry[] = []
+  const bodyR = height * 0.13
+  const spoutY = height * (4.5 / 8.375)
+  pushCyl(metal, bodyR * 1.35, height * 0.07, 0, 0, 0)
+  pushCyl(metal, bodyR, height * 0.9, 0, height * 0.07, 0)
+  pushCyl(metal, bodyR * 0.42, reach, 0, spoutY, reach / 2, 'z')
+  pushCyl(metal, bodyR * 0.55, height * 0.1, 0, spoutY - height * 0.08, reach, 'y')
+  pushCyl(metal, bodyR * 0.28, height * 0.42, bodyR * 0.7, height * 0.7, 0, 'x')
+  const geometry = mergeGeometriesGrouped([{ geoms: metal, materialIndex: 0 }])
+  for (const g of metal) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex || 'c5a572', { shininess: 80, specular: new THREE.Color(0xffe4b0) })]
+  }
+}
+
+/**
+ * Kohler K-43979 Highline two-piece elongated (left-hand lever) with
+ * K-4636 Cachet closed-front seat and lid. Tank on +Z, bowl toward −Z.
+ * Nominal 18″ × 31⅛″ × 29⁵⁄₁₆″, rim at 16½″. Scaled to the given box.
+ */
+/** Superellipse half-profile helper: returns sgn(v)*|v|^p */
+function superPow(v: number, p: number) {
+  return Math.sign(v) * Math.pow(Math.abs(v), p)
+}
+
+/**
+ * Extrude a plan polygon (points [x, z]) upward from yBase by height. Holes optional.
+ * Plan is authored in world X/Z; returned geometry is non-indexed and Y-up.
+ */
+function extrudePlanY(
+  outer: [number, number][],
+  holes: [number, number][][],
+  yBase: number,
+  height: number
+): THREE.BufferGeometry {
+  const shape = new THREE.Shape(outer.map(([x, z]) => new THREE.Vector2(x, -z)))
+  for (const h of holes) shape.holes.push(new THREE.Path(h.map(([x, z]) => new THREE.Vector2(x, -z))))
+  const g = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, curveSegments: 40 })
+  g.rotateX(-Math.PI / 2)
+  g.translate(0, yBase, 0)
+  return g
+}
+
+/** Rounded rectangle in plan: x ∈ [-hw, hw], z ∈ [z0, z1], corner radius r. */
+function roundedPlanRect(hw: number, z0: number, z1: number, r: number, seg = 8): [number, number][] {
+  const pts: [number, number][] = []
+  const corners: [number, number, number][] = [
+    [hw - r, z1 - r, 0],
+    [-hw + r, z1 - r, Math.PI / 2],
+    [-hw + r, z0 + r, Math.PI],
+    [hw - r, z0 + r, (3 * Math.PI) / 2]
+  ]
+  for (const [cx, cz, a0] of corners) {
+    for (let k = 0; k <= seg; k++) {
+      const a = a0 + (k / seg) * (Math.PI / 2)
+      pts.push([cx + r * Math.cos(a), cz + r * Math.sin(a)])
+    }
+  }
+  return pts
+}
+
+/**
+ * Kohler K-43979 Highline two-piece elongated (spec sheet): 18″ W, 31⅛″ H, 29⁵⁄₁₆″ D, bowl rim 16½″,
+ * seat with bowl 17³⁄₁₆″, 12″ rough-in. Bowl footprint, tank size and lever are estimated from the photos.
+ * Tank at +Z (against wall).
+ * Room-facing side of the tank is −Z; left-hand trip lever sits on its front face.
+ * Bowl is a lofted elongated surface (outer shell + rim + inner bowl), seat is a ring.
+ */
+function buildHighlineGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const porc: THREE.BufferGeometry[] = []
+  const seat: THREE.BufferGeometry[] = []
+  const metal: THREE.BufferGeometry[] = []
+  // Inch scale = K-43979 spec sheet: 18″ W × 31⅛″ H × 29⁵⁄₁₆″ D (matches the item's width/height/depth)
+  const X = (i: number) => (i / 18) * width
+  const Y = (i: number) => (i / 31.125) * height
+  const Z = (i: number) => (i / 29.3125) * depth
+  const half = depth / 2
+  const NB = 2.4 // superellipse exponent: rounded-front elongated bowl
+  const SEG = 72
+
+  // Bowl footprint (outer): half width 7.0″, half length 10.75″, center 11.25″ from front.
+  const a = X(7.0)
+  const b = Z(10.75)
+  const bowlZ = -half + Z(11.25)
+  const rimY = Y(16.5)
+
+  // Loft profile: [scale, y-fraction of bowl height]. Outer shell → rim → inner wall → water.
+  const profile: [number, number][] = [
+    [0.8, 0.0], // flat footprint at floor (trapway skirt)
+    [0.84, 0.035],
+    [0.93, 0.1],
+    [0.99, 0.18],
+    [1.0, 0.27],
+    [1.0, 0.38],
+    [1.0, 0.45],
+    [0.995, 0.5],
+    [0.985, 0.53], // outer rim edge
+    [0.91, 0.535], // inner rim edge (flat rim top)
+    [0.89, 0.5],
+    [0.87, 0.44],
+    [0.845, 0.4] // water surface
+  ]
+  const rings: number[][] = []
+  for (const [s, f] of profile) {
+    const y = f * height
+    const ring: number[] = []
+    for (let j = 0; j < SEG; j++) {
+      const th = (j / SEG) * Math.PI * 2
+      ring.push(
+        a * s * superPow(Math.cos(th), 2 / NB),
+        y,
+        bowlZ + b * s * superPow(Math.sin(th), 2 / NB)
+      )
+    }
+    rings.push(ring)
+  }
+  const bowlPos: number[] = []
+  const bowlIdx: number[] = []
+  // Center vertices for caps
+  const capOuter = bowlPos.length / 3
+  bowlPos.push(0, profile[0][1] * height, bowlZ)
+  for (const ring of rings) bowlPos.push(...ring)
+  const ringBase = (r: number) => 1 + r * SEG // vertex index of ring r, segment 0
+  const lastRing = rings.length - 1
+  const capInner = bowlPos.length / 3
+  bowlPos.push(0, profile[lastRing][1] * height, bowlZ)
+  // Outer base cap (fan from center to ring 0)
+  for (let j = 0; j < SEG; j++) {
+    bowlIdx.push(capOuter, ringBase(0) + ((j + 1) % SEG), ringBase(0) + j)
+  }
+  // Strips between consecutive rings
+  for (let r = 0; r < lastRing; r++) {
+    for (let j = 0; j < SEG; j++) {
+      const j1 = (j + 1) % SEG
+      const p0 = ringBase(r) + j
+      const p1 = ringBase(r) + j1
+      const q0 = ringBase(r + 1) + j
+      const q1 = ringBase(r + 1) + j1
+      bowlIdx.push(p0, q0, p1, p1, q0, q1)
+    }
+  }
+  // Inner bottom (water) cap
+  for (let j = 0; j < SEG; j++) {
+    bowlIdx.push(capInner, ringBase(lastRing) + j, ringBase(lastRing) + ((j + 1) % SEG))
+  }
+  const bowlGeom = new THREE.BufferGeometry()
+  bowlGeom.setAttribute('position', new THREE.Float32BufferAttribute(bowlPos, 3))
+  bowlGeom.setIndex(bowlIdx)
+  bowlGeom.computeVertexNormals()
+  porc.push(bowlGeom)
+
+  // Seat ring: closed-lid footprint, sits on the rim (16.5″ → 17.19″)
+  const seatT = Y(0.9)
+  const ellipsePts = (ax: number, bz: number, cz: number, n = 56): [number, number][] => {
+    const out: [number, number][] = []
+    for (let j = 0; j < n; j++) {
+      const th = (j / n) * Math.PI * 2
+      out.push([ax * superPow(Math.cos(th), 2 / NB), cz + bz * superPow(Math.sin(th), 2 / NB)])
+    }
+    return out
+  }
+  // Seat ring under a closed lid (lid down covers the bowl opening)
+  seat.push(
+    extrudePlanY(
+      ellipsePts(a * 1.03, b * 1.03, bowlZ),
+      [ellipsePts(a * 0.8, b * 0.8, bowlZ)],
+      rimY,
+      seatT
+    )
+  )
+  const lidT = Y(0.6)
+  const lidTop = rimY + seatT + lidT
+  seat.push(extrudePlanY(ellipsePts(a * 1.03, b * 1.03, bowlZ), [], rimY + seatT, lidT))
+
+  // Low hinge caps at the rear of the lid (flush-profile, not posts)
+  for (const sx of [-1, 1]) {
+    pushCyl(metal, X(0.9), Y(0.4), sx * a * 0.6, lidTop, bowlZ + b * 0.8, 'y')
+  }
+
+  // Tank: 14.2″ wide, 7.5″ deep, from 16.6″ to 31.1″, tank front at −Z
+  const tankHW = X(7.1)
+  const tankZ0 = half - Z(7.5)
+  const tankZ1 = half
+  const tankYb = Y(16.6)
+  const tankH = Y(31.1) - tankYb
+  porc.push(extrudePlanY(roundedPlanRect(tankHW, tankZ0, tankZ1, X(2.0), 8), [], tankYb, tankH))
+
+  // Tank top lip: overhangs the front and sides like the Lowe's tank cover
+  porc.push(
+    extrudePlanY(roundedPlanRect(tankHW + X(0.6), tankZ0 - Z(0.8), tankZ1 + Z(0.2), X(2.2), 8), [], Y(30.2), Y(0.9))
+  )
+
+  // Left-hand trip lever: upper-left of the tank front face (room-facing, −Z). Left = +X when facing the bowl.
+  // Pivot escutcheon on the face, lever arm stands out toward the room, handle turns toward the left.
+  // Paddle lever: flat rectangular blade standing off the tank face, as on the Lowe's unit
+  const leverX = X(4.6)
+  const leverY = Y(26.8)
+  pushBox(metal, X(3.0), Y(1.1), Z(1.0), leverX, leverY - Y(0.55), tankZ0 - Z(0.5))
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: porc, materialIndex: 0 },
+    { geoms: seat, materialIndex: 1 },
+    { geoms: metal, materialIndex: 2 }
+  ])
+  for (const g of [...porc, ...seat, ...metal]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(hex || 'f7f7f5', { shininess: 70, specular: new THREE.Color(0xdddddd) }),
+      phong('ffffff', { shininess: 60, specular: new THREE.Color(0xcccccc) }),
+      phong('c5c8cc', { shininess: 90, specular: new THREE.Color(0xffffff) })
+    ]
+  }
+}
+
 function buildToiletGeometry(
   width: number,
   height: number,
@@ -2732,6 +5022,408 @@ function buildPlungeGeometry(
   ])
   for (const g of [...shellGeoms, ...waterGeoms, ...metalGeoms]) g.dispose()
   return { geometry, materials: [shellMat, waterMat, metalMat] }
+}
+
+/** Frameless glass shower door — panel on +Z, slim hardware. */
+function buildShowerDoorGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  _hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const glass: THREE.BufferGeometry[] = []
+  const metal: THREE.BufferGeometry[] = []
+  const t = Math.max(1.2, Math.min(depth, 3))
+  pushBox(glass, width * 0.92, height * 0.94, t, 0, height * 0.03, 0)
+  // Hinge stile + handle
+  pushBox(metal, 2.2, height * 0.96, t + 1, -width * 0.45, height * 0.02, 0)
+  pushBox(metal, 2.2, height * 0.96, t + 1, width * 0.45, height * 0.02, 0)
+  pushCyl(metal, 1.1, 18, width * 0.28, height * 0.48, t / 2 + 2, 'y')
+  const geometry = mergeGeometriesGrouped([
+    { geoms: glass, materialIndex: 0 },
+    { geoms: metal, materialIndex: 1 }
+  ])
+  for (const g of [...glass, ...metal]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong('c8e0f0', {
+        shininess: 90,
+        specular: new THREE.Color(0xffffff),
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false
+      }),
+      phong('9ca3af', { shininess: 60, specular: new THREE.Color(0xffffff) })
+    ]
+  }
+}
+
+/**
+ * L-shaped corner shower bench for NE corner (rot 0):
+ * backs hug +X (east wall) and −Z (north wall).
+ * WIDTH = span along north wall (−X), DEPTH = span along east wall (+Z).
+ */
+function buildShowerBenchGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const seat = Math.min(height * 0.22, 8)
+  const seatY = height - seat
+  const arm = Math.min(45, Math.min(width, depth) * 0.4) // ~18″ seat depth
+  const halfW = width / 2
+  const halfD = depth / 2
+  // Arm along north (−Z): full width, against north
+  pushBox(body, width, seatY, arm, 0, 0, -halfD + arm / 2)
+  pushBox(body, width, seat, arm + 1, 0, seatY, -halfD + arm / 2)
+  // Arm along east (+X): remaining depth south, against east
+  const southLen = Math.max(depth - arm, arm)
+  pushBox(body, arm, seatY, southLen, halfW - arm / 2, 0, -halfD + arm + southLen / 2)
+  pushBox(body, arm + 1, seat, southLen, halfW - arm / 2, seatY, -halfD + arm + southLen / 2)
+  const geometry = mergeGeometriesGrouped([{ geoms: body, materialIndex: 0 }])
+  for (const g of body) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex || 'd6d3d1', { shininess: 25, specular: new THREE.Color(0x888888) })]
+  }
+}
+
+/** Wall-mount shower arm (+Z into room) + round head. */
+function buildShowerHeadGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const metal: THREE.BufferGeometry[] = []
+  const armLen = Math.max(depth * 0.7, 12)
+  const headR = Math.min(width, height) * 0.35
+  // Flange on −Z (wall)
+  pushCyl(metal, 3.5, 1.5, 0, height * 0.5, -depth / 2 + 1, 'z')
+  // Arm
+  pushCyl(metal, 1.4, armLen, 0, height * 0.5, -depth / 2 + 2 + armLen / 2, 'z')
+  // Head disk facing down slightly
+  pushCyl(metal, headR, 2.5, 0, height * 0.5 - 2, -depth / 2 + 2 + armLen, 'y')
+  pushCyl(metal, headR * 0.85, 1.2, 0, height * 0.5 - 4, -depth / 2 + 2 + armLen, 'y')
+  const geometry = mergeGeometriesGrouped([{ geoms: metal, materialIndex: 0 }])
+  for (const g of metal) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex || 'c0c5ca', { shininess: 80, specular: new THREE.Color(0xffffff) })]
+  }
+}
+
+/**
+ * Delta T17235 In2ition: 5½″ arm off the −Z wall, 6″ fixed head, docked hand shower.
+ * WIDTH × HEIGHT × DEPTH is the head-and-arm box (nominal 6″ × 6¹³⁄₁₆″ × 9½″).
+ */
+function buildIn2itionGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const metal: THREE.BufferGeometry[] = []
+  const zWall = -depth / 2
+  const armLen = depth * 0.58
+  pushCyl(metal, width * 0.22, 1.4, 0, 0, zWall + 0.7, 'z')
+  pushCyl(metal, 1.15, armLen, 0, 0, zWall + 1.4 + armLen / 2, 'z')
+  const zHead = zWall + 1.4 + armLen
+  pushCyl(metal, width * 0.5, 2.4, 0, height * 0.08, zHead, 'y')
+  pushCyl(metal, width * 0.4, 0.7, 0, height * 0.08 - 1.6, zHead, 'y')
+  pushCyl(metal, width * 0.16, height * 0.42, 0, -height * 0.12, zHead - 1.2, 'y')
+  pushCyl(metal, width * 0.22, height * 0.16, 0, -height * 0.38, zHead - 1.2, 'y')
+  const geometry = mergeGeometriesGrouped([{ geoms: metal, materialIndex: 0 }])
+  for (const g of metal) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex || 'c5a572', { shininess: 80, specular: new THREE.Color(0xffe4b0) })]
+  }
+}
+
+/** Delta Monitor 17 Saylor trim: one lever (volume + temperature) and a small dial. Face +Z. */
+function buildSaylorTrimGeometry(
+  plateD: number,
+  leverLen: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const metal: THREE.BufferGeometry[] = []
+  const dial: THREE.BufferGeometry[] = []
+  const R = plateD / 2
+  pushCyl(metal, R, 1.3, 0, 0, 0.65, 'z')
+  pushCyl(metal, R * 0.22, 3.4, 0, 0, 2.8, 'z')
+  pushBoxAt(metal, R * 0.16, leverLen, 1.8, 0, -leverLen / 2, 4.6)
+  pushCyl(dial, R * 0.14, 0.5, 0, R * 0.42, 1.7, 'z')
+  const geometry = mergeGeometriesGrouped([
+    { geoms: metal, materialIndex: 0 },
+    { geoms: dial, materialIndex: 1 }
+  ])
+  for (const g of [...metal, ...dial]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(hex || 'c5a572', { shininess: 85, specular: new THREE.Color(0xffe4b0) }),
+      phong('8b3a3a', { shininess: 40 })
+    ]
+  }
+}
+
+/** Pressure-balance valve trim: round plate on +Z face, two knobs with levers (Delta Tetra style). */
+function buildValveTrimGeometry(
+  plateD: number,
+  leverLen: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const metal: THREE.BufferGeometry[] = []
+  const R = plateD / 2
+  // Round escutcheon plate (back at z=0, front at z=1)
+  pushCyl(metal, R, 1.0, 0, 0, 0.5, 'z')
+  // Two handle knobs stacked vertically, each with a lever running outward (+X)
+  const knobs = [
+    { y: R * 0.28, kr: R * 0.2 },
+    { y: -R * 0.2, kr: R * 0.26 }
+  ]
+  for (const k of knobs) {
+    pushCyl(metal, k.kr, 4, 0, k.y, 3.0, 'z')
+    const lh = R * 0.14
+    pushBoxAt(metal, leverLen, lh, 2.2, leverLen / 2, k.y, 6.0)
+  }
+  const geometry = mergeGeometriesGrouped([{ geoms: metal, materialIndex: 0 }])
+  for (const g of metal) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex || 'a88b5c', { shininess: 90, specular: new THREE.Color(0xffe2a0) })]
+  }
+}
+
+/** Wall slide bar (vertical, along Y) with hand-shower cradle and head projecting +Z. */
+function buildHandShowerGeometry(
+  barLen: number,
+  armLen: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const metal: THREE.BufferGeometry[] = []
+  // Vertical slide bar, centered on y=0 (bbox-centered)
+  pushCyl(metal, 1.1, barLen, 0, -barLen / 2, 0, 'y')
+  // End knobs
+  pushCyl(metal, 1.6, 1.6, 0, -barLen / 2 - 0.8, 0, 'y')
+  pushCyl(metal, 1.6, 1.6, 0, barLen / 2 - 0.8, 0, 'y')
+  // Slider bracket around the bar
+  pushCyl(metal, 2.2, 3.5, 0, -1.75, 0.6, 'y')
+  // Hand-shower arm projecting into the room (+Z)
+  pushCyl(metal, 1.2, armLen, 0, 0, armLen / 2, 'z')
+  // Hand-shower head (puck facing +Z)
+  pushCyl(metal, 4.5, 3.5, 0, 0, armLen + 1.75, 'z')
+  const geometry = mergeGeometriesGrouped([{ geoms: metal, materialIndex: 0 }])
+  for (const g of metal) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex || 'a88b5c', { shininess: 90, specular: new THREE.Color(0xffe2a0) })]
+  }
+}
+
+/** Flat-back (−Y in shape / −Z world) rounded-front D footprint. */
+function makeTubDShape(w: number, d: number, cornerR: number): THREE.Shape {
+  const shape = new THREE.Shape()
+  const hw = w / 2
+  const hd = d / 2
+  const r = Math.min(cornerR, hw * 0.42, hd * 0.55)
+  shape.moveTo(-hw + r, -hd)
+  shape.lineTo(hw - r, -hd)
+  shape.quadraticCurveTo(hw, -hd, hw, -hd + r)
+  shape.lineTo(hw, hd - r)
+  shape.quadraticCurveTo(hw, hd, hw - r, hd)
+  shape.lineTo(-hw + r, hd)
+  shape.quadraticCurveTo(-hw, hd, -hw, hd - r)
+  shape.lineTo(-hw, -hd + r)
+  shape.quadraticCurveTo(-hw, -hd, -hw + r, -hd)
+  return shape
+}
+
+/** Extrude footprint (optionally hollow) into Y-up tub space. */
+function pushTubExtrude(
+  target: THREE.BufferGeometry[],
+  w: number,
+  d: number,
+  h: number,
+  y0: number,
+  cornerR: number,
+  wallT?: number
+) {
+  const shape = makeTubDShape(w, d, cornerR)
+  if (wallT != null && wallT > 0) {
+    const hole = makeTubDShape(w - wallT * 2, d - wallT * 2, cornerR * 0.82)
+    shape.holes.push(hole)
+  }
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: h,
+    bevelEnabled: false,
+    curveSegments: 18
+  })
+  geo.rotateX(-Math.PI / 2)
+  geo.scale(1, 1, -1)
+  geo.translate(0, y0, 0)
+  geo.computeVertexNormals()
+  target.push(geo)
+}
+
+/**
+ * Freestanding soaking tub (back-to-wall) — sculpted glossy acrylic reference.
+ * WIDTH along wall, DEPTH into room. Back flush on −Z; deck faucet on rear rim.
+ */
+function buildFreestandingTubGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const water: THREE.BufferGeometry[] = []
+  const chrome: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const halfD = depth / 2
+  const rim = Math.min(6.5, Math.min(width, depth) * 0.085)
+  const wallT = Math.min(5.5, rim * 0.85)
+  const floorT = Math.min(3.8, height * 0.09)
+  const waterH = height * 0.48
+  const cornerR = Math.min(width, depth) * 0.3
+
+  // Single smooth hollow shell (flat back, rounded front) + slight top flare rim
+  const shellH = height - rim * 0.7
+  pushTubExtrude(body, width * 0.97, depth * 0.97, shellH, 0, cornerR * 0.95, wallT)
+  // Soft undercut flare at top of skirt (thin outer wrap, no fill)
+  pushTubExtrude(
+    body,
+    width * 1.02,
+    depth * 1.02,
+    height * 0.16,
+    height * 0.78,
+    cornerR * 1.02,
+    wallT * 0.55
+  )
+
+  // Basin floor + water
+  const innerW = width - wallT * 2.15
+  const innerD = depth - wallT * 2.15
+  pushTubExtrude(body, innerW, innerD, floorT, 0, cornerR * 0.72)
+  pushTubExtrude(water, innerW * 0.9, innerD * 0.9, Math.max(2, waterH - floorT), floorT, cornerR * 0.68)
+
+  // Top deck rim (ring only)
+  pushTubExtrude(
+    body,
+    width * 1.04,
+    depth * 1.04,
+    rim * 0.7,
+    height - rim * 0.7,
+    cornerR * 1.06,
+    rim * 1.2
+  )
+
+  // Overflow slit on interior back
+  pushBox(dark, width * 0.22, 1.15, 1.5, 0, height * 0.68, -halfD + wallT + 2.5)
+
+  // ——— Deck faucet: square chrome U-spout (reference) ———
+  const fy = height - rim * 0.1
+  const fz = -halfD + rim * 0.4
+  pushBox(chrome, 7.5, 0.85, 7.5, 0, fy, fz)
+  pushBox(chrome, 5.4, 0.55, 5.4, 0, fy + 0.85, fz)
+  pushBox(chrome, 2.15, 21, 2.15, 0, fy + 1.1, fz)
+  pushBox(chrome, 2.15, 2.15, 13, 0, fy + 20.8, fz + 5.5)
+  pushBox(chrome, 2.15, 9, 2.15, 0, fy + 14.2, fz + 11.2)
+  pushBox(chrome, 2.7, 1.3, 3.4, 0, fy + 12.8, fz + 12.8)
+  pushBox(chrome, 5.8, 1.45, 1.45, 5.8, fy + 5.5, fz)
+
+  // Hand shower left
+  const hx = -width * 0.13
+  pushBox(chrome, 2.5, 1.1, 2.5, hx, fy, fz)
+  pushCyl(chrome, 0.5, 8.5, hx, fy + 1, fz, 'y')
+  const wand = new THREE.CylinderGeometry(1.05, 2.35, 5.2, 14)
+  wand.rotateZ(-0.6)
+  wand.translate(hx - 2.2, fy + 10.5, fz + 3.2)
+  chrome.push(wand)
+  pushCyl(chrome, 0.38, 13, hx - 5.5, fy + 3.5, fz + 5, 'z')
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: water, materialIndex: 1 },
+    { geoms: chrome, materialIndex: 2 },
+    { geoms: dark, materialIndex: 3 }
+  ])
+  for (const g of [...body, ...water, ...chrome, ...dark]) g.dispose()
+
+  return {
+    geometry,
+    materials: [
+      phong(hex || 'f8f8f8', { shininess: 120, specular: new THREE.Color(0xffffff) }),
+      phong('7dd3fc', {
+        shininess: 100,
+        specular: new THREE.Color(0xe0f2fe),
+        transparent: true,
+        opacity: 0.4,
+        depthWrite: false
+      }),
+      phong('d0d5da', { shininess: 130, specular: new THREE.Color(0xffffff) }),
+      phong('111111', { shininess: 35 })
+    ]
+  }
+}
+
+/**
+ * Standard alcove bathtub — apron front (+Z), rim, basin, water.
+ * WIDTH along wall, DEPTH front-to-back (into room when back on −Z).
+ */
+function buildTubGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const water: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const rim = Math.min(8, Math.min(width, depth) * 0.08)
+  const apron = Math.min(4, depth * 0.08)
+  const floorT = Math.min(5, height * 0.12)
+  const waterH = height * 0.55
+
+  // Outer shell / apron
+  pushBox(body, width, height, depth, 0, 0, 0)
+  // Carve look: inner basin void via thinner inner walls (stacked rim + floor)
+  pushBox(body, width - rim * 2, floorT, depth - rim * 2 - apron, 0, 0, -apron * 0.3)
+  // Top rim deck
+  pushBox(body, width, rim * 0.55, rim, 0, height - rim * 0.55, -halfD + rim / 2)
+  pushBox(body, width, rim * 0.55, rim, 0, height - rim * 0.55, halfD - rim / 2)
+  pushBox(body, rim, rim * 0.55, depth - rim * 2, -halfW + rim / 2, height - rim * 0.55, 0)
+  pushBox(body, rim, rim * 0.55, depth - rim * 2, halfW - rim / 2, height - rim * 0.55, 0)
+  // Front apron lip
+  pushBox(body, width * 0.98, height * 0.92, apron * 0.7, 0, 0, halfD - apron * 0.35)
+
+  // Water
+  pushBox(
+    water,
+    width - rim * 2.4,
+    waterH - floorT,
+    depth - rim * 2.4 - apron,
+    0,
+    floorT,
+    -apron * 0.2
+  )
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: water, materialIndex: 1 }
+  ])
+  for (const g of [...body, ...water]) g.dispose()
+  const shell = phong(hex, { shininess: 55, specular: new THREE.Color(0x888888) })
+  const waterMat = phong('38bdf8', { shininess: 90, specular: new THREE.Color(0xa5f3fc) })
+  waterMat.transparent = true
+  waterMat.opacity = 0.5
+  waterMat.depthWrite = false
+  return { geometry, materials: [shell, waterMat] }
 }
 
 /** Compact powder-coated chiller with grille, display, and hose stubs. */
@@ -3238,6 +5930,531 @@ function buildStoneBarGeometry(
 }
 
 /** Dark wood X-brace door with 6-lite upper grid and black strap hinges. */
+/**
+ * Front entry double doors — black clad frames, full glass each leaf,
+ * high horizontal mullion, center meeting stile, long pulls (photo match).
+ */
+function buildEntryDoubleDoorGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const frame: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const metal: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const t = Math.max(depth, 5)
+  const frameHex = hex || '0a0a0a'
+  const stile = Math.max(width * 0.035, 5.5)
+  const rail = Math.max(height * 0.04, 5.5)
+  const topLiteH = Math.max(height * 0.12, 14)
+  const mullionY = height / 2 - rail - topLiteH / 2
+  const leafW = (width - stile) / 2
+
+  // Perimeter only — no full RO slab (that filled the opening solid black).
+  // Rails/stiles still span width×height so InWall hole matches the RO.
+  // Use pushBoxAt (center coords) — pushBox’s y+h/2 would skew tall stiles vs short rails.
+  for (const side of [-1, 1] as const) {
+    const cx = side * (leafW / 2 + stile / 2)
+    // Leaf frame
+    pushBoxAt(frame, leafW, rail, t, cx, height / 2 - rail / 2, 0) // top
+    pushBoxAt(frame, leafW, rail, t, cx, -height / 2 + rail / 2, 0) // bottom
+    pushBoxAt(frame, stile, height - rail * 2, t, cx - leafW / 2 + stile / 2, 0, 0) // outer
+    pushBoxAt(frame, stile, height - rail * 2, t, cx + leafW / 2 - stile / 2, 0, 0) // inner
+    // High horizontal mullion (two-lite look)
+    pushBoxAt(frame, leafW - stile * 2, rail * 0.7, t * 1.05, cx, mullionY, 0)
+    // Glass — upper lite + lower lite
+    const glassW = leafW - stile * 2.2
+    const upperH = topLiteH - rail * 0.4
+    const lowerH = height - rail * 2 - topLiteH - rail * 0.5
+    pushBoxAt(glass, glassW, upperH, t * 0.25, cx, height / 2 - rail - upperH / 2, t * 0.1)
+    pushBoxAt(glass, glassW, lowerH, t * 0.25, cx, -height / 2 + rail + lowerH / 2, t * 0.1)
+    // Long vertical pull near center meeting stile
+    const pullX = cx - side * (leafW / 2 - stile - 3)
+    pushBoxAt(metal, 1.8, height * 0.42, 2.2, pullX, height * 0.02, t * 0.55)
+  }
+  // Center meeting stile
+  pushBoxAt(frame, stile * 0.85, height, t * 1.05, 0, 0, 0)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: frame, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 },
+    { geoms: metal, materialIndex: 2 }
+  ])
+  for (const g of [...frame, ...glass, ...metal]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(frameHex, { shininess: 35, specular: new THREE.Color(0x444444) }),
+      phong('b8dcf5', {
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+        shininess: 100,
+        specular: new THREE.Color(0xffffff)
+      }),
+      phong('111111', { shininess: 60, specular: new THREE.Color(0x999999) })
+    ]
+  }
+}
+
+/**
+ * Pella Contemporary sliding patio — black clad frame, two overlapping single-lite panels,
+ * interlock stile, recessed pulls. WIDTH × HEIGHT = RO; DEPTH ≈ jamb depth.
+ */
+function buildSlidingPatioGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const frame: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const metal: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const t = Math.max(depth, 8)
+  const frameHex = hex || '0a0a0a'
+  const stile = Math.max(Math.min(width * 0.03, 6), 4)
+  const rail = Math.max(Math.min(height * 0.045, 7), 4.5)
+  // Outer fixed frame (head / sill / jambs)
+  pushBoxAt(frame, width, rail * 1.15, t, 0, height / 2 - rail * 0.55, 0)
+  pushBoxAt(frame, width, rail * 1.15, t, 0, -height / 2 + rail * 0.55, 0)
+  pushBoxAt(frame, stile * 1.1, height, t, -halfW + stile * 0.55, 0, 0)
+  pushBoxAt(frame, stile * 1.1, height, t, halfW - stile * 0.55, 0, 0)
+
+  // Two sliding panels — fixed left (−X), operable right (+X), slight Z offset + overlap
+  const panelW = width * 0.52
+  const panelH = height - rail * 2.2
+  const panelT = t * 0.42
+  const panels: { cx: number; z: number }[] = [
+    { cx: -halfW + panelW * 0.48, z: -t * 0.12 },
+    { cx: halfW - panelW * 0.48, z: t * 0.12 }
+  ]
+  for (const { cx, z } of panels) {
+    pushBoxAt(frame, panelW, rail, panelT, cx, panelH / 2 - rail / 2, z) // top
+    pushBoxAt(frame, panelW, rail, panelT, cx, -panelH / 2 + rail / 2, z) // bottom
+    pushBoxAt(frame, stile, panelH - rail * 2, panelT, cx - panelW / 2 + stile / 2, 0, z)
+    pushBoxAt(frame, stile, panelH - rail * 2, panelT, cx + panelW / 2 - stile / 2, 0, z)
+    const gW = panelW - stile * 2.2
+    const gH = panelH - rail * 2.2
+    pushBoxAt(glass, gW, gH, panelT * 0.35, cx, 0, z + panelT * 0.08)
+  }
+  // Interlock / meeting stile + recessed pulls on operable panel
+  pushBoxAt(frame, stile * 0.7, panelH * 0.92, panelT * 1.15, 0, 0, 0)
+  const pullX = halfW - panelW * 0.48 - panelW / 2 + stile + 4
+  pushBoxAt(metal, 2.2, height * 0.28, 1.6, pullX, 0, t * 0.35)
+  pushBoxAt(metal, 2.2, height * 0.28, 1.6, -pullX, 0, -t * 0.35)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: frame, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 },
+    { geoms: metal, materialIndex: 2 }
+  ])
+  for (const g of [...frame, ...glass, ...metal]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(frameHex, { shininess: 40, specular: new THREE.Color(0x555555) }),
+      phong('b8dcf5', {
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+        shininess: 100,
+        specular: new THREE.Color(0xffffff)
+      }),
+      phong('111111', { shininess: 70, specular: new THREE.Color(0xaaaaaa) })
+    ]
+  }
+}
+
+/**
+ * Black-clad single-lite fixed — slim perimeter frame, no mullion (basement bar 108×26 FXD).
+ */
+function buildBlackFixedGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const frame: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const t = Math.max(depth, 6)
+  const frameHex = hex || '0a0a0a'
+  const stile = Math.max(Math.min(width * 0.025, 5.5), 3.5)
+  const rail = Math.max(Math.min(height * 0.12, 5.5), 3.5)
+
+  pushBoxAt(frame, width, rail, t, 0, height / 2 - rail / 2, 0)
+  pushBoxAt(frame, width, rail, t, 0, -height / 2 + rail / 2, 0)
+  pushBoxAt(frame, stile, height, t, -halfW + stile / 2, 0, 0)
+  pushBoxAt(frame, stile, height, t, halfW - stile / 2, 0, 0)
+
+  const glassW = width - stile * 2
+  const glassH = height - rail * 2
+  pushBoxAt(glass, glassW, glassH, t * 0.3, 0, 0, t * 0.12)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: frame, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 }
+  ])
+  for (const g of [...frame, ...glass]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(frameHex, { shininess: 35, specular: new THREE.Color(0x444444) }),
+      phong('b8dcf5', {
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+        shininess: 100,
+        specular: new THREE.Color(0xffffff)
+      })
+    ]
+  }
+}
+
+/**
+ * Farmhouse fixed 2-over-1 — perimeter + high lite rail, no center mullion (garage 2965 photo).
+ */
+function buildFarmhouseFixedGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const frame: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const t = Math.max(depth, 6)
+  const frameHex = hex || '0a0a0a'
+  const stile = Math.max(Math.min(width * 0.055, 5.5), 3.8)
+  const rail = Math.max(Math.min(height * 0.045, 5), 4)
+  const topLiteH = Math.max(height * 0.18, 14)
+  const railY = height / 2 - rail - topLiteH
+
+  pushBoxAt(frame, width, rail, t, 0, height / 2 - rail / 2, 0)
+  pushBoxAt(frame, width, rail, t, 0, -height / 2 + rail / 2, 0)
+  pushBoxAt(frame, stile, height, t, -halfW + stile / 2, 0, 0)
+  pushBoxAt(frame, stile, height, t, halfW - stile / 2, 0, 0)
+  // High lite rail + vertical muntin in top lite (2-over-1)
+  pushBoxAt(frame, width - stile * 2, rail * 0.85, t * 1.05, 0, railY + rail * 0.4, 0)
+  pushBoxAt(frame, stile * 0.55, topLiteH - rail * 0.3, t * 1.02, 0, height / 2 - rail - topLiteH / 2, 0)
+
+  const glassW = width - stile * 2.2
+  const upperH = topLiteH - rail * 0.55
+  const lowerH = height - rail * 2 - topLiteH - rail * 0.35
+  const paneW = (glassW - stile * 0.55) / 2
+  for (const side of [-1, 1] as const) {
+    pushBoxAt(
+      glass,
+      paneW,
+      upperH,
+      t * 0.28,
+      side * (paneW / 2 + stile * 0.28),
+      height / 2 - rail - upperH / 2,
+      t * 0.12
+    )
+  }
+  pushBoxAt(glass, glassW, lowerH, t * 0.28, 0, -height / 2 + rail + lowerH / 2, t * 0.12)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: frame, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 }
+  ])
+  for (const g of [...frame, ...glass]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(frameHex, { shininess: 35, specular: new THREE.Color(0x444444) }),
+      phong('b8dcf5', {
+        transparent: true,
+        opacity: 0.32,
+        depthWrite: false,
+        shininess: 100,
+        specular: new THREE.Color(0xffffff)
+      })
+    ]
+  }
+}
+
+/**
+ * Black-clad double fixed/casement — center mullion, high lite with GBG (garage 3571 FXD-2 photo).
+ */
+function buildBlackCasementGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const frame: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const t = Math.max(depth, 6)
+  const frameHex = hex || '0a0a0a'
+  const stile = Math.max(width * 0.03, 4)
+  const rail = Math.max(height * 0.045, 4.5)
+  const topLiteH = Math.max(height * 0.18, 14)
+  const mullionY = height / 2 - rail - topLiteH
+  const leafW = width / 2
+
+  // Perimeter only — no full RO slab (that filled the opening solid black).
+  pushBoxAt(frame, width, rail, t, 0, height / 2 - rail / 2, 0)
+  pushBoxAt(frame, width, rail, t, 0, -height / 2 + rail / 2, 0)
+  pushBoxAt(frame, stile, height, t, -halfW + stile / 2, 0, 0)
+  pushBoxAt(frame, stile, height, t, halfW - stile / 2, 0, 0)
+  // Center meeting stile + high rail
+  pushBoxAt(frame, stile * 0.95, height - rail * 2, t * 1.05, 0, 0, 0)
+  pushBoxAt(frame, width - stile * 2, rail * 0.8, t * 1.05, 0, mullionY + rail * 0.35, 0)
+  // GBG: vertical muntin in each top lite (photo: 4 small panes across top)
+  for (const side of [-1, 1] as const) {
+    const cx = side * (leafW / 2)
+    pushBoxAt(
+      frame,
+      stile * 0.45,
+      topLiteH - rail * 0.35,
+      t * 1.02,
+      cx,
+      height / 2 - rail - topLiteH / 2,
+      0
+    )
+  }
+
+  for (const side of [-1, 1] as const) {
+    const cx = side * (leafW / 2)
+    const glassW = leafW - stile * 1.7
+    const upperH = topLiteH - rail * 0.45
+    const lowerH = height - rail * 2 - topLiteH - rail * 0.4
+    const paneW = (glassW - stile * 0.45) / 2
+    for (const sub of [-1, 1] as const) {
+      pushBoxAt(
+        glass,
+        paneW,
+        upperH,
+        t * 0.28,
+        cx + sub * (paneW / 2 + stile * 0.22),
+        height / 2 - rail - upperH / 2,
+        t * 0.12
+      )
+    }
+    pushBoxAt(glass, glassW, lowerH, t * 0.28, cx, -height / 2 + rail + lowerH / 2, t * 0.12)
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: frame, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 }
+  ])
+  for (const g of [...frame, ...glass]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(frameHex, { shininess: 35, specular: new THREE.Color(0x444444) }),
+      phong('b8dcf5', {
+        transparent: true,
+        opacity: 0.32,
+        depthWrite: false,
+        shininess: 100,
+        specular: new THREE.Color(0xffffff)
+      })
+    ]
+  }
+}
+
+/**
+ * Custom sliding barn door (office specs: 3′×8′ black hardware).
+ * Local +Z is the face; top rollers stick above the leaf for a track.
+ */
+function buildBarnDoorGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const wood: THREE.BufferGeometry[] = []
+  const iron: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const t = Math.max(depth, 3.5)
+  const plankN = 5
+  const gap = 0.35
+  const plankW = (width - gap * (plankN - 1)) / plankN
+
+  // Vertical planks
+  for (let i = 0; i < plankN; i++) {
+    const x = -halfW + plankW / 2 + i * (plankW + gap)
+    pushBox(wood, plankW, height, t, x, 0, 0)
+  }
+  // Perimeter + mid rails (face overlay)
+  pushBox(wood, width * 0.98, 5.5, t * 1.12, 0, height - 5.5, 0)
+  pushBox(wood, width * 0.98, 5.5, t * 1.12, 0, 0, 0)
+  pushBox(wood, width * 0.98, 4.5, t * 1.12, 0, height * 0.48, 0)
+  pushBox(wood, 4.2, height * 0.96, t * 1.12, -halfW + 2.2, height * 0.02, 0)
+  pushBox(wood, 4.2, height * 0.96, t * 1.12, halfW - 2.2, height * 0.02, 0)
+
+  // Z-brace (flat stock on face)
+  const braceSpan = width * 0.72
+  const braceRise = height * 0.38
+  for (const sign of [1, -1] as const) {
+    const g = new THREE.BoxGeometry(braceSpan, 3.2, t * 0.55)
+    g.translate(0, 0, t * 0.45)
+    g.rotateZ(sign * Math.atan2(braceRise, braceSpan * 0.85))
+    g.translate(0, height * 0.28, 0)
+    wood.push(g)
+  }
+
+  // Top roller hangers (black) — sit above leaf into track
+  for (const side of [-1, 1] as const) {
+    const hx = side * (halfW * 0.55)
+    pushBox(iron, 7, 3.2, 2.2, hx, height + 0.4, t * 0.15)
+    pushCyl(iron, 1.5, 3.8, hx, height + 5.2, t * 0.15, 'x')
+    pushBox(iron, 2.2, 6, 1.6, hx, height - 2, t * 0.55)
+  }
+  // Strap accents + edge pull
+  for (const hy of [height * 0.22, height * 0.72]) {
+    pushBox(iron, 16, 2.8, 1.2, -halfW + 9, hy, t * 0.6)
+    pushBox(iron, 2.4, 2.8, 1.2, -halfW + 1.4, hy, t * 0.6)
+  }
+  pushCyl(iron, 1.35, 14, halfW - 5.5, height * 0.45, t * 0.65, 'y')
+  pushCyl(iron, 2.1, 2.2, halfW - 5.5, height * 0.45 + 7, t * 0.65, 'y')
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: wood, materialIndex: 0 },
+    { geoms: iron, materialIndex: 1 }
+  ])
+  for (const g of [...wood, ...iron]) g.dispose()
+  // Bbox mid on leaf (rollers poke above — keep item ypos = height/2)
+  geometry.computeBoundingBox()
+  const bb = geometry.boundingBox!
+  const leafMidY = height / 2
+  const bbMidY = 0.5 * (bb.min.y + bb.max.y)
+  geometry.translate(0, leafMidY - bbMidY, 0)
+
+  return {
+    geometry,
+    materials: [
+      phong(hex || '2a2a2a', { shininess: 18, specular: new THREE.Color(0x333333) }),
+      phong('0a0a0a', { shininess: 55, specular: new THREE.Color(0x999999) })
+    ]
+  }
+}
+
+/**
+ * Craftsman overhead garage door (16′×8′ two-car OHD = two 8′ leaves).
+ * Brown leaves · raised-panel relief rails · top row of 4 glass lites per leaf with
+ * black lite frames · black center seam. Both faces decorated. Origin at bottom-center.
+ */
+function buildCraftsmanGarageDoorGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const wood: THREE.BufferGeometry[] = []
+  const frame: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const t = Math.max(depth, 4)
+  const leafN = 2
+  const leafW = width / leafN
+  const seamW = 2.4
+  const margin = 5
+  const litesPerLeaf = 4
+  const barW = 3.2
+  const winH = height * 0.22
+  const winTop = height / 2 - height * 0.07
+  const winBottom = winTop - winH
+  const winCY = (winTop + winBottom) / 2
+  const availW = leafW - margin * 2
+
+  for (let i = 0; i < leafN; i++) {
+    const cx = -width / 2 + leafW * (i + 0.5)
+    // Brown leaf (solid body, behind lites)
+    pushBoxAt(wood, leafW - seamW, height, t, cx, 0, 0)
+    // Raised-panel relief rails (brown, slightly proud)
+    for (const ry of [winBottom - 22, -height / 2 + height * 0.2, -height / 2 + height * 0.5 - 4]) {
+      pushBoxAt(wood, availW, 4.5, t + 1.6, cx, ry, 0)
+    }
+    // Stiles at leaf edges (brown relief)
+    for (const sx of [-1, 1] as const) {
+      pushBoxAt(wood, 4.5, height - 10, t + 1.2, cx + sx * (leafW / 2 - margin / 2 - 1), 0, 0)
+    }
+    // Glass lites + black frames across the top row
+    const cellW = availW / litesPerLeaf
+    for (let k = 0; k < litesPerLeaf; k++) {
+      const lx = cx - availW / 2 + cellW * (k + 0.5)
+      const glassW = cellW - barW
+      const glassH = winH - barW * 2
+      // Black frame: four bars around each lite, proud on both faces
+      pushBoxAt(frame, cellW, barW, t + 2, lx, winTop - barW / 2, 0)
+      pushBoxAt(frame, cellW, barW, t + 2, lx, winBottom + barW / 2, 0)
+      pushBoxAt(frame, barW, winH, t + 2, lx - cellW / 2 + barW / 2, winCY, 0)
+      pushBoxAt(frame, barW, winH, t + 2, lx + cellW / 2 - barW / 2, winCY, 0)
+      // Glass sits in the frame, on each face (in front of the brown leaf)
+      for (const side of [1, -1] as const) {
+        pushBoxAt(glass, glassW, glassH, 0.6, lx, winCY, side * (t / 2 + 0.5))
+      }
+    }
+  }
+  // Black center seam between leaves
+  pushBoxAt(frame, seamW, height, t + 2, 0, 0, 0)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: wood, materialIndex: 0 },
+    { geoms: frame, materialIndex: 1 },
+    { geoms: glass, materialIndex: 2 }
+  ])
+  for (const g of [...wood, ...frame, ...glass]) g.dispose()
+  geometry.translate(0, height / 2, 0)
+
+  return {
+    geometry,
+    materials: [
+      phong(hex || '6b4a2b', { shininess: 22, specular: new THREE.Color(0x333333) }),
+      phong('0a0a0a', { shininess: 60, specular: new THREE.Color(0x999999) }),
+      phong('b8dcf5', {
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+        shininess: 100,
+        specular: new THREE.Color(0xffffff)
+      })
+    ]
+  }
+}
+
+/** Black barn-door track: rail + wall mounts + end stops. LENGTH along local X. */
+function buildBarnTrackGeometry(
+  length: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const iron: THREE.BufferGeometry[] = []
+  const halfL = length / 2
+  const railH = Math.max(height * 0.55, 2.2)
+  const railD = Math.max(depth * 0.7, 2.4)
+  pushBox(iron, length, railH, railD, 0, height * 0.2, 0)
+  // Inner running channel lip
+  pushBox(iron, length * 0.98, 1.1, railD * 0.45, 0, height * 0.2 + railH * 0.35, railD * 0.35)
+  const mounts = Math.max(3, Math.round(length / 55))
+  for (let i = 0; i < mounts; i++) {
+    const x = -halfL + ((i + 0.5) / mounts) * length
+    pushBox(iron, 3.2, height * 0.9, 1.4, x, 0, -depth * 0.35)
+    pushBox(iron, 8, 1.6, 1.2, x, height * 0.55, -depth * 0.15)
+  }
+  // End stops
+  for (const side of [-1, 1] as const) {
+    pushBox(iron, 2.5, height * 0.85, depth * 0.9, side * (halfL - 1.4), 0, 0)
+  }
+  const geometry = mergeGeometriesGrouped([{ geoms: iron, materialIndex: 0 }])
+  for (const g of iron) g.dispose()
+  geometry.computeBoundingBox()
+  const bb = geometry.boundingBox!
+  geometry.translate(0, height / 2 - 0.5 * (bb.min.y + bb.max.y), 0)
+  return {
+    geometry,
+    materials: [phong(hex || '0a0a0a', { shininess: 60, specular: new THREE.Color(0xaaaaaa) })]
+  }
+}
+
 function buildPoolHouseDoorGeometry(
   width: number,
   height: number,
@@ -3542,6 +6759,79 @@ function buildChaiseGeometry(
  * Plastic resin bar-height stool — low back, molded seat, faces +Z.
  * WIDTH = across, DEPTH = front-to-back, HEIGHT = overall (seat ~72% of H).
  */
+/**
+ * Barrel-back swivel chair. Seat faces +Z, back wraps the −Z side.
+ * Back = half-elliptic shell (vertical axis) so the back is curved in plan, like a barrel chair.
+ * Base = swivel disc + column, seat = upholstered cushion.
+ */
+function buildSwivelChairGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const base: THREE.BufferGeometry[] = []
+  const seatH = Math.min(height * 0.66, 52) // 20″ seat on a 31″ chair
+  const seatT = Math.min(10, height * 0.12)
+  const backH = height - seatH
+  const halfD = depth / 2
+
+  // Swivel base: disc at floor + column up to the seat
+  const baseR = Math.min(33, width * 0.44) // 26″ swivel base
+  pushCyl(base, baseR, 4, 0, 0, 0, 'y')
+  pushCyl(base, 3.5, seatH - 4, 0, 4, 0, 'y')
+
+  // Seat cushion, sits forward of the back
+  const backT = depth * 0.14
+  const seatD = depth * 0.7
+  const seatZ = -halfD + backT + seatD / 2
+  pushBox(body, width * 0.9, seatT, seatD, 0, seatH, seatZ)
+
+  // Barrel back: outer half-ellipse surface on the −Z side, rising from the seat
+  const back = new THREE.CylinderGeometry(1, 1, backH, 32, 1, true, Math.PI / 2, Math.PI)
+  back.scale(width / 2, 1, halfD)
+  back.translate(0, seatH + backH / 2, 0)
+  body.push(back)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: base, materialIndex: 1 }
+  ])
+  for (const g of [...body, ...base]) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex, { shininess: 6 }), phong('3f3a33', { shininess: 30 })]
+  }
+}
+
+/**
+ * 36″ round wood-top table: thick round top, pedestal column, round foot.
+ */
+function buildRoundTableGeometry(
+  dia: number,
+  height: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const top: THREE.BufferGeometry[] = []
+  const base: THREE.BufferGeometry[] = []
+  const topT = Math.min(4, height * 0.09)
+  const footR = dia * 0.34
+  pushCyl(base, footR, 2.5, 0, 0, 0, 'y')
+  pushCyl(base, dia * 0.07, height - topT - 2.5, 0, 2.5, 0, 'y')
+  pushCyl(top, dia / 2, topT, 0, height - topT, 0, 'y')
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: top, materialIndex: 0 },
+    { geoms: base, materialIndex: 1 }
+  ])
+  for (const g of [...top, ...base]) g.dispose()
+  return {
+    geometry,
+    materials: [phong(hex, { shininess: 28 }), phong('2f2f33', { shininess: 40 })]
+  }
+}
+
 function buildBarstoolGeometry(
   width: number,
   height: number,
@@ -3551,7 +6841,7 @@ function buildBarstoolGeometry(
   const shell: THREE.BufferGeometry[] = []
   const metal: THREE.BufferGeometry[] = []
   const W = Math.max(width, 38)
-  const H = Math.max(height, 90)
+  const H = Math.max(height, 60)
   const D = Math.max(depth, 42)
   const seatH = H * 0.72
   const seatT = Math.min(5, H * 0.05)
@@ -4222,6 +7512,882 @@ function buildRakeHorizGeometry(
   const geometry = mergeGeometries(geoms)
   for (const g of geoms) g.dispose()
   return { geometry, materials: [mat] }
+}
+
+/**
+ * Monogram 30″ single wall oven (ZTSX1DPSZSS look): stainless front, black glass
+ * control band across the top, full-width stainless handle bar, large black glass
+ * door, stainless kick. Face +Z. Y=0 at bottom (Item recenters the bbox).
+ */
+function buildMonoWallOvenGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const steel: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const steelHex = hex && hex !== '2a2a2a' ? hex : 'c8ccd0'
+
+  // Body + stainless front plate (flush at +Z)
+  pushBox(steel, width, height, depth * 0.94, 0, 0, -depth * 0.03)
+  pushBox(steel, width, height, 1.0, 0, 0, halfD - 0.5)
+
+  // Top control band — black glass in a thin stainless surround
+  const kickH = height * 0.05
+  const ctlY = height * 0.79
+  const ctlH = height * 0.18
+  pushBox(steel, width * 0.94, ctlH, 0.8, 0, ctlY, halfD + 0.1)
+  pushBox(glass, width * 0.88, ctlH * 0.8, 0.6, 0, ctlY + ctlH * 0.1, halfD + 0.3)
+
+  // Stainless handle bar (full width) with two standoff brackets
+  const barY = height * 0.745
+  const barR = Math.max(1.1, height * 0.018)
+  pushCyl(steel, barR, width * 0.92, 0, barY, halfD + 2.2, 'x')
+  for (const sx of [-halfW * 0.88, halfW * 0.88]) {
+    pushBox(steel, 2.0, barR * 2, 2.4, sx, barY - barR, halfD + 1.0)
+  }
+
+  // Large door — stainless frame + black glass lite
+  const doorH = height * 0.66
+  const doorY = kickH + height * 0.01
+  pushBox(steel, width * 0.94, doorH + 1, 1.0, 0, doorY - 0.5, halfD)
+  pushBox(glass, width * 0.86, doorH * 0.92, 0.6, 0, doorY + doorH * 0.04, halfD + 0.5)
+
+  // Kick strip under the door
+  pushBox(steel, width * 0.96, kickH * 0.6, 1.2, 0, 0.2, halfD - 0.2)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: steel, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 }
+  ])
+  for (const g of [...steel, ...glass]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(steelHex, { shininess: 85, specular: new THREE.Color(0xffffff) }),
+      phong('0a0a0b', { shininess: 120, specular: new THREE.Color(0x666666) })
+    ]
+  }
+}
+
+/**
+ * Monogram-style 30″ microwave to stack above the wall oven: stainless front,
+ * black glass window on the left, black glass display + push buttons on the right,
+ * stainless handle bar across the top of the window. Face +Z. Y=0 at bottom.
+ */
+function buildMonoMicrowaveGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const steel: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const steelHex = hex && hex !== '2a2a2a' ? hex : 'c8ccd0'
+
+  // Body + stainless front plate
+  pushBox(steel, width, height, depth * 0.94, 0, 0, -depth * 0.03)
+  pushBox(steel, width, height, 1.0, 0, 0, halfD - 0.5)
+
+  // Window (left ~66%) — stainless frame + black glass
+  const doorW = width * 0.66
+  const doorCx = -halfW + width * 0.04 + doorW / 2
+  const winY = height * 0.12
+  const winH = height * 0.7
+  pushBox(steel, doorW + 1.2, winH + 1.2, 0.8, doorCx, winY - 0.6, halfD + 0.1)
+  pushBox(glass, doorW - 1.4, winH - 1.4, 0.6, doorCx, winY + 0.7, halfD + 0.5)
+
+  // Handle bar across the top of the window + brackets
+  const barY = height * 0.9
+  const barR = Math.max(0.9, height * 0.02)
+  pushCyl(steel, barR, doorW * 0.9, doorCx, barY, halfD + 1.6, 'x')
+  for (const sx of [-doorW * 0.42, doorW * 0.42]) {
+    pushBox(steel, 1.8, barR * 2, 2.0, doorCx + sx, barY - barR, halfD + 0.8)
+  }
+
+  // Control column (right ~24%) — black display + four push buttons
+  const panelW = width * 0.24
+  const panelCx = halfW - width * 0.03 - panelW / 2
+  pushBox(steel, panelW * 0.92, height * 0.26, 0.8, panelCx, height * 0.69, halfD + 0.1)
+  pushBox(glass, panelW * 0.8, height * 0.2, 0.6, panelCx, height * 0.72, halfD + 0.5)
+  const btnR = Math.max(0.7, width * 0.009)
+  for (const t of [0.5, 0.4, 0.3, 0.2]) {
+    pushCyl(steel, btnR, 0.8, panelCx, height * t, halfD + 1.0, 'z')
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: steel, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 }
+  ])
+  for (const g of [...steel, ...glass]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(steelHex, { shininess: 85, specular: new THREE.Color(0xffffff) }),
+      phong('0a0a0b', { shininess: 120, specular: new THREE.Color(0x666666) })
+    ]
+  }
+}
+
+/**
+ * LG single-unit wash tower (WKEX300HBA / WKGX301HBA look): dark stainless body,
+ * dryer on top with a round tinted door, center control strip, washer below with
+ * a round front-load door, and a kick drawer. Face +Z. Y=0 at bottom.
+ */
+/**
+ * Stainless single bowl resting on a counter. Base at Y=0 (counter top).
+ * Walls ~1cm thick, floor ~1cm, rim lip on top, dark drain in the floor.
+ */
+/**
+ * Frame-and-panel cabinet. Front faces +Z. Y=0 at the bottom of the toe kick.
+ * Carcass is flush at depth/2; frame members stand 1.6 cm proud; panels sit 1.0 cm behind the frame.
+ * Doors: 2 overlay doors over the full width. Optional drawer (DRAWER_H) at the bottom.
+ */
+function buildFramedCabinetGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  drawerH: number,
+  toe: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const frame: THREE.BufferGeometry[] = []
+  const panel: THREE.BufferGeometry[] = []
+  const FT = 1.6 // frame thickness, proud of carcass front
+  const PT = 0.6 // panel thickness
+  const GAP = 0.3 // reveal between doors / top / bottom
+  const STILE = 5.08 // 2″ door frame member
+  const zFront = depth / 2
+
+  // Carcass + toe kick platform
+  pushBox(body, width, height - toe, depth, 0, toe, 0)
+  if (toe > 0) pushBox(body, width * 0.92, toe, depth * 0.85, 0, 0, -depth * 0.02)
+
+  // Frame-and-panel face: four frame members + recessed panel behind them.
+  const addFrame = (cx: number, yb: number, w: number, h: number, stile: number) => {
+    const zf = zFront + FT / 2
+    pushBox(frame, stile, h, FT, cx - w / 2 + stile / 2, yb, zf)
+    pushBox(frame, stile, h, FT, cx + w / 2 - stile / 2, yb, zf)
+    pushBox(frame, w - stile * 2, stile, FT, cx, yb, zf)
+    pushBox(frame, w - stile * 2, stile, FT, cx, yb + h - stile, zf)
+    pushBox(panel, w - stile * 2 + 0.2, h - stile * 2 + 0.2, PT, cx, yb + stile - 0.1, zFront + PT / 2)
+  }
+  // Pull: small bar standing off the frame face (vertical or horizontal)
+  const pullZ = zFront + FT + 0.8
+
+  // Doors
+  const doorTop = height - GAP
+  const doorYb = toe + (drawerH > 0 ? drawerH + GAP : GAP)
+  const doorH = doorTop - doorYb
+  const n = Math.max(1, Math.round(width / 55))
+  const dw = width / n
+  for (let i = 0; i < n; i++) {
+    const cx = -width / 2 + (i + 0.5) * dw
+    const w = dw - GAP
+    addFrame(cx, doorYb, w, doorH, STILE)
+    // Vertical pull at the meeting-edge side of each door
+    const px = cx + (i === 0 ? 1 : -1) * (w / 2 - 4.5)
+    const py = drawerH > 0 ? doorTop - 8 - 10 : doorYb + 8
+    pushBox(frame, 1.3, 10, 1.6, px, py, pullZ)
+  }
+
+  // Drawer front (full width) with horizontal pull
+  if (drawerH > 0) {
+    addFrame(0, toe + 0.2, width - 0.4, drawerH - 0.4, 3.81)
+    pushBox(frame, 10.16, 1.3, 1.6, 0, toe + drawerH / 2 - 0.65, pullZ)
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: [...body, ...frame], materialIndex: 0 },
+    { geoms: panel, materialIndex: 1 }
+  ])
+  for (const g of [...body, ...frame, ...panel]) g.dispose()
+  const a = phong(hex, { shininess: 25 })
+  const b = phong(hex, { shininess: 25 })
+  b.color.offsetHSL(0, 0, -0.035)
+  return { geometry, materials: [a, b] }
+}
+
+/**
+ * Granite vanity top with a round cut-out and a porcelain bowl recessed into it.
+ * Local: width along X, depth along Z, top surface at Y=0, slab below to −THK.
+ * Bowl bottom at −(THK + BOWL_DEPTH). Bowl center at Z = BOWL_Z.
+ */
+function buildBowlTopGeometry(
+  width: number,
+  depth: number,
+  thk: number,
+  bowlDia: number,
+  bowlDepth: number,
+  bowlZ: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const stone: THREE.BufferGeometry[] = []
+  const porc: THREE.BufferGeometry[] = []
+  const drain: THREE.BufferGeometry[] = []
+  const R = bowlDia / 2
+
+  // Slab: rectangle in shape XY (shape y → world Z), hole = bowl opening, extruded down −Y.
+  const shape = new THREE.Shape()
+  shape.moveTo(-width / 2, -depth / 2)
+  shape.lineTo(width / 2, -depth / 2)
+  shape.lineTo(width / 2, depth / 2)
+  shape.lineTo(-width / 2, depth / 2)
+  shape.lineTo(-width / 2, -depth / 2)
+  const hole = new THREE.Path()
+  hole.absarc(0, bowlZ, R, 0, Math.PI * 2, false)
+  shape.holes.push(hole)
+  const slab = new THREE.ExtrudeGeometry(shape, { depth: thk, bevelEnabled: false, curveSegments: 48 })
+  slab.rotateX(Math.PI / 2)
+  stone.push(slab)
+
+  // Bowl shell (double-sided so the inside reads from above) + floor + drain
+  const bowlTotal = thk + bowlDepth
+  const shell = new THREE.CylinderGeometry(R, R * 0.96, bowlDepth, 48, 1, true)
+  shell.translate(0, -thk - bowlDepth / 2, bowlZ)
+  porc.push(shell)
+  const floor = new THREE.CircleGeometry(R * 0.96, 48)
+  floor.rotateX(-Math.PI / 2)
+  floor.translate(0, -bowlTotal, bowlZ)
+  porc.push(floor)
+  const dr = new THREE.CylinderGeometry(2.2, 2.2, 0.6, 16)
+  dr.translate(0, -bowlTotal + 0.3, bowlZ)
+  drain.push(dr)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: stone, materialIndex: 0 },
+    { geoms: porc, materialIndex: 1 },
+    { geoms: drain, materialIndex: 2 }
+  ])
+  for (const g of [...stone, ...porc, ...drain]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(hex || 'c9c3b8', { shininess: 70, specular: new THREE.Color(0x999999) }),
+      phong('f5f5f4', { shininess: 90, specular: new THREE.Color(0xffffff), side: THREE.DoubleSide }),
+      phong('2a2d31', { shininess: 40 })
+    ]
+  }
+}
+
+function buildVesselSinkGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const shell: THREE.BufferGeometry[] = []
+  const basin: THREE.BufferGeometry[] = []
+  const drain: THREE.BufferGeometry[] = []
+  const halfW = width / 2
+  const halfD = depth / 2
+  const wall = 1.0
+  const floorT = 1.0
+
+  // Outer walls (full height) + top rim lip
+  pushBox(shell, width, height, wall, 0, 0, halfD - wall / 2)
+  pushBox(shell, width, height, wall, 0, 0, -halfD + wall / 2)
+  pushBox(shell, wall, height, depth, -halfW + wall / 2, 0, 0)
+  pushBox(shell, wall, height, depth, halfW - wall / 2, 0, 0)
+  pushBox(shell, width + 1.0, 0.8, depth + 1.0, 0, height - 0.8, 0)
+
+  // Basin floor (inside) + drain
+  pushBox(basin, width - wall * 2, floorT, depth - wall * 2, 0, 0, 0)
+  pushCyl(drain, 2.2, 0.4, 0, floorT, 0)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: shell, materialIndex: 0 },
+    { geoms: basin, materialIndex: 1 },
+    { geoms: drain, materialIndex: 2 }
+  ])
+  for (const g of [...shell, ...basin, ...drain]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(hex, { shininess: 90, specular: new THREE.Color(0xdddddd) }),
+      phong('b9bec4', { shininess: 80, specular: new THREE.Color(0xdddddd) }),
+      phong('2a2d31', { shininess: 40 })
+    ]
+  }
+}
+
+function buildWashTowerGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const ring: THREE.BufferGeometry[] = []
+  const halfD = depth / 2
+  const bodyHex = hex && hex !== '2a2a2a' ? hex : '23262b'
+
+  // Cabinet body + front plate (flush at +Z)
+  pushBox(body, width, height, depth * 0.96, 0, 0, -depth * 0.02)
+  pushBox(body, width, height, 1.0, 0, 0, halfD - 0.5)
+
+  // Chrome band between dryer and control strip
+  pushBox(ring, width * 0.98, 1.2, 1.4, 0, height * 0.545, halfD + 0.2)
+
+  // Center control strip — black display band
+  pushBox(glass, width * 0.9, height * 0.05, 0.6, 0, height * 0.48, halfD + 0.2)
+
+  // Round front-load doors: dryer (top) and washer (bottom)
+  const doorR = width * 0.4
+  for (const cy of [height * 0.72, height * 0.25]) {
+    pushCyl(glass, doorR * 0.9, 0.8, 0, cy, halfD + 0.4, 'z')
+    const torus = new THREE.TorusGeometry(doorR, 1.4, 12, 48)
+    torus.translate(0, cy, halfD + 0.8)
+    ring.push(torus)
+  }
+
+  // Kick drawer along the bottom
+  pushBox(body, width * 0.94, height * 0.06, 1.0, 0, height * 0.01, halfD - 0.2)
+  pushBox(ring, width * 0.5, 0.8, 1.2, 0, height * 0.035, halfD + 0.4)
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: body, materialIndex: 0 },
+    { geoms: glass, materialIndex: 1 },
+    { geoms: ring, materialIndex: 2 }
+  ])
+  for (const g of [...body, ...glass, ...ring]) g.dispose()
+  return {
+    geometry,
+    materials: [
+      phong(bodyHex, { shininess: 60, specular: new THREE.Color(0x444444) }),
+      phong('0c0e11', { shininess: 140, specular: new THREE.Color(0x888888) }),
+      phong('a9aeb4', { shininess: 90, specular: new THREE.Color(0xffffff) })
+    ]
+  }
+}
+
+/* ───────────────────────── Laundry detail pack ─────────────────────────
+ * shakerbase · shakerwall · counterx · lsink · pulldown · frontload
+ * Each is ONE merged mesh (reload-latency rule). Item recenters the bbox, so every
+ * builder keeps hardware inside the stated overall DEPTH (pulls end exactly at +Z = D/2).
+ */
+
+const LP_PULL = 3.0 // bar-pull projection past the door face
+const LP_DOOR = 1.9 // door / drawer-front thickness (3/4")
+
+function lpShade(hex: string, dl: number): string {
+  const c = new THREE.Color(`#${hex.replace(/^#/, '')}`)
+  c.offsetHSL(0, 0, dl)
+  return c.getHexString()
+}
+
+/** Cylinder between two points. */
+function lpSeg(arr: THREE.BufferGeometry[], a: THREE.Vector3, b: THREE.Vector3, r: number, radial = 14) {
+  const dir = new THREE.Vector3().subVectors(b, a)
+  const len = dir.length()
+  if (len < 1e-4) return
+  const g = new THREE.CylinderGeometry(r, r, len, radial, 1)
+  g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize()))
+  const mid = new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5)
+  g.translate(mid.x, mid.y, mid.z)
+  arr.push(g)
+}
+
+/** Shaker door/drawer front: 4-piece frame + recessed center panel. Front face at zFace. */
+function lpShakerFront(
+  frame: THREE.BufferGeometry[],
+  panel: THREE.BufferGeometry[],
+  cx: number,
+  yb: number,
+  w: number,
+  h: number,
+  zFace: number,
+  stile: number
+) {
+  const s = Math.min(stile, w * 0.3, h * 0.45)
+  const zc = zFace - LP_DOOR / 2
+  pushBox(frame, s, h, LP_DOOR, cx - w / 2 + s / 2, yb, zc)
+  pushBox(frame, s, h, LP_DOOR, cx + w / 2 - s / 2, yb, zc)
+  pushBox(frame, w - 2 * s, s, LP_DOOR, cx, yb, zc)
+  pushBox(frame, w - 2 * s, s, LP_DOOR, cx, yb + h - s, zc)
+  const recess = 0.9
+  const pt = LP_DOOR - recess
+  pushBox(panel, w - 2 * s + 0.3, h - 2 * s + 0.3, pt, cx, yb + s - 0.15, zFace - LP_DOOR + pt / 2)
+  // thin inner bead around the panel opening
+  const bead = 0.35
+  const iw = w - 2 * s
+  const ih = h - 2 * s
+  pushBox(frame, iw, bead, 0.5, cx, yb + s, zFace - 0.25)
+  pushBox(frame, iw, bead, 0.5, cx, yb + s + ih - bead, zFace - 0.25)
+  pushBox(frame, bead, ih - 2 * bead, 0.5, cx - iw / 2 + bead / 2, yb + s + bead, zFace - 0.25)
+  pushBox(frame, bead, ih - 2 * bead, 0.5, cx + iw / 2 - bead / 2, yb + s + bead, zFace - 0.25)
+}
+
+/** Satin bar pull: bar + two posts. Bar's outer face ends exactly zFace + LP_PULL. */
+function lpBarPull(
+  arr: THREE.BufferGeometry[],
+  cx: number,
+  cy: number,
+  zFace: number,
+  len: number,
+  vertical: boolean
+) {
+  const r = 0.55
+  const rp = 0.42
+  const postL = LP_PULL - r
+  const zBar = zFace + LP_PULL - r
+  if (vertical) {
+    pushCyl(arr, r, len, cx, cy - len / 2, zBar)
+    pushCyl(arr, rp, postL, cx, cy + len * 0.36, zFace + postL / 2, 'z')
+    pushCyl(arr, rp, postL, cx, cy - len * 0.36, zFace + postL / 2, 'z')
+  } else {
+    pushCyl(arr, r, len, cx, cy, zBar, 'x')
+    pushCyl(arr, rp, postL, cx - len * 0.36, cy, zFace + postL / 2, 'z')
+    pushCyl(arr, rp, postL, cx + len * 0.36, cy, zFace + postL / 2, 'z')
+  }
+}
+
+function lpCabinetMaterials(hex: string): THREE.Material[] {
+  return [
+    phong(hex, { shininess: 22 }),
+    phong(lpShade(hex, -0.045), { shininess: 14 }),
+    phong('b9bec5', { shininess: 70, specular: new THREE.Color(0x999999) }),
+    phong(lpShade(hex, -0.34), { shininess: 4 })
+  ]
+}
+
+function buildShakerBaseGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string,
+  mode: string,
+  doorsArg: number
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const paint: THREE.BufferGeometry[] = []
+  const panel: THREE.BufferGeometry[] = []
+  const hw: THREE.BufferGeometry[] = []
+  const shadow: THREE.BufferGeometry[] = []
+
+  const toe = 10.16
+  const open = mode === 'open'
+  const zBack = -depth / 2
+  const zFace = depth / 2 - (open ? 0 : LP_PULL)
+  const zC = open ? zFace - LP_DOOR : zFace - LP_DOOR - 0.1 // carcass front plane
+  const ch = height - toe
+  const midZ = (zC + zBack) / 2
+  const edge = 0.15
+  const gap = 0.4
+
+  // Toe kick (recessed 7 cm behind the carcass front)
+  const zToe = zC - 7.0
+  pushBox(shadow, width, toe, zToe - zBack, 0, 0, (zToe + zBack) / 2)
+
+  if (mode === 'doors' || mode === 'drawers') {
+    pushBox(paint, width, ch, zC - zBack, 0, toe, midZ)
+  } else {
+    const t = 1.9
+    pushBox(paint, t, ch, zC - zBack, -width / 2 + t / 2, toe, midZ)
+    pushBox(paint, t, ch, zC - zBack, width / 2 - t / 2, toe, midZ)
+    pushBox(paint, width - 2 * t, ch, 1.0, 0, toe, zBack + 0.5)
+    pushBox(paint, width - 2 * t, t, zC - zBack - 1.0, 0, toe, (zC + zBack + 1.0) / 2)
+    if (open) {
+      pushBox(paint, width - 2 * t, t, zC - zBack - 1.0, 0, toe + ch * 0.5, (zC + zBack + 1.0) / 2)
+      pushBox(paint, width - 2 * t, t, zC - zBack - 1.0, 0, height - t, (zC + zBack + 1.0) / 2)
+      // face frame (flush at zFace)
+      const fs = 3.8
+      pushBox(paint, fs, ch, LP_DOOR, -width / 2 + fs / 2, toe, zFace - LP_DOOR / 2)
+      pushBox(paint, fs, ch, LP_DOOR, width / 2 - fs / 2, toe, zFace - LP_DOOR / 2)
+      pushBox(paint, width - 2 * fs, fs, LP_DOOR, 0, height - fs, zFace - LP_DOOR / 2)
+      pushBox(paint, width - 2 * fs, fs * 0.7, LP_DOOR, 0, toe, zFace - LP_DOOR / 2)
+      pushBox(paint, width - 2 * fs, fs * 0.7, LP_DOOR, 0, toe + ch * 0.5 - fs * 0.35 + t / 2, zFace - LP_DOOR / 2)
+    } else {
+      // sink: top stretchers (front/back) — middle stays open for the basin
+      pushBox(paint, width - 2 * t, t, 7.6, 0, height - t, zC - 3.8)
+      pushBox(paint, width - 2 * t, t, 7.6, 0, height - t, zBack + 1.0 + 3.8)
+    }
+  }
+
+  if (!open) {
+    // reveal shadow plate behind the fronts
+    pushBox(shadow, width, ch, 0.1, 0, toe, zC + 0.05)
+    const top = height - edge
+    const bottom = toe + edge
+    const fw = width - 2 * edge
+
+    if (mode === 'drawers') {
+      // 5″ / 10⅛″ / 10⅛″ proportions
+      const total = top - bottom - 2 * gap
+      const hs = [5 / 25.25, 10.125 / 25.25, 10.125 / 25.25].map((r) => r * total)
+      let yTop = top
+      for (const h of hs) {
+        const yb = yTop - h
+        lpShakerFront(paint, panel, 0, yb, fw, h, zFace, h < 18 ? 4.4 : 5.7)
+        lpBarPull(hw, 0, yb + h / 2, zFace, Math.min(16, fw * 0.3), false)
+        yTop = yb - gap
+      }
+    } else {
+      const dh = 14.0
+      const dyb = top - dh
+      lpShakerFront(paint, panel, 0, dyb, fw, dh, zFace, 4.4)
+      if (mode !== 'sink') lpBarPull(hw, 0, dyb + dh / 2, zFace, Math.min(16, fw * 0.3), false)
+      const n = doorsArg > 0 ? doorsArg : width < 70 ? 1 : 2
+      const dw = (fw - (n - 1) * gap) / n
+      const dybDoor = bottom
+      const dhDoor = dyb - gap - bottom
+      for (let i = 0; i < n; i++) {
+        const cx = -width / 2 + edge + dw / 2 + i * (dw + gap)
+        lpShakerFront(paint, panel, cx, dybDoor, dw, dhDoor, zFace, 5.7)
+        const px = n === 1 ? cx + dw / 2 - 4.2 : i === 0 ? cx + dw / 2 - 4.2 : cx - dw / 2 + 4.2
+        lpBarPull(hw, px, dybDoor + dhDoor - 11, zFace, 12.7, true)
+      }
+    }
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: paint, materialIndex: 0 },
+    { geoms: panel, materialIndex: 1 },
+    { geoms: hw, materialIndex: 2 },
+    { geoms: shadow, materialIndex: 3 }
+  ])
+  return { geometry, materials: lpCabinetMaterials(hex) }
+}
+
+function buildShakerWallGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string,
+  doorsArg: number,
+  crown: number,
+  pullSide: 'L' | 'R'
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const paint: THREE.BufferGeometry[] = []
+  const panel: THREE.BufferGeometry[] = []
+  const hw: THREE.BufferGeometry[] = []
+  const shadow: THREE.BufferGeometry[] = []
+
+  const bh = height - crown
+  const zBack = -depth / 2
+  const zFace = depth / 2 - LP_PULL
+  const zC = zFace - LP_DOOR - 0.1
+  const edge = 0.15
+  const gap = 0.4
+
+  pushBox(paint, width, bh, zC - zBack, 0, 0, (zC + zBack) / 2)
+  pushBox(shadow, width, bh, 0.1, 0, 0, zC + 0.05)
+
+  const n = doorsArg > 0 ? doorsArg : width < 55 ? 1 : 2
+  const fw = width - 2 * edge
+  const dw = (fw - (n - 1) * gap) / n
+  const yb = edge
+  const dh = bh - 2 * edge
+  for (let i = 0; i < n; i++) {
+    const cx = -width / 2 + edge + dw / 2 + i * (dw + gap)
+    lpShakerFront(paint, panel, cx, yb, dw, dh, zFace, 5.7)
+    let px: number
+    if (n === 1) px = pullSide === 'L' ? cx - dw / 2 + 4.2 : cx + dw / 2 - 4.2
+    else px = i === 0 ? cx + dw / 2 - 4.2 : cx - dw / 2 + 4.2
+    lpBarPull(hw, px, yb + 12, zFace, 12.7, true)
+  }
+
+  if (crown > 0) {
+    // stepped cornice, all inside the nominal envelope
+    const c1 = crown * 0.36
+    const c2 = crown * 0.3
+    const c3 = crown - c1 - c2
+    pushBox(paint, width, c1, zFace - 1.4 - zBack, 0, bh, (zFace - 1.4 + zBack) / 2)
+    pushBox(paint, width, c2, zFace - 0.7 - zBack, 0, bh + c1, (zFace - 0.7 + zBack) / 2)
+    pushBox(paint, width, c3, zFace - zBack, 0, bh + c1 + c2, (zFace + zBack) / 2)
+    // shadow line under the cornice
+    pushBox(shadow, width - 0.2, 0.25, zFace - 1.3 - zBack, 0, bh - 0.05, (zFace - 1.3 + zBack) / 2)
+  }
+
+  const geometry = mergeGeometriesGrouped([
+    { geoms: paint, materialIndex: 0 },
+    { geoms: panel, materialIndex: 1 },
+    { geoms: hw, materialIndex: 2 },
+    { geoms: shadow, materialIndex: 3 }
+  ])
+  return { geometry, materials: lpCabinetMaterials(hex) }
+}
+
+function buildCounterXGeometry(
+  width: number,
+  thk: number,
+  depth: number,
+  hex: string,
+  cutW: number,
+  cutD: number,
+  cutX: number,
+  cutZ: number,
+  splashH: number,
+  flags: number
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const stone: THREE.BufferGeometry[] = []
+  const hw = width / 2
+  const hd = depth / 2
+  const outer: [number, number][] = [
+    [-hw, -hd],
+    [hw, -hd],
+    [hw, hd],
+    [-hw, hd]
+  ]
+  const holes: [number, number][][] = []
+  if (cutW > 0 && cutD > 0) {
+    holes.push(
+      roundedPlanRect(cutW / 2, cutZ - cutD / 2, cutZ + cutD / 2, 1.6, 6).map(([x, z]) => [x + cutX, z] as [number, number])
+    )
+  }
+  stone.push(extrudePlanY(outer, holes, 0, thk))
+
+  if (splashH > 0) {
+    const st = 1.9
+    const back = (flags & 1) !== 0
+    if (back) pushBox(stone, width, splashH, st, 0, thk, -hd + st / 2)
+    const sideLen = depth - (back ? st : 0)
+    const sideZ = back ? st / 2 : 0
+    if (flags & 2) pushBox(stone, st, splashH, sideLen, -hw + st / 2, thk, sideZ)
+    if (flags & 4) pushBox(stone, st, splashH, sideLen, hw - st / 2, thk, sideZ)
+  }
+  const geometry = mergeGeometriesGrouped([{ geoms: stone, materialIndex: 0 }])
+  return { geometry, materials: [phong(hex, { shininess: 55, specular: new THREE.Color(0x444444) })] }
+}
+
+function buildLaundrySinkGeometry(
+  openW: number,
+  height: number,
+  openD: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const acrylic: THREE.BufferGeometry[] = []
+  const chrome: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const wall = 0.9
+  const floorT = 0.9
+  const ow = openW / 2
+  const od = openD / 2
+  // basin shell + floor
+  const shellOuter = roundedPlanRect(ow + wall, -od - wall, od + wall, 3.6)
+  const shellInner = roundedPlanRect(ow, -od, od, 2.8)
+  acrylic.push(extrudePlanY(shellOuter, [shellInner], floorT, height - floorT - 0.9))
+  acrylic.push(extrudePlanY(shellOuter, [], 0, floorT))
+  // top flange (25″ × 22″ overall for the Medford)
+  const fx = 3.81
+  const fz = 6.19
+  acrylic.push(
+    extrudePlanY(roundedPlanRect(ow + fx, -od - fz, od + fz, 5), [roundedPlanRect(ow, -od, od, 2.8)], height - 0.9, 0.9)
+  )
+  // rear-biased drain with chrome ring
+  const dz = -od + 9
+  pushCyl(chrome, 4.3, 0.35, 0, floorT, dz)
+  pushCyl(dark, 2.5, 0.45, 0, floorT, dz)
+  // overflow-style slot on the rear wall
+  pushBox(dark, 6.5, 1.3, 0.25, 0, height - 7, -od + 0.1)
+  return {
+    geometry: mergeGeometriesGrouped([
+      { geoms: acrylic, materialIndex: 0 },
+      { geoms: chrome, materialIndex: 1 },
+      { geoms: dark, materialIndex: 2 }
+    ]),
+    materials: [
+      phong(hex, { shininess: 95, specular: new THREE.Color(0x777777) }),
+      phong('d6dae0', { shininess: 120, specular: new THREE.Color(0xffffff) }),
+      phong('4b5058', { shininess: 10 })
+    ]
+  }
+}
+
+function buildPulldownFaucetGeometry(
+  height: number,
+  reach: number,
+  hex: string
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const chrome: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
+
+  // Escutcheon (10⅝″ × 2⅝″) + base collar + tapered neck
+  chrome.push(extrudePlanY(roundedPlanRect(13.5, -3.34, 3.34, 3.0, 6), [], 0, 0.8))
+  pushCyl(chrome, 2.75, 1.6, 0, 0.8, 0)
+  {
+    const neck = new THREE.CylinderGeometry(1.7, 2.45, 3.6, 24)
+    neck.translate(0, 2.4 + 1.8, 0)
+    chrome.push(neck)
+  }
+
+  // Column + high-arc spout
+  const tube = 1.3
+  const R = reach / 2
+  const y1 = height - tube - R
+  lpSeg(chrome, V(0, 5.8, 0), V(0, y1, 0), tube, 18)
+  const pts: THREE.Vector3[] = []
+  const N = 22
+  for (let i = 0; i <= N; i++) {
+    const phi = (i / N) * Math.PI
+    pts.push(V(0, y1 + R * Math.sin(phi), R * (1 - Math.cos(phi))))
+  }
+  for (let i = 0; i < N; i++) lpSeg(chrome, pts[i], pts[i + 1], tube, 16)
+  for (const p of pts) {
+    const s = new THREE.SphereGeometry(tube, 10, 6)
+    s.translate(p.x, p.y, p.z)
+    chrome.push(s)
+  }
+
+  // Pull-down head: collar at arc end, body, dark spray face (outlet 8-7/16″ above deck)
+  const outletY = 21.43
+  const headTop = y1 + 0.4
+  pushCyl(chrome, 1.85, 1.8, 0, headTop - 1.8, reach)
+  pushCyl(chrome, 1.55, headTop - 1.8 - outletY, 0, outletY, reach)
+  pushCyl(dark, 1.3, 0.3, 0, outletY - 0.28, reach)
+  pushCyl(chrome, 1.65, 0.5, 0, outletY, reach)
+
+  // Lever handle on +X, rising 23°, with boss at the column
+  pushCyl(chrome, 1.55, 2.4, 1.3, 7.0, 0, 'x')
+  lpSeg(chrome, V(2.3, 7.0, 0), V(14.7, 12.3, 0), 0.85, 14)
+  {
+    const tip = new THREE.SphereGeometry(0.85, 12, 8)
+    tip.translate(14.7, 12.3, 0)
+    chrome.push(tip)
+  }
+
+  return {
+    geometry: mergeGeometriesGrouped([
+      { geoms: chrome, materialIndex: 0 },
+      { geoms: dark, materialIndex: 1 }
+    ]),
+    materials: [
+      phong(hex, { shininess: 140, specular: new THREE.Color(0xffffff) }),
+      phong('30343a', { shininess: 20 })
+    ]
+  }
+}
+
+function buildFrontLoadGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  hex: string,
+  kind: 'washer' | 'dryer'
+): { geometry: THREE.BufferGeometry; materials: THREE.Material[] } {
+  const body: THREE.BufferGeometry[] = []
+  const chrome: THREE.BufferGeometry[] = []
+  const glass: THREE.BufferGeometry[] = []
+  const panel: THREE.BufferGeometry[] = []
+  const steel: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const disp: THREE.BufferGeometry[] = []
+
+  const PROTR = 3.0
+  const zBack = -depth / 2
+  const zFront = depth / 2 - PROTR
+  const bodyD = zFront - zBack
+  const foot = 2.5
+  const consoleH = 12.0
+  const cy = (height - consoleH + foot) / 2 // door center height
+  const holeR = 19.05 // 15″ drum opening
+  const drumD = 34
+
+  // Body: plan-extruded plate with the round drum opening
+  const shape = new THREE.Shape()
+  shape.moveTo(-width / 2, foot)
+  shape.lineTo(width / 2, foot)
+  shape.lineTo(width / 2, height)
+  shape.lineTo(-width / 2, height)
+  shape.closePath()
+  const hole = new THREE.Path()
+  hole.absarc(0, cy, holeR, 0, Math.PI * 2, false)
+  shape.holes.push(hole)
+  const bodyG = new THREE.ExtrudeGeometry(shape, { depth: bodyD, bevelEnabled: false, curveSegments: 56 })
+  bodyG.translate(0, 0, zBack)
+  body.push(bodyG)
+  pushBox(body, width, height - foot, 0.8, 0, foot, zBack + 0.4) // rear cover
+  pushBox(dark, width - 2.5, foot, bodyD - 3.0, 0, 0, (zBack + 1.5 + zFront - 1.5) / 2) // kick
+
+  // Drum (open shell + dark back) seen through the door
+  {
+    const drum = new THREE.CylinderGeometry(holeR - 0.15, holeR - 0.15, drumD, 56, 1, true)
+    drum.rotateX(Math.PI / 2)
+    drum.translate(0, cy, zFront - drumD / 2)
+    steel.push(drum)
+    const back = new THREE.CircleGeometry(holeR - 0.15, 56)
+    back.translate(0, cy, zFront - drumD)
+    dark.push(back)
+    // 3 drum lifters
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2 + Math.PI / 2
+      const lx = Math.cos(a) * (holeR - 1.2)
+      const ly = Math.sin(a) * (holeR - 1.2)
+      pushBoxAt(steel, 2.4, 2.4, drumD * 0.7, lx, cy + ly, zFront - drumD * 0.5)
+    }
+  }
+  // Rubber gasket + chrome bezel + smoked dome glass
+  {
+    const gasket = new THREE.TorusGeometry(holeR + 0.9, 1.1, 10, 56)
+    gasket.translate(0, cy, zFront - 0.1)
+    dark.push(gasket)
+    const bezel = new THREE.TorusGeometry(24.2, 2.2, 14, 64)
+    bezel.translate(0, cy, zFront + 0.7)
+    chrome.push(bezel)
+    const capR = 90
+    const theta = Math.asin(21.6 / capR)
+    const dome = new THREE.SphereGeometry(capR, 56, 8, 0, Math.PI * 2, 0, theta)
+    dome.rotateX(Math.PI / 2)
+    dome.translate(0, cy, zFront + 0.1 - capR * Math.cos(theta))
+    glass.push(dome)
+    // hinge knuckles on the left
+    pushBoxAt(dark, 1.6, 6.0, 1.2, -24.6, cy + 14, zFront + 0.8)
+    pushBoxAt(dark, 1.6, 6.0, 1.2, -24.6, cy - 14, zFront + 0.8)
+  }
+
+  // Console: black glass band, dial, display, buttons
+  {
+    const py = height - consoleH + 1.0
+    const ph = consoleH - 3.0
+    const pc = py + ph / 2
+    const zp = zFront + 0.3
+    pushBox(panel, width - 6, ph, 0.6, 0, py, zp)
+    pushCyl(chrome, 4.5, 1.5, 0, pc, zFront + 0.6 + 0.75, 'z')
+    pushCyl(dark, 3.5, 0.5, 0, pc, zFront + 0.6 + 1.5 + 0.2, 'z')
+    pushBoxAt(chrome, 0.7, 2.6, 0.2, 0, pc + 3.0, zFront + 0.6 + 1.5 + 0.55) // dial indicator
+    const dx = kind === 'washer' ? 16 : -18
+    pushBoxAt(disp, 9.5, 3.2, 0.3, dx, pc, zFront + 0.75)
+    if (kind === 'washer') {
+      pushBoxAt(dark, 16, 4.4, 0.4, -24, pc, zFront + 0.8) // SmartDispense window
+      pushBoxAt(chrome, 11, 0.5, 0.3, -24, pc - 2.6, zFront + 0.95)
+    }
+    const bx = kind === 'washer' ? 27 : 24
+    for (let i = -1; i <= 1; i++) pushCyl(chrome, 1.1, 0.5, bx + i * 3.6, pc, zFront + 0.6 + 0.25 + 0.0, 'z')
+  }
+
+  return {
+    geometry: mergeGeometriesGrouped([
+      { geoms: body, materialIndex: 0 },
+      { geoms: chrome, materialIndex: 1 },
+      { geoms: steel, materialIndex: 4 },
+      { geoms: dark, materialIndex: 5 },
+      { geoms: panel, materialIndex: 3 },
+      { geoms: disp, materialIndex: 6 },
+      { geoms: glass, materialIndex: 2 }
+    ]),
+    materials: [
+      phong(hex, { shininess: 45, specular: new THREE.Color(0x555555) }),
+      phong('d2d6dc', { shininess: 130, specular: new THREE.Color(0xffffff) }),
+      phong('1b2230', {
+        shininess: 140,
+        specular: new THREE.Color(0xffffff),
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false
+      }),
+      phong('0d0f12', { shininess: 120, specular: new THREE.Color(0x888888) }),
+      phong('b5bac2', { shininess: 80, specular: new THREE.Color(0xaaaaaa) }),
+      phong('1a1c20', { shininess: 10 }),
+      phong('7fe7e0', { shininess: 30, emissive: new THREE.Color(0x1e6f6a) })
+    ]
+  }
 }
 
 export function isProceduralUrl(url: string): boolean {

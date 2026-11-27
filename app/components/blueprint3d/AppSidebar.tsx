@@ -30,6 +30,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
@@ -64,9 +65,14 @@ interface AppSidebarProps {
   levels?: Array<{ id: string; name: string }>
   activeLevelId?: string | null
   onSwitchLevel?: (levelId: string) => void
+  /** Create a blank level and switch to it (persists on first Save with walls). */
+  onNewLevel?: () => void
   onSettingsClick: () => void
   /** Open Adjust Floor texture panel (not auto-shown on canvas click). */
   onAdjustFloor?: () => void
+  /** Open Areas & floor — click walls to form a zone, toggle floor visible. */
+  onAreasFloor?: () => void
+  areasFloorActive?: boolean
   projectName?: string | null
   onHelpClick?: () => void
   autosaveLabel?: string | null
@@ -104,8 +110,11 @@ export function AppSidebar({
   levels,
   activeLevelId,
   onSwitchLevel,
+  onNewLevel,
   onSettingsClick,
   onAdjustFloor,
+  onAreasFloor,
+  areasFloorActive = false,
   projectName,
   onHelpClick,
   autosaveLabel,
@@ -211,7 +220,7 @@ export function AppSidebar({
             >
               {tMain('savePlan')}
             </Button>
-            {levels && levels.length > 0 && onSwitchLevel && (
+            {((levels && levels.length > 0 && onSwitchLevel) || onNewLevel) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -224,18 +233,22 @@ export function AppSidebar({
                     <span className="flex min-w-0 items-center gap-1.5 truncate">
                       <Layers className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">
-                        {levels.find((l) => l.id === activeLevelId)?.name ||
+                        {levels?.find((l) => l.id === activeLevelId)?.name ||
                           tMain('level')}
                       </span>
                     </span>
                     <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-60" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  {levels.map((level) => (
+                {/* Above sidebar backdrop (z-80) — portaled menus default to z-50 and were unclickable */}
+                <DropdownMenuContent align="start" className="z-[100] w-56">
+                  {levels?.map((level) => (
                     <DropdownMenuItem
                       key={level.id}
-                      onClick={() => onSwitchLevel(level.id)}
+                      onClick={() => {
+                        onSwitchLevel?.(level.id)
+                        onOpenChange(false)
+                      }}
                       className={cn(
                         activeLevelId === level.id && 'bg-accent font-medium'
                       )}
@@ -243,6 +256,19 @@ export function AppSidebar({
                       {level.name}
                     </DropdownMenuItem>
                   ))}
+                  {onNewLevel && (
+                    <>
+                      {levels && levels.length > 0 && <DropdownMenuSeparator />}
+                      <DropdownMenuItem
+                        onClick={() => onNewLevel()}
+                        className="gap-1.5"
+                        title={tMain('newLevelHint')}
+                      >
+                        <Plus className="h-3.5 w-3.5 shrink-0" />
+                        {tMain('newLevel')}
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -369,6 +395,22 @@ export function AppSidebar({
                 {t('adjustFloor')}
               </Button>
             )}
+            {onAreasFloor && (
+              <Button
+                type="button"
+                variant={areasFloorActive ? 'secondary' : 'outline'}
+                size="sm"
+                className="h-8 w-full justify-start gap-1.5 text-xs"
+                title={t('areasFloorHint')}
+                onClick={() => {
+                  onAreasFloor()
+                  onOpenChange(false)
+                }}
+              >
+                <ListTree className="h-3.5 w-3.5" />
+                {t('areasFloor')}
+              </Button>
+            )}
           </section>
 
           {activeTab === 'edit' && onOpenExteriorWalls && (
@@ -455,7 +497,7 @@ export function AppSidebar({
                       <ChevronDown className="ml-auto h-3 w-3 opacity-60" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="z-[80]">
+                  <DropdownMenuContent align="start" className="z-[100]">
                     <DropdownMenuItem
                       onClick={() => {
                         if (onAddEntrance) onAddEntrance('door')

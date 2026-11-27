@@ -31,6 +31,17 @@ export class Room {
   /** floor plane for intersection testing */
   public floorPlane!: THREE.Mesh
 
+  /**
+   * Pure open-to-below room (every area in the cycle is invisible) — no slab at all.
+   */
+  public openBelow = false
+
+  /**
+   * Plan-cm hole polygons (CW) cut from the floor when this room also has loft/etc.
+   * Set from `area_floor_invisible` + `rectCm` via applyFloorFinishes.
+   */
+  public floorHoles: { x: number; y: number }[][] = []
+
   /** */
   // @ts-ignore - customTexture is declared but not used, keeping for future use
   private customTexture = false
@@ -59,7 +70,30 @@ export class Room {
     this.floorChangeCallbacks.add(callback)
   }
 
-  public getTexture(): { url: string; scale: number } {
+  public setOpenBelow(open: boolean): void {
+    if (this.openBelow === open) return
+    this.openBelow = open
+    this.floorChangeCallbacks.fire()
+  }
+
+  public setFloorHoles(holes: { x: number; y: number }[][]): void {
+    const next = holes || []
+    const same =
+      next.length === this.floorHoles.length &&
+      next.every((poly, i) => {
+        const prev = this.floorHoles[i]
+        return (
+          prev &&
+          poly.length === prev.length &&
+          poly.every((p, j) => p.x === prev[j].x && p.y === prev[j].y)
+        )
+      })
+    if (same) return
+    this.floorHoles = next
+    this.floorChangeCallbacks.fire()
+  }
+
+  public getTexture(): { url: string; scale: number; rotationDeg?: number } {
     const uuid = this.getUuid()
     const tex = this.floorplan.getFloorTexture(uuid)
     return tex || defaultRoomTexture
@@ -69,9 +103,14 @@ export class Room {
    * textureStretch always true, just an argument for consistency with walls
    */
   // @ts-ignore - setTexture is declared but not used, keeping for future use
-  public setTexture(textureUrl: string, textureStretch: boolean, textureScale: number): void {
+  public setTexture(
+    textureUrl: string,
+    textureStretch: boolean,
+    textureScale: number,
+    rotationDeg?: number
+  ): void {
     const uuid = this.getUuid()
-    this.floorplan.setFloorTexture(uuid, textureUrl, textureScale)
+    this.floorplan.setFloorTexture(uuid, textureUrl, textureScale, rotationDeg)
     this.floorChangeCallbacks.fire()
   }
 

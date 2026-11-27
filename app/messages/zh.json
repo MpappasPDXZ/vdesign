@@ -31,7 +31,9 @@
       "moveEdit": "移动",
       "exteriorWalls": "外墙",
       "adjustFloor": "调整地板",
-      "adjustFloorHint": "打开地板材质面板 — 在 3D 中点击地板，再选择材质"
+      "adjustFloorHint": "打开地板材质面板 — 在 3D 中点击地板，再选择材质",
+      "areasFloor": "区域与地板",
+      "areasFloorHint": "点击墙体围成区域，然后显示或隐藏该区域地板"
     },
     "exteriorWalls": {
       "title": "外墙",
@@ -65,6 +67,12 @@
       "switchLevel": "切换楼层",
       "switchLevelOk": "已切换到 {level}",
       "switchLevelFail": "无法切换楼层：{error}",
+      "newLevel": "新建楼层…",
+      "newLevelHint": "在此住宅中开始空白楼层。有墙后再保存。",
+      "newLevelPrompt": "新楼层名称",
+      "newLevelOk": "已开始 {level} — 画墙后保存方案",
+      "newLevelExists": "楼层“{level}”已存在 — 请切换到该楼层",
+      "newLevelCancel": "已取消新建楼层",
       "downloadPlan": "下载方案",
       "downloadPlanHint": "同时下载一份 JSON 到下载文件夹",
       "loadPlan": "加载方案",
@@ -96,9 +104,13 @@
       "blueprint": "蓝图"
     },
     "seedProjects": {
-      "title": "示例 / Cursor 项目",
+      "title": "项目",
+      "pickProject": "选择项目",
+      "pickLevel": "选择楼层",
+      "loadingLevels": "正在加载楼层…",
+      "emptyLevels": "该项目没有楼层",
       "load": "加载",
-      "empty": "暂无示例项目",
+      "empty": "暂无项目",
       "loadError": "加载项目失败",
       "importFile": "导入 JSON 文件…",
       "importSuccess": "项目已加载",
@@ -466,6 +478,15 @@
           "selectRoomType": "选择房间类型"
         }
       }
+    },
+    "entranceProps": {
+      "title": "Entrance Editor",
+      "titleHost": "Entrance Editor · wall #{n}",
+      "apply": "Apply",
+      "delete": "Delete entrance",
+      "confirmDeletePrompt": "Delete \"{name}\"? This removes the opening from the wall.",
+      "width": "Width (in)",
+      "height": "Height (in)"
     }
   }
 }

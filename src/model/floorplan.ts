@@ -6,7 +6,12 @@ import { Corner } from './corner'
 import { Room } from './room'
 import { HalfEdge } from './half_edge'
 
-export type FloorTexture = { url: string; scale: number }
+export type FloorTexture = {
+  url: string
+  scale: number
+  /** Degrees, CCW in plan — applied to floor UV/texture. */
+  rotationDeg?: number
+}
 export type WallTexture = { url: string; stretch: boolean; scale: number }
 export interface SavedFloorplan {
   corners: Record<string, { x: number; y: number }>
@@ -22,6 +27,8 @@ export interface SavedFloorplan {
     wallType?: string
     exposure?: string
     name?: string
+    /** Stable wall number (badge #N). Missing in older files → array position + 1. */
+    num?: number
   }>
   wallTextures?: unknown[]
   floorTextures?: Record<string, FloorTexture>
@@ -138,6 +145,7 @@ export class Floorplan {
    */
   public newWall(start: Corner, end: Corner): Wall {
     const wall = new Wall(start, end)
+    wall.num = this.nextWallNum()
     this.walls.push(wall)
     const scope = this
     wall.fireOnDelete(() => {
@@ -209,7 +217,9 @@ export class Floorplan {
       wall.wallType = host.wallType
       wall.exposure = host.exposure
     }
-    wall.name = `inserted after #${afterIndex + 1}`
+    // New number, not a renumber: walls keep their #N when another wall is inserted.
+    wall.num = this.nextWallNum()
+    wall.name = afterIndex >= 0 ? `inserted after #${this.walls[afterIndex].num}` : ''
 
     const insertAt = afterIndex + 1
     this.walls.splice(insertAt, 0, wall)
@@ -259,6 +269,13 @@ export class Floorplan {
     return this.walls
   }
 
+  /** Next unused wall number (max existing + 1). */
+  public nextWallNum(): number {
+    let max = 0
+    for (const w of this.walls) if (w.num > max) max = w.num
+    return max + 1
+  }
+
   /** Gets the corners. */
   public getCorners(): Corner[] {
     return this.corners
@@ -271,22 +288,30 @@ export class Floorplan {
 
   public overlappedCorner(x: number, y: number, tolerance?: number): Corner | null {
     tolerance = tolerance || defaultFloorPlanTolerance
+    let best: Corner | null = null
+    let bestD = tolerance
     for (let i = 0; i < this.corners.length; i++) {
-      if (this.corners[i].distanceFrom(x, y) < tolerance) {
-        return this.corners[i]
+      const d = this.corners[i].distanceFrom(x, y)
+      if (d < bestD) {
+        bestD = d
+        best = this.corners[i]
       }
     }
-    return null
+    return best
   }
 
   public overlappedWall(x: number, y: number, tolerance?: number): Wall | null {
     tolerance = tolerance || defaultFloorPlanTolerance
+    let best: Wall | null = null
+    let bestD = tolerance
     for (let i = 0; i < this.walls.length; i++) {
-      if (this.walls[i].distanceFrom(x, y) < tolerance) {
-        return this.walls[i]
+      const d = this.walls[i].distanceFrom(x, y)
+      if (d < bestD) {
+        bestD = d
+        best = this.walls[i]
       }
     }
-    return null
+    return best
   }
 
   /**
@@ -341,7 +366,8 @@ export class Floorplan {
         ...(wall.baseHeight > 0 ? { baseHeight: wall.baseHeight } : {}),
         wallType: wall.wallType,
         exposure: wall.exposure,
-        name: wall.name || undefined
+        name: wall.name || undefined,
+        num: wall.num
       })
     })
     floorplan.newFloorTextures = this.floorTextures
@@ -380,6 +406,8 @@ export class Floorplan {
         end = this.newCorner(c1.x + 2.54, c1.y)
       }
       const newWall = scope.newWall(c1, end)
+      // Saved number wins; older files without `num` take array position + 1 (unchanged display).
+      newWall.num = wall.num != null && wall.num > 0 ? wall.num : scope.walls.length
       if (wall.frontTexture) {
         newWall.frontTexture = wall.frontTexture
       }
@@ -422,10 +450,18 @@ export class Floorplan {
     }
   }
 
-  public setFloorTexture(uuid: string, url: string, scale: number): void {
+  public setFloorTexture(
+    uuid: string,
+    url: string,
+    scale: number,
+    rotationDeg?: number
+  ): void {
     this.floorTextures[uuid] = {
       url: url,
-      scale: scale
+      scale: scale,
+      ...(rotationDeg != null && Number.isFinite(rotationDeg)
+        ? { rotationDeg }
+        : {})
     }
   }
 

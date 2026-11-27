@@ -150,9 +150,11 @@ export class Scene {
       materials.forEach((mat) => {
         // Make sure materials are double-sided to avoid backface culling issues
         mat.side = THREE.DoubleSide
-        // Enable depth testing and writing
         mat.depthTest = true
-        mat.depthWrite = true
+        // Transparent glass must keep depthWrite:false — forcing true fills panes solid.
+        if (!mat.transparent) {
+          mat.depthWrite = true
+        }
       })
 
       // Single-material meshes must not use a material[] — Three r181 skips

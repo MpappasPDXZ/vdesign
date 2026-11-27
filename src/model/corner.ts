@@ -303,38 +303,74 @@ export class Corner implements Point {
   }
 
   public mergeWithIntersected(): boolean {
-    //console.log('mergeWithIntersected for object: ' + this.type);
-    // check corners
-    for (let i = 0; i < this.floorplan.getCorners().length; i++) {
-      const corner = this.floorplan.getCorners()[i]
-      if (this.distanceFromCorner(corner) < cornerTolerance && corner != this) {
-        this.combineWithCorner(corner)
-        return true
+    // Prefer the *closest* tip within tolerance — first-in-array used to steal
+    // joins onto distant corners that merely sat inside the radius.
+    let bestCorner: Corner | null = null
+    let bestCornerDist = cornerTolerance
+    for (const corner of this.floorplan.getCorners()) {
+      if (corner === this) continue
+      const d = this.distanceFromCorner(corner)
+      if (d < bestCornerDist) {
+        bestCornerDist = d
+        bestCorner = corner
       }
     }
-    // check walls
-    for (let i = 0; i < this.floorplan.getWalls().length; i++) {
-      const wall = this.floorplan.getWalls()[i]
-      if (this.distanceFromWall(wall) < cornerTolerance && !this.isWallConnected(wall)) {
-        // update position to be on wall
-        const intersection = Utils.closestPointOnLine(
-          this.x,
-          this.y,
-          wall.getStart().x,
-          wall.getStart().y,
-          wall.getEnd().x,
-          wall.getEnd().y
-        )
-        this.x = intersection.x
-        this.y = intersection.y
-        // merge this corner into wall by breaking wall into two parts
-        this.floorplan.newWall(this, wall.getEnd())
-        wall.setEnd(this)
-        this.floorplan.update()
-        return true
+    if (bestCorner) {
+      this.combineWithCorner(bestCorner)
+      return true
+    }
+
+    // Mid-span wall join: closest wall only, tighter than tip merge. First-in-
+    // array + 20cm made long garage/mud walls "glob" every nearby draw.
+    const wallMergeTolerance = 10
+    let bestWall: Wall | null = null
+    let bestWallDist = wallMergeTolerance
+    for (const wall of this.floorplan.getWalls()) {
+      if (this.isWallConnected(wall)) continue
+      const d = this.distanceFromWall(wall)
+      if (d < bestWallDist) {
+        bestWallDist = d
+        bestWall = wall
       }
     }
-    return false
+    if (!bestWall) return false
+
+    const intersection = Utils.closestPointOnLine(
+      this.x,
+      this.y,
+      bestWall.getStart().x,
+      bestWall.getStart().y,
+      bestWall.getEnd().x,
+      bestWall.getEnd().y
+    )
+    // Near a tip → join the tip, don't split the wall into a stub junction
+    const dStart = Utils.distance(
+      intersection.x,
+      intersection.y,
+      bestWall.getStart().x,
+      bestWall.getStart().y
+    )
+    const dEnd = Utils.distance(
+      intersection.x,
+      intersection.y,
+      bestWall.getEnd().x,
+      bestWall.getEnd().y
+    )
+    if (dStart < cornerTolerance) {
+      this.combineWithCorner(bestWall.getStart())
+      return true
+    }
+    if (dEnd < cornerTolerance) {
+      this.combineWithCorner(bestWall.getEnd())
+      return true
+    }
+
+    this.x = intersection.x
+    this.y = intersection.y
+    this.floorplan.newWall(this, bestWall.getEnd())
+    bestWall.setEnd(this)
+    this.floorplan.update()
+    return true
   }
 
   /** Ensure we do not have duplicate walls (i.e. same start and end points) */

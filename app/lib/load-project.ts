@@ -54,7 +54,30 @@ export function normalizeUnderlay(
 
 export function normalizeAreas(areas: AreaLabel[] | undefined): AreaLabel[] {
   if (!Array.isArray(areas)) return []
-  return areas.filter((a) => a?.name && Number.isFinite(a.xCm) && Number.isFinite(a.yCm))
+  return areas
+    .filter((a) => a?.name && Number.isFinite(a.xCm) && Number.isFinite(a.yCm))
+    .map((a) => {
+      const out: AreaLabel = { name: a.name, xCm: a.xCm, yCm: a.yCm }
+      if (typeof a.notes === 'string' && a.notes) out.notes = a.notes
+      if (a.area_floor_invisible === true || a.area_floor_invisible === 1) {
+        out.area_floor_invisible = true
+      } else if (a.area_floor_invisible === false || a.area_floor_invisible === 0) {
+        out.area_floor_invisible = false
+      }
+      const r = a.rectCm
+      if (
+        r &&
+        Number.isFinite(r.x) &&
+        Number.isFinite(r.z) &&
+        Number.isFinite(r.width) &&
+        Number.isFinite(r.depth) &&
+        r.width > 0 &&
+        r.depth > 0
+      ) {
+        out.rectCm = { x: r.x, z: r.z, width: r.width, depth: r.depth }
+      }
+      return out
+    })
 }
 
 const SETBACK_EDGES = new Set(['north', 'south', 'east', 'west'])

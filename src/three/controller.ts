@@ -172,6 +172,11 @@ export class Controller {
         return
       }
 
+      if (!this.canSelectItems()) {
+        if (this.mouseoverObject || this.intersectedObject) this.clearItemHover()
+        return
+      }
+
       if (!this.mouseDown) {
         try {
           this.updateIntersections()
@@ -204,6 +209,40 @@ export class Controller {
     return this.state === ControllerState.ROTATING || this.state === ControllerState.ROTATING_FREE
   }
 
+  /** True when the Select toolbar toggle is on and measure mode is off. */
+  private canSelectItems(): boolean {
+    return this.three.isItemSelectEnabled() && !this.three.isMeasureMode()
+  }
+
+  /** Drop hover highlight / pointer cursor (used when Select turns off). */
+  public clearItemHover(): void {
+    if (this.mouseoverObject) {
+      this.mouseoverObject.mouseOff()
+      this.mouseoverObject = null
+    }
+    this.intersectedObject = null
+    this.rotateMouseOver = false
+    this.hud.setMouseover(false)
+    this.three.setCursorStyle('auto')
+    this.needsUpdate = true
+  }
+
+  /** Leave any drag/selection and restore orbit — Select toggle off. */
+  public exitItemSelectMode(): void {
+    if (
+      this.state === ControllerState.DRAGGING ||
+      this.state === ControllerState.ROTATING ||
+      this.state === ControllerState.ROTATING_FREE
+    ) {
+      if (this.selectedObject) this.selectedObject.clickReleased()
+      this.switchState(ControllerState.SELECTED)
+    }
+    this.setSelectedObject(null)
+    this.switchState(ControllerState.UNSELECTED)
+    this.clearItemHover()
+    this.controls.enabled = true
+  }
+
   private mouseDownEvent(event: MouseEvent): void {
     if (this.enabled) {
       event.preventDefault()
@@ -220,6 +259,11 @@ export class Controller {
         return
       }
       this.measureDownPos = null
+
+      // Select off: leave the drag to OrbitControls (pan / orbit / zoom)
+      if (!this.canSelectItems()) {
+        return
+      }
 
       switch (this.state) {
         case ControllerState.SELECTED:
@@ -601,6 +645,12 @@ export class Controller {
       this.mouse.copy(touchPos)
       this.touchStartPos = touchPos.clone()
 
+      // Select off: camera-only — don't pick fixtures under the finger
+      if (!this.canSelectItems()) {
+        this.mouseDown = true
+        return
+      }
+
       // Update intersections to check what we're touching
       this.updateIntersections()
 
@@ -686,6 +736,8 @@ export class Controller {
         this.mouseMoved = true
       }
     }
+
+    if (!this.canSelectItems()) return
 
     // Handle different states
     switch (this.state) {

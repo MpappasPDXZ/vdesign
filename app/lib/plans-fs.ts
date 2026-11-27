@@ -87,7 +87,7 @@ export async function writePlanToRepo(opts: {
   /** Home display / slug name (e.g. 2713-S-224th). Level suffixes are stripped. */
   name: string
   id?: string
-  /** Which level to patch. Defaults to project.meta.levelId or "main". */
+  /** Which level to patch. Defaults to project.meta.levelId or "basement". */
   levelId?: string
   levelName?: string
   /**
@@ -111,8 +111,9 @@ export async function writePlanToRepo(opts: {
 
   const homeName = stripLevelSuffix(opts.name || opts.id || 'vdesign-plan')
   const slug = slugifyPlanName(homeName)
+  // Never default to a synthetic "main" — that spawned an empty 4th level on 2713.
   const levelId =
-    opts.levelId || opts.project.meta?.levelId || opts.project.meta?.level || 'main'
+    opts.levelId || opts.project.meta?.levelId || opts.project.meta?.level || 'basement'
   const levelName =
     opts.levelName || opts.project.meta?.level || levelId
   const doMerge = opts.merge !== false
@@ -309,7 +310,10 @@ export interface PlanReadResult {
   levelId: string
 }
 
-export async function readLatestPlan(slugHint?: string): Promise<PlanReadResult | null> {
+export async function readLatestPlan(
+  slugHint?: string,
+  levelHint?: string | null
+): Promise<PlanReadResult | null> {
   const root = getPlansDir()
   let entries: string[] = []
   try {
@@ -350,14 +354,27 @@ export async function readLatestPlan(slugHint?: string): Promise<PlanReadResult 
   const full = path.join(root, pick.file)
   const raw = JSON.parse(await fs.readFile(full, 'utf8')) as unknown
   const home = normalizeToHome(raw, pick.file.replace(/\.json$/i, ''))
-  const level = getActiveLevel(home)
+  const key = levelHint?.trim().toLowerCase()
+  const matched = key
+    ? home.levels.find(
+        (l) =>
+          l.id === levelHint ||
+          l.id.toLowerCase() === key ||
+          l.name.toLowerCase() === key ||
+          (key === 'downstairs' && l.id === 'basement') ||
+          (key === 'main-level' && l.id === 'main')
+      )
+    : undefined
+  const level = matched || getActiveLevel(home)
   if (!level.floorplan?.walls?.length) {
     throw new Error(`Latest plan has no walls: ${pick.file}`)
   }
 
+  const homeWithLevel: VdesignHome = { ...home, activeLevelId: level.id }
+
   return {
     project: levelToProject(level, home.meta),
-    home,
+    home: homeWithLevel,
     slug: pick.file.replace(/\.json$/i, ''),
     relativePath: path.posix.join('plans', pick.file),
     mtimeMs: pick.mtimeMs,

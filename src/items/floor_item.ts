@@ -44,8 +44,12 @@ export abstract class FloorItem extends Item {
   public resized(): void {
     const floorY = this.halfSize.y + FloorItem.FLOOR_CLEARANCE_CM
     // Keep authored elevated placements (rack shelves, mattress, floating vanity).
+    // Keep below-floor placements (stairs rising from level below into this floor).
     // Posts/boxes saved at ypos≈0 still snap onto the floor via floorY.
-    if (this.position_set && this.position.y > floorY + 1) {
+    if (
+      this.position_set &&
+      (this.position.y > floorY + 1 || this.position.y < -1)
+    ) {
       return
     }
     this.position.y = floorY

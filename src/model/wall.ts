@@ -18,7 +18,7 @@ export type WallType =
   | 'wood'
   | 'steel'
   | 'partition'
-  /** Black metal (or painted) fence — thin open rails/pickets in 3D */
+  /** Black metal fence — guard-height: horizontal bars; tall PL: vertical pickets */
   | 'fence'
 export type WallExposure = 'interior' | 'exterior'
 
@@ -91,8 +91,14 @@ export class Wall {
   /** Interior vs exterior */
   public exposure: WallExposure = 'exterior'
 
-  /** Display name, e.g. "basement #11 west, exterior wall" */
+  /** Display name, e.g. "basement west, exterior wall" (no number — see `num`) */
   public name = ''
+
+  /**
+   * Stable wall number shown as the 2D badge and used everywhere wall # is referenced.
+   * Saved in floorplan JSON as `num`. Assigned once; never renumbered when other walls change.
+   */
+  public num = 0
 
   /** Actions to be applied after movement. */
   private moved_callbacks = new EventEmitter<void>()

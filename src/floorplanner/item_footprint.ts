@@ -9,6 +9,8 @@ export interface ItemFootprint {
   /** Three.js Y rotation (radians). */
   rotationY: number
   label: string
+  /** Scene item this footprint draws (selection highlight / hit-test identity). */
+  ref?: object
   /**
    * plant — green ink (landscaping OR movable), shown in 2D + blueprint
    * structure — fixed fixtures / built-ins, blue ink

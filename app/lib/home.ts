@@ -147,8 +147,14 @@ export function slugifyLevelId(name: string): string {
 /** "2713-S-224th-Basement" → "2713-S-224th" */
 export function stripLevelSuffix(name: string): string {
   return name
-    .replace(/\s*[—–-]\s*(Basement|Backyard|Main|Second|Garage|Exterior)\s*$/i, '')
-    .replace(/-(Basement|Backyard|Main|Second|Garage|Exterior)$/i, '')
+    .replace(
+      /\s*[—–-]\s*(Basement|Backyard|Main|Second|Upstairs|Garage|Exterior)\s*$/i,
+      ''
+    )
+    .replace(
+      /-(Basement|Backyard|Main|Second|Upstairs|Garage|Exterior)$/i,
+      ''
+    )
     .trim() || name
 }
 

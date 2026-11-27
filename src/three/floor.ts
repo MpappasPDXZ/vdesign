@@ -3,6 +3,47 @@ import type { Room } from '../model/room'
 
 const SHINGLE_URL = '/models/textures/shingle-rustic-black.png'
 
+/**
+ * Three.js r152+ ShapeGeometry ignores holes — triangulate ourselves.
+ * Includes UVs (ShapeGeometry-style) so carpet textures aren't black.
+ * Winding flipped vs Edge so floor BackSide still faces the camera.
+ */
+function shapeGeometryWithHoles(shape: THREE.Shape): THREE.BufferGeometry {
+  const contour = shape.getPoints()
+  const holes = shape.holes.map((h) => h.getPoints())
+  const faces = THREE.ShapeUtils.triangulateShape(contour, holes)
+  const verts = contour.concat(...holes)
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  for (const v of verts) {
+    minX = Math.min(minX, v.x)
+    minY = Math.min(minY, v.y)
+    maxX = Math.max(maxX, v.x)
+    maxY = Math.max(maxY, v.y)
+  }
+  const spanX = maxX - minX || 1
+  const spanY = maxY - minY || 1
+
+  const positions: number[] = []
+  const uvs: number[] = []
+  for (const face of faces) {
+    const [a, b, c] = face
+    for (const idx of [a, c, b]) {
+      const v = verts[idx]
+      positions.push(v.x, v.y, 0)
+      uvs.push((v.x - minX) / spanX, (v.y - minY) / spanY)
+    }
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2))
+  geometry.computeVertexNormals()
+  return geometry
+}
+
 export class Floor {
   public readonly room: Room
   private readonly scene: THREE.Scene
@@ -39,8 +80,13 @@ export class Floor {
     return this.roomWallStats().baseMax > 50
   }
 
+  /** Stair well / great-room void — railing encloses air, not a floor. */
+  private isOpenBelowRoom(): boolean {
+    return this.room.openBelow === true
+  }
+
   private buildFloor(): THREE.Mesh | null {
-    if (this.isElevatedDeckRoom()) return null
+    if (this.isElevatedDeckRoom() || this.isOpenBelowRoom()) return null
     const textureSettings = this.room.getTexture()
     // setup texture
     const textureLoader = new THREE.TextureLoader()
@@ -49,6 +95,12 @@ export class Floor {
     floorTexture.wrapT = THREE.RepeatWrapping
     floorTexture.repeat.set(1, 1)
     floorTexture.colorSpace = THREE.SRGBColorSpace
+    // Plan CCW degrees → Three texture rotation (around UV center)
+    const rotDeg = textureSettings.rotationDeg
+    if (rotDeg != null && Number.isFinite(rotDeg) && rotDeg !== 0) {
+      floorTexture.center.set(0.5, 0.5)
+      floorTexture.rotation = (rotDeg * Math.PI) / 180
+    }
     // Apply anisotropic filtering for sharper textures at angles
     floorTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy()
     floorTexture.minFilter = THREE.LinearMipmapLinearFilter
@@ -78,7 +130,17 @@ export class Floor {
     })
     const shape = new THREE.Shape(points)
 
-    const geometry = new THREE.ShapeGeometry(shape)
+    // Open-to-below voids inside a shared loft/hall cycle
+    for (const hole of this.room.floorHoles || []) {
+      if (!hole?.length) continue
+      const path = new THREE.Path(
+        hole.map((p) => new THREE.Vector2(p.x / textureScale, p.y / textureScale))
+      )
+      shape.holes.push(path)
+    }
+
+    const geometry =
+      shape.holes.length > 0 ? shapeGeometryWithHoles(shape) : new THREE.ShapeGeometry(shape)
     const floor = new THREE.Mesh(geometry, floorMaterialTop)
 
     // ShapeGeometry is in XY; +PI/2 puts +Z local → world up. FrontSide then faces upward.
@@ -157,6 +219,15 @@ export class Floor {
    * Skips tiny leftover polys (< 4′ on a side) and yard loops.
    */
   private buildRoof(): THREE.Group | null {
+    // Open-below voids (whole room or punched holes) must not get a roof slab —
+    // it reads as a fake black/grey “floor” when looking down from 3D.
+    if (
+      this.isOpenBelowRoom() ||
+      this.isElevatedDeckRoom() ||
+      (this.room.floorHoles?.length ?? 0) > 0
+    ) {
+      return null
+    }
     const bbox = this.roomBBox()
     const width = bbox.maxX - bbox.minX
     const depth = bbox.maxZ - bbox.minZ
@@ -182,8 +253,11 @@ export class Floor {
     // Deck / low rooms: flat canopy (shared house wall can be tall — use fenceFrac).
     // Elevated decks (Omarail on posts) already have an explicit cover item — do NOT
     // invent a black slab at 42″ that floats under the real deck floor.
+    // Covered porches attached to full-height house walls (max ≫ rail) also skip —
+    // that slab reads as a floating black plane through the room (main dining deck).
     if (stats.fenceFrac >= 0.35 && area < 900_000) {
       if (stats.baseMax > 50) return null
+      if (stats.max > 150) return null
       const railH = 106.68 // 42″ Omarail stand-in
       const y = railH + 12
       const geo = new THREE.BoxGeometry(width + 20, 6, depth + 20)
@@ -321,6 +395,12 @@ export class Floor {
     }
 
     return group
+  }
+
+  /** Layer toggle — hide slab/roof without removing from the scene graph. */
+  public setVisible(visible: boolean): void {
+    if (this.floorPlane) this.floorPlane.visible = visible
+    if (this.roofGroup) this.roofGroup.visible = visible
   }
 
   public addToScene(): void {

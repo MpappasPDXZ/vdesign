@@ -7,6 +7,13 @@ import type { AreaLabel } from './area_label'
 import type { ItemFootprint } from './item_footprint'
 import type { SetbackSpec } from './setback'
 import { EventEmitter } from '../core/events'
+import type { Item } from '../items/item'
+
+/** Edit-mode plan click target: wall-hosted entrance badge or a floor item footprint. */
+export interface PlanHit {
+  kind: 'entrance' | 'item'
+  item: Item
+}
 
 type FloorplannerMode = (typeof floorplannerModes)[keyof typeof floorplannerModes]
 
@@ -54,11 +61,49 @@ export class Floorplanner {
   /** Currently selected wall for property editing */
   public selectedWall: Wall | null = null
 
+  /** Fired when a wall-hosted entrance (E/S badge) is clicked in Edit (MOVE) mode, or `null` to close. */
+  public entranceSelectedCallbacks = new EventEmitter<Item | null>()
+
+  /** Fired when a floor item footprint (furniture/fixture) is clicked in Edit (MOVE) mode, or `null`. */
+  public planItemSelectedCallbacks = new EventEmitter<Item | null>()
+
+  /** Entrance badge highlighted on the plan (drawn by the view). */
+  public selectedEntrance: Item | null = null
+
+  /** Floor item highlighted on the plan (drawn by the view). */
+  public selectedPlanItem: Item | null = null
+
+  /** Hit-test supplied by Blueprint3d (scene items live outside the floorplan model). */
+  private planHitTester:
+    | ((xCm: number, zCm: number, badgeRadiusCm: number) => PlanHit | null)
+    | null = null
+
+  /** Wire entrance/furniture hit-testing (Edit mode single click). */
+  public setPlanHitTester(
+    tester: ((xCm: number, zCm: number, badgeRadiusCm: number) => PlanHit | null) | null
+  ): void {
+    this.planHitTester = tester
+  }
+
+  /** Clear entrance + furniture plan selection (no events if already clear). */
+  public clearPlanSelection(fire = true): void {
+    const hadEntrance = this.selectedEntrance != null
+    const hadItem = this.selectedPlanItem != null
+    this.selectedEntrance = null
+    this.selectedPlanItem = null
+    if (fire && hadEntrance) this.entranceSelectedCallbacks.fire(null)
+    if (fire && hadItem) this.planItemSelectedCallbacks.fire(null)
+    if (hadEntrance || hadItem) this.view.draw()
+  }
+
   /**
    * Connect host while Wall Editor is open — drawn orange so the join
    * target is obvious next to the blue selected wall.
    */
   public connectHostWall: Wall | null = null
+
+  /** Walls selected while forming an area (floor visible toggle). */
+  public areaFormWalls: Wall[] = []
 
   /** */
   private canvasElement: HTMLCanvasElement
@@ -161,6 +206,16 @@ export class Floorplanner {
     })
   }
 
+  /**
+   * Wall # badge radius in screen px — grows with zoom so labels stay readable
+   * when zoomed in. Hit-test should use the same value (+ small pad).
+   * Scaled to 65% of the original (35% smaller) so close zoom doesn't dominate.
+   */
+  public wallNumberBadgeRadiusPx(): number {
+    const t = Math.min(2.4, Math.max(1, this.pixelsPerCm / 0.5))
+    return 13 * t * 0.65
+  }
+
   /** Pinch/scroll zoom toward the cursor (dims LOD updates on redraw). */
   private onWheel(event: WheelEvent): void {
     event.preventDefault()
@@ -191,11 +246,11 @@ export class Floorplanner {
     this.view.draw()
   }
 
-  public zoomIn(step = 1.2): void {
+  public zoomIn(step = 1.08): void {
     this.zoomBy(step)
   }
 
-  public zoomOut(step = 1.2): void {
+  public zoomOut(step = 1.08): void {
     this.zoomBy(1 / step)
   }
 
@@ -272,28 +327,51 @@ export class Floorplanner {
 
     // update object target
     if (this.mode != floorplannerModes.DRAW && !this.mouseDown) {
-      const hoverCorner: Corner | null = this.floorplan.overlappedCorner(this.mouseX, this.mouseY)
-      // MOVE: only the numbered mid-span badge (avoids parallel-wall miss-hits).
-      // DELETE: still allow body hit so delete remains usable with numbers off.
-      const badgeRadiusCm = 14 * this.cmPerPixel
-      const hoverWall: Wall | null =
-        this.mode == floorplannerModes.MOVE
-          ? this.floorplan.overlappedWallBadge(this.mouseX, this.mouseY, badgeRadiusCm)
-          : this.floorplan.overlappedWall(this.mouseX, this.mouseY)
+      // MOVE: # badge hit-test (avoids parallel-wall miss-hits).
+      // DELETE: body hit so delete works with numbers off.
+      // Short walls (<12"): midpoint sits inside the corner hit radius — if
+      // corner wins, Delete calls removeAll() and MOVE can't open the editor.
+      // Prefer badge/wall over corner whenever the cursor is on a wall target.
+      // Match drawn badge (grows with zoom; 2-digit labels widen the ring a bit)
+      const badgeRadiusCm = (this.wallNumberBadgeRadiusPx() * 1.25 + 2) * this.cmPerPixel
+      const hoverWallBadge = this.floorplan.overlappedWallBadge(
+        this.mouseX,
+        this.mouseY,
+        badgeRadiusCm
+      )
+      const hoverWallBody = this.floorplan.overlappedWall(this.mouseX, this.mouseY)
+      const hoverCornerRaw = this.floorplan.overlappedCorner(this.mouseX, this.mouseY)
+
+      let hoverWall: Wall | null = null
+      let hoverCorner: Corner | null = null
+
+      if (this.mode == floorplannerModes.MOVE) {
+        if (hoverWallBadge) {
+          hoverWall = hoverWallBadge
+        } else if (hoverWallBody && hoverWallBody.getLength() < 12 * 2.54) {
+          // Short wall: body hit beats tip corner (badge midpoint is inside corner radius)
+          hoverWall = hoverWallBody
+        } else {
+          hoverCorner = hoverCornerRaw
+        }
+      } else {
+        // DELETE: one wall, not corner.removeAll(), when aiming at a wall
+        hoverWall = hoverWallBadge || hoverWallBody
+        if (!hoverWall) hoverCorner = hoverCornerRaw
+      }
+
       let draw = false
       if (hoverCorner != this.activeCorner) {
         this.activeCorner = hoverCorner
         draw = true
       }
-      // corner takes precendence
-      if (this.activeCorner == null) {
-        if (hoverWall != this.activeWall) {
-          this.activeWall = hoverWall
-          draw = true
-        }
-      } else {
-        this.activeWall = null
+      if (hoverWall != this.activeWall) {
+        this.activeWall = hoverWall
+        draw = true
       }
+      // Keep corner/wall mutually exclusive for downstream handlers
+      if (this.activeWall) this.activeCorner = null
+      else if (this.activeCorner) this.activeWall = null
       if (draw) {
         this.view.draw()
       }
@@ -334,13 +412,19 @@ export class Floorplanner {
     const canvasClick = this.mouseDown && !this.mouseMoved
     this.mouseDown = false
 
-    // drawing
+    // drawing — reuse an existing tip when the click is on it so we don't
+    // newCorner+merge and accidentally split a long neighbor wall instead.
     if (this.mode == floorplannerModes.DRAW && canvasClick) {
-      const corner = this.floorplan.newCorner(this.targetX, this.targetY)
-      if (this.lastNode != null) {
+      const existing = this.floorplan.overlappedCorner(
+        this.targetX,
+        this.targetY,
+        snapTolerance
+      )
+      const corner = existing ?? this.floorplan.newCorner(this.targetX, this.targetY)
+      if (this.lastNode != null && this.lastNode !== corner) {
         this.floorplan.newWall(this.lastNode, corner)
       }
-      if (corner.mergeWithIntersected() && this.lastNode != null) {
+      if (!existing && corner.mergeWithIntersected() && this.lastNode != null) {
         this.setMode(floorplannerModes.MOVE)
       }
       this.lastNode = corner
@@ -352,20 +436,51 @@ export class Floorplanner {
     if (this.mode == floorplannerModes.MOVE && canvasClick) {
       const wall = this.activeWall
       if (wall) {
+        // Wall # badge wins over entrance/furniture; selections are mutually exclusive.
+        this.clearPlanSelection()
         this.selectedWall = wall
         this.wallSelectedCallbacks.fire(wall)
         this.view.draw()
       } else if (!this.activeCorner) {
-        if (this.selectedWall) {
-          this.selectedWall = null
-          this.wallSelectedCallbacks.fire(null)
+        const badgeRadiusCm = (9 + 3) * this.cmPerPixel
+        const hit = this.planHitTester
+          ? this.planHitTester(this.mouseX, this.mouseY, badgeRadiusCm)
+          : null
+        if (hit) {
+          if (this.selectedWall) {
+            this.selectedWall = null
+            this.wallSelectedCallbacks.fire(null)
+          }
+          if (hit.kind === 'entrance') {
+            if (this.selectedPlanItem) {
+              this.selectedPlanItem = null
+              this.planItemSelectedCallbacks.fire(null)
+            }
+            this.selectedEntrance = hit.item
+            this.entranceSelectedCallbacks.fire(hit.item)
+          } else {
+            if (this.selectedEntrance) {
+              this.selectedEntrance = null
+              this.entranceSelectedCallbacks.fire(null)
+            }
+            this.selectedPlanItem = hit.item
+            this.planItemSelectedCallbacks.fire(hit.item)
+          }
           this.view.draw()
+        } else {
+          this.clearPlanSelection()
+          if (this.selectedWall) {
+            this.selectedWall = null
+            this.wallSelectedCallbacks.fire(null)
+            this.view.draw()
+          }
         }
       }
     }
   }
 
   public selectWall(wall: Wall | null): void {
+    if (wall) this.clearPlanSelection()
     this.selectedWall = wall
     if (!wall) this.connectHostWall = null
     this.wallSelectedCallbacks.fire(wall)
@@ -375,6 +490,12 @@ export class Floorplanner {
   /** Highlight the Connect host (orange). Pass null to clear. */
   public setConnectHostWall(wall: Wall | null): void {
     this.connectHostWall = wall
+    this.view.draw()
+  }
+
+  /** Highlight walls chosen for Areas & floor (teal). */
+  public setAreaFormWalls(walls: Wall[]): void {
+    this.areaFormWalls = walls.slice()
     this.view.draw()
   }
 

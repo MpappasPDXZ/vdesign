@@ -83,6 +83,8 @@ export interface FloorFinishSpec {
   /** Texture repeat scale in cm (smaller → denser pattern). */
   scale: number
   notes?: string
+  /** Plan-view CCW degrees for grain / plank direction. */
+  rotationDeg?: number
   /**
    * Optional explicit floor patch. Required for open bays (gym→hall with no door):
    * room detection only finds closed wall cycles, so area labels alone never get a mesh.
@@ -170,8 +172,10 @@ export interface SeedProjectInfo {
   id: string
   name: string
   address?: string
-  /** Display summary, e.g. "Basement · Backyard" */
+  /** Display summary, e.g. "Basement · Backyard · Upstairs" */
   level?: string
+  /** Optional level ids for one-click load (from home). */
+  levels?: Array<{ id: string; name: string }>
   /** Path under /public (home or legacy level JSON) */
   path: string
 }

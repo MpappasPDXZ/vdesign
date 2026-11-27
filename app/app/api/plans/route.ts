@@ -85,7 +85,8 @@ export async function GET(req: Request) {
       return NextResponse.json({ slug: slugifyPlanName(slug), versions })
     }
 
-    const latest = await readLatestPlan(slug)
+    const level = url.searchParams.get('level')
+    const latest = await readLatestPlan(slug, level)
     if (!latest) {
       return NextResponse.json({ error: 'No plans in plans/' }, { status: 404 })
     }
@@ -96,7 +97,7 @@ export async function GET(req: Request) {
       mtimeMs: latest.mtimeMs,
       levelId: latest.levelId,
       home: latest.home,
-      /** Active level payload for the canvas */
+      /** Requested (or active) level payload for the canvas */
       project: latest.project
     })
   } catch (err) {

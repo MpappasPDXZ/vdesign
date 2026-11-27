@@ -33,11 +33,15 @@ export class Edge {
   private readonly front: boolean
   private planes: THREE.Mesh[] = []
   private basePlanes: THREE.Mesh[] = [] // always visible
+  /** Area-layer toggle (session) — false hides this edge regardless of camera. */
+  private areaLayerVisible = true
   private texture: THREE.Texture | null = null
   private currentTextureUrl: string = ''
   private foundationTexture: THREE.Texture | null = null
   private readonly textureLoader = new THREE.TextureLoader()
   private readonly lightMap: THREE.Texture
+  /** Session wall-height scale from FloorplanThree (1 = full; short mode ≈ 0.1). */
+  private readonly getWallHeightScale: () => number
   // Brightened colors for Three.js r181
   private readonly fillerColor = 0xffffff
   private readonly sideColor = 0xeeeeee
@@ -45,6 +49,12 @@ export class Edge {
   /** Walk-out foundation band height (9′) for tall exterior house walls */
   private static readonly FOUNDATION_H_CM = 274.32
   private static readonly FOUNDATION_TEX = '/models/textures/concrete-foundation.png'
+  /**
+   * Orbit distance (camera → target) below which full walls hide so interiors
+   * (pantry cabinets, mudroom lockers, …) stay visible. Fences stay up.
+   * ~18′ — room inspection / “show my wife the cabinets” zoom.
+   */
+  private static readonly CLOSE_ZOOM_HIDE_WALLS_CM = 550
 
   public visible = false
 
@@ -52,13 +62,20 @@ export class Edge {
   private readonly boundRedraw: () => void
   private readonly boundUpdateVisibility: () => void
 
-  constructor(scene: THREE.Scene, edge: HalfEdge, controls: Controls, renderer: THREE.WebGLRenderer) {
+  constructor(
+    scene: THREE.Scene,
+    edge: HalfEdge,
+    controls: Controls,
+    renderer: THREE.WebGLRenderer,
+    getWallHeightScale?: () => number
+  ) {
     this.scene = scene
     this.edge = edge
     this.controls = controls
     this.renderer = renderer
     this.wall = edge.wall
     this.front = edge.front
+    this.getWallHeightScale = getWallHeightScale ?? (() => 1)
     this.lightMap = this.textureLoader.load('https://cdn-images.lumenfeng.com/models-cover/walllightmap.png')
     this.lightMap.colorSpace = THREE.SRGBColorSpace
 
@@ -67,6 +84,18 @@ export class Edge {
     this.boundUpdateVisibility = this.updateVisibility.bind(this)
 
     this.init()
+  }
+
+  /** Rebuild meshes after wall-height scale changes (cabinets/items untouched). */
+  public rebuild(): void {
+    this.redraw()
+  }
+
+  /** Display height for full walls — short-walls mode leaves fixtures full size. */
+  private displayHeight(): number {
+    const h = this.wall.height || 0
+    if (this.wall.wallType === 'fence') return h
+    return Math.max(8, h * this.getWallHeightScale())
   }
 
   public remove(): void {
@@ -111,7 +140,63 @@ export class Edge {
     this.updateVisibility()
   }
 
+  /** Room on this half-edge's interior side (for area-layer hide). */
+  public getRoom() {
+    return this.edge.getRoom()
+  }
+
+  /** Session area-layer: hide walls that only bound turned-off rooms. */
+  public setAreaLayerVisible(visible: boolean): void {
+    this.areaLayerVisible = visible
+    this.updateVisibility()
+  }
+
   private updateVisibility(): void {
+    // Guard-height fence / railing: always keep meshes visible. Camera-facing
+    // hide is for full walls (see through windows into rooms). Rails only build
+    // on the front half-edge, so the same hide would erase them from half the
+    // orbit angles — and short rails never block a window view anyway.
+    if (this.wall.wallType === 'fence') {
+      this.visible = true
+      this.planes.forEach((plane) => {
+        plane.visible = true
+      })
+      this.basePlanes.forEach((plane) => {
+        plane.visible = true
+      })
+      this.updateObjectVisibility()
+      return
+    }
+
+    if (!this.areaLayerVisible) {
+      this.visible = false
+      this.planes.forEach((plane) => {
+        plane.visible = false
+      })
+      this.basePlanes.forEach((plane) => {
+        plane.visible = false
+      })
+      this.updateObjectVisibility()
+      return
+    }
+
+    // Close orbit: drop full walls so room interiors (cabinets, fixtures) read.
+    // Skip when short-walls mode is on — stubs already clear the view.
+    if (
+      this.getWallHeightScale() >= 0.99 &&
+      this.controls.getDistance() < Edge.CLOSE_ZOOM_HIDE_WALLS_CM
+    ) {
+      this.visible = false
+      this.planes.forEach((plane) => {
+        plane.visible = false
+      })
+      this.basePlanes.forEach((plane) => {
+        plane.visible = false
+      })
+      this.updateObjectVisibility()
+      return
+    }
+
     // finds the normal from the specified edge
     const start = this.edge.interiorStart()
     const end = this.edge.interiorEnd()
@@ -135,6 +220,9 @@ export class Edge {
     // show or hide plans
     this.planes.forEach((plane) => {
       plane.visible = this.visible
+    })
+    this.basePlanes.forEach((plane) => {
+      plane.visible = true
     })
 
     this.updateObjectVisibility()
@@ -176,7 +264,7 @@ export class Edge {
     // Always update texture parameters (stretch, scale, etc.)
     if (this.texture) {
       if (!stretch) {
-        const height = this.wall.height
+        const height = this.displayHeight()
         const width = this.edge.interiorDistance()
         this.texture.wrapT = THREE.RepeatWrapping
         this.texture.wrapS = THREE.RepeatWrapping
@@ -187,13 +275,16 @@ export class Edge {
   }
 
   private updatePlanes(): void {
-    // Fence walls: open black-metal rails/pickets (once per wall, on front edge only)
+    // Fence walls: open black-metal rail (once per wall, on front edge only)
     if (this.wall.wallType === 'fence') {
       if (this.front) {
         this.planes.push(...this.buildFenceMeshes())
       }
       return
     }
+
+    const wallH = this.displayHeight()
+    const shortMode = this.getWallHeightScale() < 0.99
 
     // Switched to MeshLambertMaterial for proper lighting interaction
     const wallMaterial = new THREE.MeshLambertMaterial({
@@ -212,6 +303,7 @@ export class Edge {
     })
 
     const tallExterior =
+      !shortMode &&
       this.wall.exposure === 'exterior' &&
       this.wall.wallType !== 'fence' &&
       (this.wall.height || 0) >= Edge.FOUNDATION_H_CM * 1.5
@@ -252,7 +344,7 @@ export class Edge {
             side.inv,
             wallMaterial,
             fh,
-            this.wall.height
+            wallH
           )
         )
       }
@@ -264,7 +356,9 @@ export class Edge {
           this.edge.exteriorEnd(),
           this.edge.exteriorTransform,
           this.edge.invExteriorTransform,
-          wallMaterial
+          wallMaterial,
+          0,
+          wallH
         )
       )
       this.planes.push(
@@ -273,7 +367,9 @@ export class Edge {
           this.edge.interiorEnd(),
           this.edge.interiorTransform,
           this.edge.invInteriorTransform,
-          wallMaterial
+          wallMaterial,
+          0,
+          wallH
         )
       )
     }
@@ -284,7 +380,7 @@ export class Edge {
 
     // top
     this.planes.push(
-      this.buildFiller(this.edge, this.wall.height, THREE.DoubleSide, this.fillerColor)
+      this.buildFiller(this.edge, wallH, THREE.DoubleSide, this.fillerColor)
     )
 
     // sides
@@ -292,7 +388,7 @@ export class Edge {
       this.buildSideFillter(
         this.edge.interiorStart(),
         this.edge.exteriorStart(),
-        this.wall.height,
+        wallH,
         this.sideColor
       )
     )
@@ -301,15 +397,16 @@ export class Edge {
       this.buildSideFillter(
         this.edge.interiorEnd(),
         this.edge.exteriorEnd(),
-        this.wall.height,
+        wallH,
         this.sideColor
       )
     )
   }
 
   /**
-   * Black metal fence along the wall centerline: end posts, rails, pickets.
-   * Keeps room topology (still a Wall) but reads as open fencing in 3D.
+   * Black metal fence along the wall centerline: end posts + rails.
+   * Guard-height walls (≤ ~48″) use horizontal members like deck `guardrun`.
+   * Tall property fences keep vertical pickets.
    * `wall.baseHeight` lifts deck/landing rails onto the walking surface.
    */
   private buildFenceMeshes(): THREE.Mesh[] {
@@ -332,10 +429,10 @@ export class Edge {
     const thickness = Math.max(2, Math.min(this.wall.thickness || 5.08, 8))
     const postW = Math.max(thickness * 1.4, 6)
     const railT = Math.max(thickness * 0.55, 2.5)
-    const picketW = Math.max(thickness * 0.45, 2)
-    const picketGap = 14 // open black-metal pickets
+    // ≤48″ → interior/deck railing (horizontal bars); taller → property fence pickets
+    const horizontalMembers = railH <= 122
 
-    // Gaps for doors/stairs so pickets don't block openings
+    // Gaps for doors/stairs so members don't block openings
     const gaps: Array<{ lo: number; hi: number }> = []
     this.wall.items.forEach((item: any) => {
       const pos = item.position
@@ -382,9 +479,10 @@ export class Edge {
     }
 
     // Top + bottom rails in segments that skip openings
-    const railBottom = yBottom + railH * 0.1
+    const railBottom = yBottom + railH * 0.08
     const railTop = yBottom + railH * 0.94
     const segPoints = [0, ...gaps.flatMap((g) => [g.lo, g.hi]), len].sort((a, b) => a - b)
+    const railSegs: Array<{ a: number; b: number; mx: number; mz: number; segLen: number }> = []
     for (let i = 0; i < segPoints.length - 1; i += 2) {
       const a = Math.max(0, segPoints[i])
       const b = Math.min(len, segPoints[i + 1])
@@ -393,18 +491,35 @@ export class Edge {
       const mz = ay + uy * ((a + b) / 2)
       const segLen = b - a - postW * 0.5
       if (segLen < 2) continue
+      railSegs.push({ a, b, mx, mz, segLen })
       boxAt(mx, mz, railBottom - railT / 2, railBottom + railT / 2, segLen, railT)
       boxAt(mx, mz, railTop - railT / 2, railTop + railT / 2, segLen, railT)
     }
 
-    // Vertical pickets span between the two rails only
-    const picketBottom = railBottom + railT * 0.5
-    const picketTop = railTop - railT * 0.5
-    for (let d = picketGap; d < len - picketGap / 2; d += picketGap) {
-      if (d < postW || d > len - postW) continue
-      if (Math.abs(d % postSpacing) < postW * 0.6) continue
-      if (inGap(d)) continue
-      boxAt(ax + ux * d, ay + uy * d, picketBottom, picketTop, picketW, picketW)
+    if (horizontalMembers) {
+      // Deck-style horizontal bars between top & bottom rails (like procedural:guardrun)
+      const barT = Math.max(thickness * 0.35, 1.4)
+      const barCount = 7
+      const clearBot = railBottom + railT * 0.5
+      const clearTop = railTop - railT * 0.5
+      for (const seg of railSegs) {
+        for (let i = 1; i <= barCount; i++) {
+          const y = clearTop - (i / (barCount + 1)) * (clearTop - clearBot)
+          boxAt(seg.mx, seg.mz, y - barT / 2, y + barT / 2, seg.segLen, barT)
+        }
+      }
+    } else {
+      // Tall property fence: vertical pickets
+      const picketW = Math.max(thickness * 0.45, 2)
+      const picketGap = 14
+      const picketBottom = railBottom + railT * 0.5
+      const picketTop = railTop - railT * 0.5
+      for (let d = picketGap; d < len - picketGap / 2; d += picketGap) {
+        if (d < postW || d > len - postW) continue
+        if (Math.abs(d % postSpacing) < postW * 0.6) continue
+        if (inGap(d)) continue
+        boxAt(ax + ux * d, ay + uy * d, picketBottom, picketTop, picketW, picketW)
+      }
     }
 
     return meshes
@@ -432,7 +547,7 @@ export class Edge {
     bottomY = 0,
     topY?: number
   ): THREE.Mesh {
-    const wallTop = topY ?? this.wall.height
+    const wallTop = topY ?? this.displayHeight()
     const v1 = this.toVec3(start, bottomY)
     const v2 = this.toVec3(end, bottomY)
     const v3 = this.toVec3(end, wallTop)
@@ -451,35 +566,37 @@ export class Edge {
       new THREE.Vector2(points[3].x, points[3].y)
     ])
 
-    // add holes for each wall item that intersects this vertical band
-    this.wall.items.forEach((item: any) => {
-      const pos = item.position.clone()
-      const halfSize = item.halfSize
-      const itemBottom = pos.y - halfSize.y
-      const itemTop = pos.y + halfSize.y
-      if (itemTop < bottomY + 1 || itemBottom > wallTop - 1) return
+    // Door/window holes only at full height — stubs stay solid so layout reads clean.
+    if (this.getWallHeightScale() >= 0.99) {
+      this.wall.items.forEach((item: any) => {
+        const pos = item.position.clone()
+        const halfSize = item.halfSize
+        const itemBottom = pos.y - halfSize.y
+        const itemTop = pos.y + halfSize.y
+        if (itemTop < bottomY + 1 || itemBottom > wallTop - 1) return
 
-      pos.applyMatrix4(transform)
-      const min = halfSize.clone().multiplyScalar(-1)
-      const max = halfSize.clone()
-      min.add(pos)
-      max.add(pos)
-      // Clip hole to this band in transformed Y
-      const bandMinY = Math.min(points[0].y, points[1].y, points[2].y, points[3].y)
-      const bandMaxY = Math.max(points[0].y, points[1].y, points[2].y, points[3].y)
-      min.y = Math.max(min.y, bandMinY + 0.5)
-      max.y = Math.min(max.y, bandMaxY - 0.5)
-      if (max.y <= min.y + 1) return
+        pos.applyMatrix4(transform)
+        const min = halfSize.clone().multiplyScalar(-1)
+        const max = halfSize.clone()
+        min.add(pos)
+        max.add(pos)
+        // Clip hole to this band in transformed Y
+        const bandMinY = Math.min(points[0].y, points[1].y, points[2].y, points[3].y)
+        const bandMaxY = Math.max(points[0].y, points[1].y, points[2].y, points[3].y)
+        min.y = Math.max(min.y, bandMinY + 0.5)
+        max.y = Math.min(max.y, bandMaxY - 0.5)
+        if (max.y <= min.y + 1) return
 
-      const holePoints = [
-        new THREE.Vector2(min.x, min.y),
-        new THREE.Vector2(max.x, min.y),
-        new THREE.Vector2(max.x, max.y),
-        new THREE.Vector2(min.x, max.y)
-      ]
+        const holePoints = [
+          new THREE.Vector2(min.x, min.y),
+          new THREE.Vector2(max.x, min.y),
+          new THREE.Vector2(max.x, max.y),
+          new THREE.Vector2(min.x, max.y)
+        ]
 
-      shape.holes.push(new THREE.Path(holePoints))
-    })
+        shape.holes.push(new THREE.Path(holePoints))
+      })
+    }
 
     // Three r152+ ShapeGeometry silently drops holes (always 8 verts). Triangulate ourselves.
     const geometry = shapeGeometryWithHoles(shape)
